@@ -1,5 +1,23 @@
-# Terms
+# mainframer
 
+Hello, dear reader. Blip-blop, it's `mainframer`, simple (at the moment lol) script that'll allow you move build process from your local machine to some remote machine and free up your local machine for better things like editing code in your IDE without lags and freezes, not running into swap, be able to actually use your computer while build is happening somewhere else.
+
+For now `mainframer` designed to work with Gradle (and as a result: Android projects that use [Gradle](https://gradle.org/)), but it's pretty universal concept, so we're ~open for other things like `go` in particular, but please file an issue before contributing support for other build systems, thanks!
+
+#### Important parts of the documentation:
+
+* Pre-setup: @Before
+* Local Configuration
+* Performance Optimizations
+* License: Apache 2.0
+
+# @Before
+
+#### How to setup build machine
+
+TODO. (It's actually very easy: separate user for each real user, installed JDK and Android SDK, that's it!)
+
+#### Info you'll need to start
 To use this Remote Build script You will need to receive following information before proceeding.
 
 * `BUILD_MACHINE_NAME` — build machine hostname.
@@ -8,12 +26,14 @@ To use this Remote Build script You will need to receive following information b
 
 # Authentication
 
-  * Configure ssh.
+  ### Configure ssh.
 
   * Generate new ssh key or use existing one.
+
   ```
   $ ssh-keygen -t rsa -b 4096 -C "{BUILD_MACHINE_USERNAME}"
   ```
+
   * Run the command
   * Enter file location for new key, ie: `~/.ssh/remote-build`.
   
@@ -42,7 +62,7 @@ To use this Remote Build script You will need to receive following information b
   $ pbcopy < ~/.ssh/sshkey.pub
   ```
 
-* Once you receive confirmation, test the connection.
+* Once you've received confirmation that build machine is ready for you, test the connection.
 
   ```
   $ ssh {BUILD_MACHINE_HOSTNAME}
@@ -50,7 +70,10 @@ To use this Remote Build script You will need to receive following information b
 
 # Local Configuration
 
-Download [`remote_build.sh`](remote_build.sh) and save it in your project (we recommend to put it under version control so you could sync changes across all team members).
+Download [`mainframer.sh`](mainframer.sh) and save it in your project (we recommend to put it under version control so you could sync changes across all team members).
+
+Also:
+>We recommend you subscribe to changes in this repo somehow (follow it on GitHub, watch for tweets of its maintainers, etc), this will allow you always apply best practises we found to make your Remote Build better, faster and safer.
 
 Put the following content in your local `local.properties` file.
 
@@ -59,23 +82,30 @@ Put the following content in your local `local.properties` file.
 remote_build.machine={BUILD_MACHINE_NAME}
 ```
 
+That'll be passed to `ssh` as parameter, `user@machine` or `machine` or `ip` will be ok.
+
 Now you can test the build.
 
   ```
-  $ bash remote_build.sh ./gradlew assembleDebug
+  $ cd your_project
+  $ bash mainframer.sh ./gradlew assembleDebug
   ```
 
-# Android Studio Configuration
+// Pro user will notice that actually we allow execute any command on remote machine during the "build".
+
+# Android Studio Configuration to build and run APK
 
 1. `Run` → `Edit Configuration` → `+`.
-* Create the desired configuration as you would for local execution.
-  * Name: use something meaningful, like `*-remote-build`.
-* Remove `Gradle-aware Make` from `Before Launch` section.
+* Select "Android App".
+  * Name: something meaningful, like `*-remote-build`.
+* Remove `Gradle-aware Make` from `Before Launch` section (ha!).
 * Create step in `Before Launch` section for `Run External Tool`.
   * Name: use something meaningful, like `remote assembleDebug`.
   * Program: `bash`.
-  * Parameters: `remote_build.sh ./gradlew :app:assembleDebug` or any Gradle/etc command you want.
+  * Parameters: `mainframer.sh ./gradlew :app:assembleDebug` or any Gradle/etc command you want.
   * Working directory: `$ProjectFileDir$`.
+
+Note: local Gradle sync is required sometimes because this is how Android Studio determines resulting `apk` name even though we'll build it on a remote machine.
 
 # Android Studio Configuration for JUnit tests
 
@@ -85,11 +115,17 @@ Now you can test the build.
 * Create step in `Before Launch` section for `Run External Tool`.
   * Name: use something meaningful, like `remote compileDebugUnitTestSources`.
   * Program: `bash`.
-  * Parameters: `remote_build.sh ./gradlew compileDebugUnitTestSources mockableAndroidJar`
+  * Parameters: `mainframer.sh ./gradlew compileDebugUnitTestSources mockableAndroidJar`
 (NOTE: Turning incremental kotlin compilation ON can lead to tests running issues. Build Cache and Minimum SDK tuning are OK.).
   * Working directory: `$ProjectFileDir$`.
 2. Run required JUnit tests as usual.
-3. If tests are failing to start then run remote clean `remote_build.sh ./gradlew clean`, sync project locally and repeat step `2`.
+3. If tests are with configuration issues then run remote clean `mainframer.sh ./gradlew clean`, sync project locally and repeat step `2`.
+
+### Pro: Any Android Studio / IntelliJ Configuration / Run from Terminal
+
+Looks like you got it, right? We ❤️ IntelliJ because it allows you do things in ways you'd like them to be and then it'll do its part: launch & install apk, run tests from compiled classes and so on.
+
+**Note to Android Developer Tools team and IntelliJ team**: please keep things as is so we could do crazy stuff like `mainframer` for Remote Builds and so on, thanks!
 
 # Performance Optimizations
 
