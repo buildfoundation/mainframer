@@ -6,12 +6,12 @@ For now `mainframer` designed to work with Gradle (and as a result: Android proj
 
 #### Important parts of the documentation:
 
-* Pre-setup: @Before
+* Pre-setup: Before
 * Local Configuration
 * Performance Optimizations
 * License: Apache 2.0
 
-# @Before
+# Before
 
 #### How to setup build machine
 
@@ -73,7 +73,7 @@ To use this Remote Build script You will need to receive following information b
 Download [`mainframer.sh`](mainframer.sh) and save it in your project (we recommend to put it under version control so you could sync changes across all team members).
 
 Also:
->We recommend you subscribe to changes in this repo somehow (follow it on GitHub, watch for tweets of its maintainers, etc), this will allow you always apply best practises we found to make your Remote Build better, faster and safer.
+>We recommend you subscribe to changes in this repo somehow (follow it on GitHub / watch for tweets of its maintainers / etc), this will allow you always apply best practises we found to make your Remote Build better, faster and safer.
 
 Put the following content in your local `local.properties` file.
 
@@ -82,16 +82,16 @@ Put the following content in your local `local.properties` file.
 remote_build.machine={BUILD_MACHINE_NAME}
 ```
 
-That'll be passed to `ssh` as parameter, `user@machine` or `machine` or `ip` will be ok.
+That'll be passed to `ssh` as parameter, `user@machine` or `machine` or `ip` will be ok (depending on your ssh and remote machine config of course).
 
 Now you can test the build.
 
   ```
   $ cd your_project
   $ bash mainframer.sh ./gradlew assembleDebug
-  ```
 
-// Pro user will notice that actually we allow execute any command on remote machine during the "build".
+  $ # Pro user will notice that actually we allow execute any command on remote machine during the "build".
+  ```
 
 # Android Studio Configuration to build and run APK
 
@@ -160,7 +160,7 @@ $ ./gradlew :app:assembleDebug -Pandroid.enableBuildCache=true
 
 ## Enable Kotlin Incremental Compilation (if you use Kotlin of course)
 
-Note: it doesn't work very well with Unit tests.
+Note: it doesn't work very well with Unit tests & it's actually flaky, but speeds things up.
 
 ```
 $ ./gradlew :app:assembleDebug -Pkotlin.incremental=true
@@ -171,7 +171,7 @@ $ ./gradlew :app:assembleDebug -Pkotlin.incremental=true
 You can tune compression levels as you wish.
 
 For example, if your network is very slow, you might consider increasing compression level up to `9` to download/upload less data.
-If network is very fast, you might consider disable compression at all by passing `0` as a value. Default values are `1`.
+If network is very fast, you might consider disable compression at all by passing `0` as a value (TODO). Default values are `1`.
 
 Configurable via properties in `local.properties`:
 
@@ -183,6 +183,9 @@ remote_build.local_gzip_level=1
 remote_build.remote_gzip_level=1
 ```
 
+## Use best hardware available for remote machine
+
+Performant CPU, fast SSD, fast RAM (~8 GB per user), fast network.
 
 License
 =======
