@@ -41,7 +41,8 @@ rm -f "$PROJECT_DIR"/build/project_for_remote_build.tar "$PROJECT_DIR"/build/rem
 
 # Archive project.
 pushd "$PROJECT_DIR"
-GZIP=-"$LOCAL_GZIP_LEVEL" tar -cz \
+LOCAL_ARCHIVE_COMMAND="tar \
+-c \
 --exclude='build/project_for_remote_build.tar' \
 --exclude='local.properties' \
 --exclude='.gradle' \
@@ -51,37 +52,59 @@ GZIP=-"$LOCAL_GZIP_LEVEL" tar -cz \
 --exclude='captures' \
 --exclude='build' \
 --exclude='*/build' \
--f build/project_for_remote_build.tar .
+."
+
+if [ $LOCAL_GZIP_LEVEL = "0" ]; then
+	LOCAL_ARCHIVE_COMMAND+=" > build/project_for_remote_build.tar"
+	REMOTE_UNARCHIVE_COMMAND="tar -xf project_for_remote_build.tar -C android-project-remote-build"
+else 
+	LOCAL_ARCHIVE_COMMAND+=" | gzip -$LOCAL_GZIP_LEVEL > build/project_for_remote_build.tar"
+	REMOTE_UNARCHIVE_COMMAND="gzip -d < project_for_remote_build.tar | tar -xf - -C android-project-remote-build"
+fi
+
+eval "$LOCAL_ARCHIVE_COMMAND"
 popd
+
+# Prepare remote archive and local unarchive commands.
+REMOTE_ARCHIVE_COMMAND="tar \
+-c \
+--exclude='kotlin' \
+--exclude='tmp' \
+build/ */build"
+
+if [ $REMOTE_GZIP_LEVEL = "0" ]; then
+	REMOTE_ARCHIVE_COMMAND+=" > remotely_built_project.tar"
+	LOCAL_UNARCHIVE_COMMAND="tar -xf build/remotely_built_project.tar -C ./"
+else
+	REMOTE_ARCHIVE_COMMAND+=" | gzip -$REMOTE_GZIP_LEVEL > remotely_built_project.tar"
+	LOCAL_UNARCHIVE_COMMAND="gzip -d < build/remotely_built_project.tar | tar -xf - -C ./"
+fi
 
 # Transfer archive to remote machine.
 scp "$PROJECT_DIR/build/project_for_remote_build.tar" $REMOTE_BUILD_MACHINE:~/
 
-# Build project on a remove machine.
+# Build project on a remote machine and then archive it.
 ssh $REMOTE_BUILD_MACHINE \
 "set -xe && \
 printenv && \
 cd ~ && \
 mkdir -p android-project-remote-build && \
 rm -rf android-project-remote-build/build/remotely_built_project.tar android-project-remote-build/*/src && \
-tar -xzf project_for_remote_build.tar -C android-project-remote-build && \
+$REMOTE_UNARCHIVE_COMMAND && \
 cd android-project-remote-build && \
 $BUILD_COMMAND && \
-GZIP=-$REMOTE_GZIP_LEVEL tar -cz \
---exclude='kotlin' \
---exclude='tmp' \
--f remotely_built_project.tar build/ */build"
+$REMOTE_ARCHIVE_COMMAND"
 
 # Clean local build dirs.
 rm -rf "$PROJECT_DIR"/build "$PROJECT_DIR"/*/build
-
-# Copy results back.
 mkdir -p "$PROJECT_DIR/build/"
+
+# Copy build results from remote machine to local.
 scp "$REMOTE_BUILD_MACHINE":~/android-project-remote-build/remotely_built_project.tar "$PROJECT_DIR/build/"
 
-# Unzip build results.
+# Unarchive build results.
 pushd "$PROJECT_DIR"
-tar -xzf build/remotely_built_project.tar -C ./
+eval "$LOCAL_UNARCHIVE_COMMAND"
 popd
 
 BUILD_END_TIME=`date +%s`
