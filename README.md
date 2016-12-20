@@ -8,7 +8,7 @@ For now `mainframer` designed to work with Gradle (and as a result: Android proj
 
 #### How to setup build machine
 
-TODO. (It's actually very easy: separate user for each real user, installed JDK and Android SDK, that's it!)
+See [instruction](HOW_TO_SETUP_REMOTE_BUILD_MACHINE.md) (it's actually very easy: separate user for each real user, installed JDK and Android SDK, that's it!).
 
 #### Info you'll need to start
 To use this Remote Build script You will need to receive following information before proceeding.
