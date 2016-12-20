@@ -4,13 +4,6 @@ Hello, dear reader. Blip-blop, it's `mainframer`, simple (at the moment lol) scr
 
 For now `mainframer` designed to work with Gradle (and as a result: Android projects that use [Gradle](https://gradle.org/)), but it's pretty universal concept, so we're ~open for other things like `go` in particular, but please file an issue before contributing support for other build systems, thanks!
 
-#### Important parts of the documentation:
-
-* Pre-setup: Before
-* Local Configuration
-* Performance Optimizations
-* License: Apache 2.0
-
 # Before
 
 #### How to setup build machine
@@ -26,7 +19,7 @@ To use this Remote Build script You will need to receive following information b
 
 # Authentication
 
-  ### Configure ssh.
+  ### Configure ssh
 
   * Generate new ssh key or use existing one.
 
@@ -58,7 +51,7 @@ To use this Remote Build script You will need to receive following information b
 * Copy and send public key to the person responsible for maintenance of remote build infrastructure.
 
   ```
-  # On Mac OS you can copy content from commandline.
+  # On macOS you can copy content from commandline.
   $ pbcopy < ~/.ssh/sshkey.pub
   ```
 
@@ -173,7 +166,7 @@ You can tune compression levels as you wish.
 For example, if your network is very slow, you might consider increasing compression level up to `9` to download/upload less data.
 If network is very fast, you might consider disable compression at all by passing `0` as a value (TODO). Default values are `1`.
 
-Configurable via properties in `local.properties`:
+Configurable via `local.properties`:
 
 ```
 # Optional.
@@ -185,7 +178,7 @@ remote_build.remote_gzip_level=1
 
 ## Use best hardware available for remote machine
 
-Performant CPU, fast SSD, fast RAM (~8 GB per user), fast network.
+Performant CPU (more cores, higher frequency, more cache), fast SSD, fast RAM (~8 GB per user), fast network.
 
 License
 =======

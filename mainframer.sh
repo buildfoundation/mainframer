@@ -24,7 +24,7 @@ fi
 BUILD_COMMAND="$@"
 
 if [ -z "$BUILD_COMMAND" ]; then
-	echo "Please pass build command as argument(s) to the script."
+	echo "Please pass build command."
 	exit 1
 fi
 
