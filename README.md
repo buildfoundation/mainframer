@@ -164,7 +164,7 @@ $ ./gradlew :app:assembleDebug -Pkotlin.incremental=true
 You can tune compression levels as you wish.
 
 For example, if your network is very slow, you might consider increasing compression level up to `9` to download/upload less data.
-If network is very fast, you might consider disable compression at all by passing `0` as a value (TODO). Default values are `1`.
+If network is very fast (near to 1 Gb/s), you might consider disable compression at all by passing `0` as a value. Default values are `1`.
 
 Configurable via `local.properties`:
 
