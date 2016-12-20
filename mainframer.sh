@@ -21,6 +21,11 @@ if [ -z "$REMOTE_GZIP_LEVEL" ]; then
 	REMOTE_GZIP_LEVEL=1
 fi
 
+if [ -z "$REMOTE_BUILD_MACHINE" ]; then
+	echo "Please specify remote build machine in local.properties"
+	exit 1
+fi
+
 BUILD_COMMAND="$@"
 
 if [ -z "$BUILD_COMMAND" ]; then
