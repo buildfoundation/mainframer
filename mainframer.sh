@@ -83,7 +83,7 @@ fi
 # Transfer archive to remote machine.
 scp "$PROJECT_DIR/build/project_for_remote_build.tar" $REMOTE_BUILD_MACHINE:~/
 
-# Build project on a remove machine and then archive it.
+# Build project on a remote machine and then archive it.
 ssh $REMOTE_BUILD_MACHINE \
 "set -xe && \
 printenv && \
