@@ -1,6 +1,6 @@
 # mainframer
 
-Hello, dear reader. Blip-blop, it's `mainframer`, simple (at the moment lol) script that'll allow you move build process from your local machine to some remote machine and free up your local machine for better things like editing code in your IDE without lags and freezes, not running into swap, be able to actually use your computer while build is happening somewhere else.
+Blip-blop, it's `mainframer`, simple (at the moment lol) script that'll allow you move build process from your local machine to some remote machine and free up your local machine for better things like editing code in your IDE without lags and freezes, not running into swap, be able to actually use your computer while build is happening somewhere else.
 
 For now `mainframer` designed to work with Gradle (and as a result: Android projects that use [Gradle](https://gradle.org/)), but it's pretty universal concept, so we're ~open for other things like `go` in particular, but please file an issue before contributing support for other build systems, thanks!
 
@@ -19,7 +19,7 @@ To use this Remote Build script You will need to receive following information b
 
 # Authentication
 
-  ### Configure ssh
+### Configure ssh
 
   * Generate new ssh key or use existing one.
 
