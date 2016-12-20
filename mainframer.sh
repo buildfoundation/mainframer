@@ -7,6 +7,7 @@ BUILD_START_TIME=`date +%s`
 # You can run it from any directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROJECT_DIR=$DIR
+PROJECT_DIR_NAME="$( basename "$PROJECT_DIR")"
 
 # Read config variables from local.properties.
 REMOTE_BUILD_MACHINE=$(awk -F "=" '/remote_build.machine/ {print $2}' "$PROJECT_DIR/local.properties")
@@ -56,10 +57,10 @@ LOCAL_ARCHIVE_COMMAND="tar \
 
 if [ $LOCAL_GZIP_LEVEL = "0" ]; then
 	LOCAL_ARCHIVE_COMMAND+=" > build/project_for_remote_build.tar"
-	REMOTE_UNARCHIVE_COMMAND="tar -xf project_for_remote_build.tar -C android-project-remote-build"
+	REMOTE_UNARCHIVE_COMMAND="tar -xf project_for_remote_build.tar -C $PROJECT_DIR_NAME"
 else 
 	LOCAL_ARCHIVE_COMMAND+=" | gzip -$LOCAL_GZIP_LEVEL > build/project_for_remote_build.tar"
-	REMOTE_UNARCHIVE_COMMAND="gzip -d < project_for_remote_build.tar | tar -xf - -C android-project-remote-build"
+	REMOTE_UNARCHIVE_COMMAND="gzip -d < project_for_remote_build.tar | tar -xf - -C $PROJECT_DIR_NAME"
 fi
 
 eval "$LOCAL_ARCHIVE_COMMAND"
@@ -88,10 +89,10 @@ ssh $REMOTE_BUILD_MACHINE \
 "set -xe && \
 printenv && \
 cd ~ && \
-mkdir -p android-project-remote-build && \
-rm -rf android-project-remote-build/build/remotely_built_project.tar android-project-remote-build/*/src && \
+mkdir -p $PROJECT_DIR_NAME && \
+rm -rf $PROJECT_DIR_NAME/build/remotely_built_project.tar $PROJECT_DIR_NAME/*/src && \
 $REMOTE_UNARCHIVE_COMMAND && \
-cd android-project-remote-build && \
+cd $PROJECT_DIR_NAME && \
 $BUILD_COMMAND && \
 $REMOTE_ARCHIVE_COMMAND"
 
@@ -100,7 +101,7 @@ rm -rf "$PROJECT_DIR"/build "$PROJECT_DIR"/*/build
 mkdir -p "$PROJECT_DIR/build/"
 
 # Copy build results from remote machine to local.
-scp "$REMOTE_BUILD_MACHINE":~/android-project-remote-build/remotely_built_project.tar "$PROJECT_DIR/build/"
+scp "$REMOTE_BUILD_MACHINE":~/"$PROJECT_DIR_NAME"/remotely_built_project.tar "$PROJECT_DIR/build/"
 
 # Unarchive build results.
 pushd "$PROJECT_DIR"
