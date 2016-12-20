@@ -4,6 +4,10 @@ Blip-blop, it's `mainframer`, simple (at the moment lol) script that'll allow yo
 
 For now `mainframer` designed to work with Gradle (and as a result: Android projects that use [Gradle](https://gradle.org/)), but it's pretty universal concept, so we're ~open for other things like `go` in particular, but please file an issue before contributing support for other build systems, thanks!
 
+##Small video that shows remote build started from Android Studio
+
+[![Video](video_preview.png)](https://youtu.be/xysQXMaPaGw "Remote Build — mainframer v1.0.0")
+
 # Before
 
 #### How to setup build machine
