@@ -40,6 +40,11 @@ mkdir -p "$PROJECT_DIR"/build
 # Remove previous archives of the project.
 rm -f "$PROJECT_DIR"/build/project_for_remote_build.tar "$PROJECT_DIR"/build/remotely_built_project.tar
 
+# Archiver.
+
+DETECT_ARCHIVER="if type 'pigz' > /dev/null; then echo 'pigz'; else echo 'gzip'; fi"
+LOCAL_ARCHIVER=`eval $DETECT_ARCHIVER`
+
 # Archive project.
 pushd "$PROJECT_DIR"
 LOCAL_ARCHIVE_COMMAND="tar \
@@ -57,13 +62,13 @@ LOCAL_ARCHIVE_COMMAND="tar \
 
 if [ $LOCAL_GZIP_LEVEL = "0" ]; then
 	LOCAL_ARCHIVE_COMMAND+=" > build/project_for_remote_build.tar"
-	REMOTE_UNARCHIVE_COMMAND="tar -xf project_for_remote_build.tar -C $PROJECT_DIR_NAME"
-else 
-	LOCAL_ARCHIVE_COMMAND+=" | gzip -$LOCAL_GZIP_LEVEL > build/project_for_remote_build.tar"
-	REMOTE_UNARCHIVE_COMMAND="gzip -d < project_for_remote_build.tar | tar -xf - -C $PROJECT_DIR_NAME"
+	REMOTE_UNARCHIVE_COMMAND="\$REMOTE_ARCHIVER -xf project_for_remote_build.tar -C $PROJECT_DIR_NAME"
+else
+	LOCAL_ARCHIVE_COMMAND+=" | $LOCAL_ARCHIVER -$LOCAL_GZIP_LEVEL > build/project_for_remote_build.tar"
+  	REMOTE_UNARCHIVE_COMMAND="\$REMOTE_ARCHIVER -d < project_for_remote_build.tar | tar -xf - -C $PROJECT_DIR_NAME"
 fi
 
-eval "$LOCAL_ARCHIVE_COMMAND"
+eval $LOCAL_ARCHIVE_COMMAND
 popd
 
 # Prepare remote archive and local unarchive commands.
@@ -75,10 +80,10 @@ build/ */build"
 
 if [ $REMOTE_GZIP_LEVEL = "0" ]; then
 	REMOTE_ARCHIVE_COMMAND+=" > remotely_built_project.tar"
-	LOCAL_UNARCHIVE_COMMAND="tar -xf build/remotely_built_project.tar -C ./"
+	LOCAL_UNARCHIVE_COMMAND="$LOCAL_ARCHIVER -xf build/remotely_built_project.tar -C ./"
 else
-	REMOTE_ARCHIVE_COMMAND+=" | gzip -$REMOTE_GZIP_LEVEL > remotely_built_project.tar"
-	LOCAL_UNARCHIVE_COMMAND="gzip -d < build/remotely_built_project.tar | tar -xf - -C ./"
+	REMOTE_ARCHIVE_COMMAND+=" | \$REMOTE_ARCHIVER -$REMOTE_GZIP_LEVEL > remotely_built_project.tar"
+	LOCAL_UNARCHIVE_COMMAND="$LOCAL_ARCHIVER -d < build/remotely_built_project.tar | tar -xf - -C ./"
 fi
 
 # Transfer archive to remote machine.
@@ -87,6 +92,7 @@ scp "$PROJECT_DIR/build/project_for_remote_build.tar" $REMOTE_BUILD_MACHINE:~/
 # Build project on a remote machine and then archive it.
 ssh $REMOTE_BUILD_MACHINE \
 "set -xe && \
+export REMOTE_ARCHIVER=\`eval \"$DETECT_ARCHIVER\"\` && \
 cd ~ && \
 mkdir -p $PROJECT_DIR_NAME && \
 rm -rf $PROJECT_DIR_NAME/build/remotely_built_project.tar $PROJECT_DIR_NAME/*/src && \
