@@ -2,7 +2,9 @@
 
 Blip-blop, it's `mainframer`, simple (at the moment lol) script that allows you to move build process from your local machine to some remote one. This way you can free up your local machine for better things — like editing source code in your IDE without lags, freezes and running into swap, being able to actually _use_ your computer when the build is happening somewhere else.
 
-For now `mainframer` designed to work with [Gradle](https://gradle.org/) (mostly Android-focused) projects, but it’s pretty universal concept, so we’re open for other things like `go` in particular, but please file an issue before contributing support for other build systems, thanks!
+**For now** `mainframer` implemented to work with [Gradle][Gradle] (mostly Android-focused) projects, but its design is pretty universal, so we’re open for other things like [`go`][Go] in particular, but please file an issue before contributing support for other build systems, thanks! 
+
+**In v2.0.0** we're [planning](https://github.com/gojuno/mainframer/issues/19) to make `mainframer` more universal and customizable so you could use it with other build systems.
 
 ## Demo
 
@@ -99,14 +101,16 @@ Note: local Gradle sync is required sometimes because this is how Android Studio
   * Name: use something meaningful, like `remote compileDebugUnitTestSources`.
   * Program: `bash`.
   * Parameters: `mainframer.sh ./gradlew compileDebugUnitTestSources mockableAndroidJar`
-(NOTE: Turning incremental kotlin compilation ON can lead to tests running issues. Build Cache and Minimum SDK tuning are OK.).
+(NOTE: Turning incremental kotlin compilation ON can lead to test run issues. Build Cache and Minimum SDK tunings are OK.).
   * Working directory: `$ProjectFileDir$`.
 2. Run required JUnit tests as usual.
-3. If tests are with configuration issues then run remote clean `mainframer.sh ./gradlew clean`, sync project locally and repeat step `2`.
+3. If tests are failing with configuration issues, run remote clean: `mainframer.sh ./gradlew clean`, then run Gradle sync locally and repeat step `2`.
 
 ### Pro: Any Android Studio / IntelliJ Configuration / Run from Terminal
 
-Looks like you got it, right? We ❤️ IntelliJ because it allows you do things in ways you’d like them to be and then it’ll do its part: launch and install APK, run tests from compiled classes and so on.
+Looks like you got it, right? You can run any command on remote machine and grab its results to local one.
+
+We ❤️ IntelliJ because it allows you do things in ways you’d like them to be and then it’ll do its part: launch and install APK, run tests from compiled classes and so on.
 
 **Note to Android Developer Tools team and IntelliJ team**: please keep things as is so we can do crazy stuff like `mainframer`!
 
@@ -150,9 +154,9 @@ $ ./gradlew :app:assembleDebug -Pkotlin.incremental=true
 
 ## Change Compression Level
 
-You can tune compression levels as you wish Default compression levels are `1`.
+You can tune compression levels as you wish. Default compression levels are `1`.
 
-* If network is slow, you might consider increasing compression level up to `9` to exchange less data.
+* If network is slow, you might consider increasing compression levels up to `9` to exchange less data.
 * If network is fast (near to 1 Gb/s), you might consider disabling compression at all by passing `0` as a value.
 
 Configurable via `local.properties`:
@@ -166,7 +170,7 @@ remote_build.remote_gzip_level=1
 
 Performant CPU (more cores, higher frequency, more cache), fast SSD, fast RAM (~8 GB per user), fast network will help a lot.
 
-We’ve created this with a simple motivation in mind — it is always easier to beef up a single headless Linux-based PC hardware unit instead of paying a ridiculous amount of money to some companies (cough-cough) still using mobile CPUs in their notebooks. Use and abuse this concept as you wish.
+We’ve created this with a simple motivation in mind — it is always easier to beef up a single headless Linux-based PC hardware unit instead of paying a ridiculous amount of money to some companies (cough-cough) still using mobile CPUs in their laptops. Use and abuse this concept as you wish.
 
 # License
 
@@ -185,3 +189,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ```
+
+[Gradle]: https://gradle.org/
+[Go]: https://golang.org
