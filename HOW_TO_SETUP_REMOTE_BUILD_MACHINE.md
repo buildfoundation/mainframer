@@ -25,6 +25,10 @@ $ chmod 600 ~/.ssh/authorized_keys
 
 `tar`, `ssh` running as service, `gzip` if you want to compress data.
 
+### Optional software
+
+`pigz` for a parallel data compression.
+
 ### Environment for the build
 
 In our case we need JDK and Android SDK installed on the remote machine (each user has its own Android SDK copy).

@@ -2,7 +2,7 @@
 
 Blip-blop, it's `mainframer`, simple (at the moment lol) script that allows you to move build process from your local machine to some remote one. This way you can free up your local machine for better things — like editing source code in your IDE without lags, freezes and running into swap, being able to actually _use_ your computer when the build is happening somewhere else.
 
-**For now** `mainframer` implemented to work with [Gradle][Gradle] (mostly Android-focused) projects, but its design is pretty universal, so we’re open for other things like [`go`][Go] in particular, but please file an issue before contributing support for other build systems, thanks! 
+**For now** `mainframer` implemented to work with [Gradle][Gradle] (mostly Android-focused) projects, but its design is pretty universal, so we’re open for other things like [`go`][Go] in particular, but please file an issue before contributing support for other build systems, thanks!
 
 **In v2.0.0** we're [planning](https://github.com/gojuno/mainframer/issues/19) to make `mainframer` more universal and customizable so you could use it with other build systems.
 
@@ -166,6 +166,11 @@ remote_build.local_gzip_level=1
 remote_build.remote_gzip_level=1
 ```
 
+## Use Parallel Compression
+
+[`pigz`][pigz] is a parallel implementation of `gzip` which offers a nice performance boost for archiving steps.
+`mainframer` will use it if it is available at `PATH`.
+
 ## Use The Best Hardware Available for Remote Machine
 
 Performant CPU (more cores, higher frequency, more cache), fast SSD, fast RAM (~8 GB per user), fast network will help a lot.
@@ -192,3 +197,4 @@ limitations under the License.
 
 [Gradle]: https://gradle.org/
 [Go]: https://golang.org
+[pigz]: http://zlib.net/pigz/

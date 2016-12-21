@@ -40,6 +40,10 @@ mkdir -p "$PROJECT_DIR"/build
 # Remove previous archives of the project.
 rm -f "$PROJECT_DIR"/build/project_for_remote_build.tar "$PROJECT_DIR"/build/remotely_built_project.tar
 
+# Archiver.
+
+ARCHIVER="$(eval "if type 'pigz' > /dev/null; then echo 'pigz'; else echo 'gzip'; fi")"
+
 # Archive project.
 pushd "$PROJECT_DIR"
 LOCAL_ARCHIVE_COMMAND="tar \
@@ -58,9 +62,9 @@ LOCAL_ARCHIVE_COMMAND="tar \
 if [ $LOCAL_GZIP_LEVEL = "0" ]; then
 	LOCAL_ARCHIVE_COMMAND+=" > build/project_for_remote_build.tar"
 	REMOTE_UNARCHIVE_COMMAND="tar -xf project_for_remote_build.tar -C $PROJECT_DIR_NAME"
-else 
-	LOCAL_ARCHIVE_COMMAND+=" | gzip -$LOCAL_GZIP_LEVEL > build/project_for_remote_build.tar"
-	REMOTE_UNARCHIVE_COMMAND="gzip -d < project_for_remote_build.tar | tar -xf - -C $PROJECT_DIR_NAME"
+else
+	LOCAL_ARCHIVE_COMMAND+=" | $ARCHIVER -$LOCAL_GZIP_LEVEL > build/project_for_remote_build.tar"
+	REMOTE_UNARCHIVE_COMMAND="$ARCHIVER -d < project_for_remote_build.tar | tar -xf - -C $PROJECT_DIR_NAME"
 fi
 
 eval "$LOCAL_ARCHIVE_COMMAND"
@@ -77,8 +81,8 @@ if [ $REMOTE_GZIP_LEVEL = "0" ]; then
 	REMOTE_ARCHIVE_COMMAND+=" > remotely_built_project.tar"
 	LOCAL_UNARCHIVE_COMMAND="tar -xf build/remotely_built_project.tar -C ./"
 else
-	REMOTE_ARCHIVE_COMMAND+=" | gzip -$REMOTE_GZIP_LEVEL > remotely_built_project.tar"
-	LOCAL_UNARCHIVE_COMMAND="gzip -d < build/remotely_built_project.tar | tar -xf - -C ./"
+	REMOTE_ARCHIVE_COMMAND+=" | $ARCHIVER -$REMOTE_GZIP_LEVEL > remotely_built_project.tar"
+	LOCAL_UNARCHIVE_COMMAND="$ARCHIVER -d < build/remotely_built_project.tar | tar -xf - -C ./"
 fi
 
 # Transfer archive to remote machine.
