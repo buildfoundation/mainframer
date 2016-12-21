@@ -87,7 +87,6 @@ scp "$PROJECT_DIR/build/project_for_remote_build.tar" $REMOTE_BUILD_MACHINE:~/
 # Build project on a remote machine and then archive it.
 ssh $REMOTE_BUILD_MACHINE \
 "set -xe && \
-printenv && \
 cd ~ && \
 mkdir -p $PROJECT_DIR_NAME && \
 rm -rf $PROJECT_DIR_NAME/build/remotely_built_project.tar $PROJECT_DIR_NAME/*/src && \
