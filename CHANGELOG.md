@@ -1,5 +1,11 @@
 # Change Log
 
+## Version 1.0.2
+
+_2016_12_22_
+
+* [PR 26](https://github.com/gojuno/mainframer/pull/26): Fix zero compression.
+
 ## Version 1.0.1
 
 _2016_12_21_
