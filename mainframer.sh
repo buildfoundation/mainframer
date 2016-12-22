@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "mainframer v1.0.3"
+echo "mainframer v1.0.2"
 
 echo "Start time: $( date )"
 BUILD_START_TIME=`date +%s`
