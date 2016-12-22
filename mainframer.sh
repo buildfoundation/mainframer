@@ -62,10 +62,10 @@ LOCAL_ARCHIVE_COMMAND="tar \
 
 if [ $LOCAL_GZIP_LEVEL = "0" ]; then
 	LOCAL_ARCHIVE_COMMAND+=" > build/project_for_remote_build.tar"
-	REMOTE_UNARCHIVE_COMMAND="\$REMOTE_ARCHIVER -xf project_for_remote_build.tar -C $PROJECT_DIR_NAME"
+	REMOTE_UNARCHIVE_COMMAND="tar -xf project_for_remote_build.tar -C $PROJECT_DIR_NAME"
 else
 	LOCAL_ARCHIVE_COMMAND+=" | $LOCAL_ARCHIVER -$LOCAL_GZIP_LEVEL > build/project_for_remote_build.tar"
-  	REMOTE_UNARCHIVE_COMMAND="\$REMOTE_ARCHIVER -d < project_for_remote_build.tar | tar -xf - -C $PROJECT_DIR_NAME"
+	REMOTE_UNARCHIVE_COMMAND="\$REMOTE_ARCHIVER -d < project_for_remote_build.tar | tar -xf - -C $PROJECT_DIR_NAME"
 fi
 
 eval $LOCAL_ARCHIVE_COMMAND
@@ -80,7 +80,7 @@ build/ */build"
 
 if [ $REMOTE_GZIP_LEVEL = "0" ]; then
 	REMOTE_ARCHIVE_COMMAND+=" > remotely_built_project.tar"
-	LOCAL_UNARCHIVE_COMMAND="$LOCAL_ARCHIVER -xf build/remotely_built_project.tar -C ./"
+	LOCAL_UNARCHIVE_COMMAND="tar -xf build/remotely_built_project.tar -C ./"
 else
 	REMOTE_ARCHIVE_COMMAND+=" | \$REMOTE_ARCHIVER -$REMOTE_GZIP_LEVEL > remotely_built_project.tar"
 	LOCAL_UNARCHIVE_COMMAND="$LOCAL_ARCHIVER -d < build/remotely_built_project.tar | tar -xf - -C ./"
