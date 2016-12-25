@@ -44,8 +44,12 @@ cd ~/mainframer/ && \
 $BUILD_COMMAND"
 
 # Sync project back to local machine
-echo Syncing back to local machine
 rsync --delete -a \
+--exclude='.gradle' \
+--exclude='.idea' \
+--exclude='.git' \
+--exclude='artifacts' \
+--exclude='captures' \
 -e "ssh" "$REMOTE_BUILD_MACHINE:~/$PROJECT_DIR_NAME/" ./
 popd
 
