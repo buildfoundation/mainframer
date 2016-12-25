@@ -31,7 +31,7 @@ pushd "$PROJECT_DIR"
 rsync -a --delete \
 --exclude='.gradle' \
 --exclude='.idea' \
---exclude='.git' \
+--exclude='**/.git/' \
 --exclude='artifacts' \
 --exclude='captures' \
 -e "ssh" ./ "$REMOTE_BUILD_MACHINE:~/$PROJECT_DIR_NAME"
@@ -47,7 +47,7 @@ $BUILD_COMMAND"
 rsync --delete -a \
 --exclude='.gradle' \
 --exclude='.idea' \
---exclude='.git' \
+--exclude='**/.git/' \
 --exclude='artifacts' \
 --exclude='captures' \
 -e "ssh" "$REMOTE_BUILD_MACHINE:~/$PROJECT_DIR_NAME/" ./
