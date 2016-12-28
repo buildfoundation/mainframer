@@ -27,23 +27,24 @@ if [ -z "$BUILD_COMMAND" ]; then
 fi
 
 pushd "$PROJECT_DIR"
-# Sync project to remote machine
+# Sync project to remote machine.
 rsync -a --delete \
 --exclude='.gradle' \
 --exclude='.idea' \
 --exclude='**/.git/' \
 --exclude='artifacts' \
 --exclude='captures' \
+--exclude='**/build' \
 -e "ssh" ./ "$REMOTE_BUILD_MACHINE:~/$PROJECT_DIR_NAME"
 
 
-# Build project on a remote machine
+# Build project on a remote machine.
 ssh $REMOTE_BUILD_MACHINE \
 "set -xe && \
-cd ~/mainframer/ && \
+cd ~/$PROJECT_DIR_NAME/ && \
 $BUILD_COMMAND"
 
-# Sync project back to local machine
+# Sync project back to local machine.
 rsync --delete -a \
 --exclude='.gradle' \
 --exclude='.idea' \
