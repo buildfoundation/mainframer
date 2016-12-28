@@ -162,8 +162,8 @@ You can tune compression levels as you wish. Default compression levels are `1`.
 Configurable via `local.properties`:
 
 ```
-remote_build.local_compress_level=1
-remote_build.remote_compress_level=1
+remote_build.local_gzip_level=1
+remote_build.remote_gzip_level=1
 ```
 
 ## Use The Best Hardware Available for Remote Machine
