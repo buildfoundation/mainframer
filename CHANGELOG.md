@@ -1,5 +1,13 @@
 # Change Log
 
+## Version 1.1.0
+
+_2016_12_29_
+
+This release is focused on migration from `tar` + `scp` to `rsync` which increases files transferring speed between machines, especially noticeable on connections slower than 1 Gbit/s. Please make sure you have `rsync` installed on both local and remote machines.
+
+* [PR 35](https://github.com/gojuno/mainframer/pull/35): Replace tar+scp with rsync.
+
 ## Version 1.0.2
 
 _2016_12_22_
