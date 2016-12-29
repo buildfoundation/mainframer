@@ -15,6 +15,7 @@ PROJECT_DIR_NAME="$( basename "$PROJECT_DIR")"
 REMOTE_BUILD_MACHINE=$(awk -F "=" '/remote_build.machine/ {print $2}' "$PROJECT_DIR/local.properties")
 LOCAL_COMPRESS_LEVEL=$(awk -F "=" '/remote_build.local_gzip_level/ {print $2}' "$PROJECT_DIR/local.properties")
 REMOTE_COMPRESS_LEVEL=$(awk -F "=" '/remote_build.local_gzip_level/ {print $2}' "$PROJECT_DIR/local.properties")
+REMOTE_SSH_PORT=$(awk -F "=" '/remote_build.ssh_port/ {print $2}' "$PROJECT_DIR/local.properties")
 
 if [ -z "$LOCAL_COMPRESS_LEVEL" ]; then
 	LOCAL_COMPRESS_LEVEL=1
@@ -27,6 +28,10 @@ fi
 if [ -z "$REMOTE_BUILD_MACHINE" ]; then
 	echo "Please specify remote build machine in local.properties"
 	exit 1
+fi
+
+if [ -z "$REMOTE_SSH_PORT" ]; then
+	REMOTE_SSH_PORT=22
 fi
 
 BUILD_COMMAND="$@"
@@ -46,10 +51,10 @@ rsync --archive --delete --compress-level=$LOCAL_COMPRESS_LEVEL \
 --exclude='captures' \
 --exclude='**/build' \
 --exclude='**/local.properties' \
---rsh "ssh" ./ "$REMOTE_BUILD_MACHINE:~/$PROJECT_DIR_NAME"
+--rsh "ssh -p$REMOTE_SSH_PORT" ./ "$REMOTE_BUILD_MACHINE:~/$PROJECT_DIR_NAME"
 
 # Build project on a remote machine.
-ssh $REMOTE_BUILD_MACHINE \
+ssh $REMOTE_BUILD_MACHINE -p $REMOTE_SSH_PORT \
 "set -xe && \
 cd ~/$PROJECT_DIR_NAME/ && \
 $BUILD_COMMAND"
@@ -62,7 +67,7 @@ rsync --archive --delete --compress-level=$REMOTE_COMPRESS_LEVEL \
 --exclude='artifacts' \
 --exclude='captures' \
 --exclude='**/local.properties' \
---rsh "ssh" "$REMOTE_BUILD_MACHINE:~/$PROJECT_DIR_NAME/" ./
+--rsh "ssh -p$REMOTE_SSH_PORT" "$REMOTE_BUILD_MACHINE:~/$PROJECT_DIR_NAME/" ./
 popd
 
 BUILD_END_TIME=`date +%s`
