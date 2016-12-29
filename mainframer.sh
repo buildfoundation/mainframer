@@ -49,10 +49,7 @@ rsync --archive --delete --compress-level=$LOCAL_COMPRESS_LEVEL \
 --rsh "ssh" ./ "$REMOTE_BUILD_MACHINE:~/$PROJECT_DIR_NAME"
 
 # Build project on a remote machine.
-ssh $REMOTE_BUILD_MACHINE \
-"set -xe && \
-cd ~/$PROJECT_DIR_NAME/ && \
-$BUILD_COMMAND"
+ssh $REMOTE_BUILD_MACHINE "echo 'set -xe && cd ~/$PROJECT_DIR_NAME/ && $BUILD_COMMAND' | bash"
 
 # Sync project back to local machine.
 rsync --archive --delete --compress-level=$REMOTE_COMPRESS_LEVEL \
