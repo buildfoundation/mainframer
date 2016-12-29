@@ -23,7 +23,7 @@ $ chmod 600 ~/.ssh/authorized_keys
 
 ### Required software
 
-`tar`, `ssh` running as service, `gzip` if you want to compress data.
+`rsync`, `ssh` running as daemon.
 
 ### Environment for the build
 
