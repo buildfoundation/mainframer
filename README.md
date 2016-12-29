@@ -63,14 +63,14 @@ See [instruction](HOW_TO_SETUP_REMOTE_BUILD_MACHINE.md). It’s actually very ea
 
 # Local Configuration
 
-1. Download [`mainframer.sh`](mainframer.sh) and save it in your project, most likely put it to VCS so you could sync changes across all team members.
+1. **Download** [latest release version of `mainframer.sh`](https://github.com/gojuno/mainframer/releases/latest) and save it in your project, most likely put it to VCS so you could sync changes across all team members.
 
   We recommend you to subscribe to changes in this repo somehow (follow it on GitHub / watch for tweets of its maintainers / etc). This will allow you to apply best practises we found to make your Remote Build better, faster and safer.
 
-2. Update your `local.properties` file.
+2. Add the following content to `local.properties`.
 
-  ```
-  $ echo "remote_build.machine={BUILD_MACHINE_NAME}" >> local.properties
+  ```properties
+  remote_build.machine={BUILD_MACHINE_NAME}
   ```
 
 3. And finally you can test the build.
