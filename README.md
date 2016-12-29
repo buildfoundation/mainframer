@@ -67,7 +67,11 @@ See [instruction](HOW_TO_SETUP_REMOTE_BUILD_MACHINE.md). It’s actually very ea
 
   We recommend you to subscribe to changes in this repo somehow (follow it on GitHub / watch for tweets of its maintainers / etc). This will allow you to apply best practises we found to make your Remote Build better, faster and safer.
 
-2. Add `remote_build.machine={BUILD_MACHINE_NAME}` to `local.properties`.
+2. Add the following content to `local.properties`.
+
+  ```properties
+  remote_build.machine={BUILD_MACHINE_NAME}
+  ```
 
 3. And finally you can test the build.
 
