@@ -11,10 +11,14 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROJECT_DIR=$DIR
 PROJECT_DIR_NAME="$( basename "$PROJECT_DIR")"
 
+function prop {
+    grep "^${1}=" $PROJECT_DIR/local.properties | cut -d'=' -f2
+}
+
 # Read config variables from local.properties.
-REMOTE_BUILD_MACHINE=$(awk -F "=" '/remote_build.machine/ {print $2}' "$PROJECT_DIR/local.properties")
-LOCAL_COMPRESS_LEVEL=$(awk -F "=" '/remote_build.local_gzip_level/ {print $2}' "$PROJECT_DIR/local.properties")
-REMOTE_COMPRESS_LEVEL=$(awk -F "=" '/remote_build.local_gzip_level/ {print $2}' "$PROJECT_DIR/local.properties")
+REMOTE_BUILD_MACHINE=$(prop 'remote_build.machine')
+LOCAL_COMPRESS_LEVEL=$(prop 'remote_build.local_gzip_level')
+REMOTE_COMPRESS_LEVEL=$(prop 'remote_build.local_gzip_level')
 
 if [ -z "$LOCAL_COMPRESS_LEVEL" ]; then
 	LOCAL_COMPRESS_LEVEL=1
