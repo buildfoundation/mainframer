@@ -1,5 +1,11 @@
 # Change Log
 
+## Version 1.1.1
+
+_2016_12_30_
+
+* [PR 44](https://github.com/gojuno/mainframer/pull/44): Build project on remote machine using bash.
+
 ## Version 1.1.0
 
 _2016_12_29_
