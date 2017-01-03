@@ -88,10 +88,12 @@ See [instruction](HOW_TO_SETUP_REMOTE_BUILD_MACHINE.md). It’s actually very ea
 * Create a step in `Before Launch` section for `Run External Tool`.
   * Name: use something meaningful, like `remote assembleDebug`.
   * Program: `bash`.
-  * Parameters: `mainframer.sh ./gradlew :app:assembleDebug` or any command you want.
+  * Parameters: `mainframer.sh ./gradlew :app:assembleDebug` or any command you want\*.
   * Working directory: `$ProjectFileDir$`.
 
 Note: local Gradle sync is required sometimes because this is how Android Studio determines resulting APK name even though we’ll build it on a remote machine.
+
+\* Please check to target your build as precise as you can. If you do `assembleDebug` it will compile all `debug` builds. If you i.e. have 2 flavors (i.e. Dev/Prod from the google multidex tutorial) it will compile both. In this case it's better to target only one - `:app:assembleDevDebug` or `:app:assembleProdDebug`.
 
 # Android Studio Configuration to Run JUnit tests
 
