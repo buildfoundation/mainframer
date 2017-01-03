@@ -15,6 +15,8 @@ function property {
     grep "^${1}=" $PROJECT_DIR/local.properties | cut -d'=' -f2
 }
 
+pushd "$PROJECT_DIR"
+
 # Read config variables from local.properties.
 REMOTE_BUILD_MACHINE=$(property 'remote_build.machine')
 LOCAL_COMPRESS_LEVEL=$(property 'remote_build.local_gzip_level')
@@ -40,32 +42,39 @@ if [ -z "$BUILD_COMMAND" ]; then
 	exit 1
 fi
 
-pushd "$PROJECT_DIR"
+# Read local exclude rules.
+LOCAL_EXCLUDE_FILE=".mainframerignorelocal"
+LOCAL_EXCLUDE=""
+
+if [ -f "$LOCAL_EXCLUDE_FILE" ]; then
+	while read -r line
+	do
+		LOCAL_EXCLUDE+="--exclude='$line' "
+	done < "$LOCAL_EXCLUDE_FILE"
+fi
+
+# Read remote exclude rules.
+REMOTE_EXCLUDE_FILE=".mainframerignoreremote"
+REMOTE_EXCLUDE=""
+
+if [ -f "$REMOTE_EXCLUDE_FILE" ]; then
+	while read -r line
+	do
+		REMOTE_EXCLUDE+="--exclude='$line' "
+	done < "$REMOTE_EXCLUDE_FILE"
+fi
+
 # Sync project to remote machine.
-rsync --archive --delete --compress-level=$LOCAL_COMPRESS_LEVEL \
---exclude='.gradle' \
---exclude='.idea' \
---exclude='**/.git/' \
---exclude='artifacts' \
---exclude='captures' \
---exclude='**/build' \
---exclude='**/local.properties' \
---rsh "ssh" ./ "$REMOTE_BUILD_MACHINE:~/$PROJECT_DIR_NAME"
+eval "rsync --archive --delete --compress-level=$LOCAL_COMPRESS_LEVEL $LOCAL_EXCLUDE --rsh ssh ./ $REMOTE_BUILD_MACHINE:~/$PROJECT_DIR_NAME"
 
 # Build project on a remote machine.
 ssh $REMOTE_BUILD_MACHINE "echo 'set -xe && cd ~/$PROJECT_DIR_NAME/ && $BUILD_COMMAND' | bash"
 
 # Sync project back to local machine.
-rsync --archive --delete --compress-level=$REMOTE_COMPRESS_LEVEL \
---exclude='.gradle' \
---exclude='.idea' \
---exclude='**/.git/' \
---exclude='artifacts' \
---exclude='captures' \
---exclude='**/local.properties' \
---rsh "ssh" "$REMOTE_BUILD_MACHINE:~/$PROJECT_DIR_NAME/" ./
-popd
+eval "rsync --archive --delete --compress-level=$REMOTE_COMPRESS_LEVEL $REMOTE_EXCLUDE --rsh ssh $REMOTE_BUILD_MACHINE:~/$PROJECT_DIR_NAME/ ./"
 
 BUILD_END_TIME=`date +%s`
 echo "End time: $( date )"
 echo "Whole process took `expr $BUILD_END_TIME - $BUILD_START_TIME` seconds."
+
+popd
