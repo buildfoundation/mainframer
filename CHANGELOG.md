@@ -1,5 +1,11 @@
 # Change Log
 
+## Version 1.1.2
+
+_2017_01_03_
+
+* [PR 47](https://github.com/gojuno/mainframer/pull/47): Better local.properties parsing.
+
 ## Version 1.1.1
 
 _2016_12_30_
