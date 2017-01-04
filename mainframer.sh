@@ -15,25 +15,6 @@ function property {
     grep "^${1}=" $PROJECT_DIR/local.properties | cut -d'=' -f2
 }
 
-function readExcludesFile {
-	if [ -f "$1" ]; then
-		EXCLUDES=""
-
-		# Second part is a fallback in case if last line does not contain newline character.
-		while read -r line || [[ -n "$line" ]]
-		do
-			# Do not process empty lines.
-			if [ ! -z "$line" ]; then
-				EXCLUDES+="--exclude=\"$line\" "
-			fi
-		done < "$1"
-
-		echo "$EXCLUDES"
-	else 
-		echo ""
-	fi
-}
-
 pushd "$PROJECT_DIR"
 
 # Read config variables from local.properties.
@@ -61,18 +42,14 @@ if [ -z "$BUILD_COMMAND" ]; then
 	exit 1
 fi
 
-# Read exclude rules.
-LOCAL_EXCLUDE="$(readExcludesFile .mainframerignorelocal)"
-REMOTE_EXCLUDE="$(readExcludesFile .mainframerignoreremote)"
-
 # Sync project to remote machine.
-eval "rsync --archive --delete --compress-level=$LOCAL_COMPRESS_LEVEL $LOCAL_EXCLUDE --rsh ssh ./ $REMOTE_BUILD_MACHINE:~/$PROJECT_DIR_NAME"
+rsync --archive --delete --compress-level=$LOCAL_COMPRESS_LEVEL --exclude-from='.mainframerignorelocal' --rsh ssh ./ "$REMOTE_BUILD_MACHINE:~/$PROJECT_DIR_NAME"
 
 # Build project on a remote machine.
 ssh $REMOTE_BUILD_MACHINE "echo 'set -xe && cd ~/$PROJECT_DIR_NAME/ && $BUILD_COMMAND' | bash"
 
 # Sync project back to local machine.
-eval "rsync --archive --delete --compress-level=$REMOTE_COMPRESS_LEVEL $REMOTE_EXCLUDE --rsh ssh $REMOTE_BUILD_MACHINE:~/$PROJECT_DIR_NAME/ ./"
+rsync --archive --delete --compress-level=$REMOTE_COMPRESS_LEVEL --exclude-from='.mainframerignoreremote' --rsh ssh "$REMOTE_BUILD_MACHINE:~/$PROJECT_DIR_NAME/" ./
 
 BUILD_END_TIME=`date +%s`
 echo "End time: $( date )"
