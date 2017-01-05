@@ -15,6 +15,8 @@ function property {
     grep "^${1}=" $PROJECT_DIR/local.properties | cut -d'=' -f2
 }
 
+pushd "$PROJECT_DIR"
+
 # Read config variables from local.properties.
 REMOTE_BUILD_MACHINE=$(property 'remote_build.machine')
 LOCAL_COMPRESS_LEVEL=$(property 'remote_build.local_gzip_level')
@@ -40,32 +42,17 @@ if [ -z "$BUILD_COMMAND" ]; then
 	exit 1
 fi
 
-pushd "$PROJECT_DIR"
 # Sync project to remote machine.
-rsync --archive --delete --compress-level=$LOCAL_COMPRESS_LEVEL \
---exclude='.gradle' \
---exclude='.idea' \
---exclude='**/.git/' \
---exclude='artifacts' \
---exclude='captures' \
---exclude='**/build' \
---exclude='**/local.properties' \
---rsh "ssh" ./ "$REMOTE_BUILD_MACHINE:~/$PROJECT_DIR_NAME"
+rsync --archive --delete --compress-level=$LOCAL_COMPRESS_LEVEL --exclude-from='.mainframerignorelocal' --rsh ssh ./ "$REMOTE_BUILD_MACHINE:~/$PROJECT_DIR_NAME"
 
 # Build project on a remote machine.
 ssh $REMOTE_BUILD_MACHINE "echo 'set -xe && cd ~/$PROJECT_DIR_NAME/ && $BUILD_COMMAND' | bash"
 
 # Sync project back to local machine.
-rsync --archive --delete --compress-level=$REMOTE_COMPRESS_LEVEL \
---exclude='.gradle' \
---exclude='.idea' \
---exclude='**/.git/' \
---exclude='artifacts' \
---exclude='captures' \
---exclude='**/local.properties' \
---rsh "ssh" "$REMOTE_BUILD_MACHINE:~/$PROJECT_DIR_NAME/" ./
-popd
+rsync --archive --delete --compress-level=$REMOTE_COMPRESS_LEVEL --exclude-from='.mainframerignoreremote' --rsh ssh "$REMOTE_BUILD_MACHINE:~/$PROJECT_DIR_NAME/" ./
 
 BUILD_END_TIME=`date +%s`
 echo "End time: $( date )"
 echo "Whole process took `expr $BUILD_END_TIME - $BUILD_START_TIME` seconds."
+
+popd
