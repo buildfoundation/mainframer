@@ -10,12 +10,12 @@ BUILD_START_TIME=`date +%s`
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROJECT_DIR=$DIR
 PROJECT_DIR_NAME="$( basename "$PROJECT_DIR")"
+IGNORE_LOCAL_FILE=".mainframerignorelocal"
+IGNORE_REMOTE_FILE=".mainframerignoreremote"
 
 function property {
     grep "^${1}=" "$PROJECT_DIR"/local.properties | cut -d'=' -f2
 }
-
-pushd "$PROJECT_DIR" > /dev/null
 
 # Read config variables from local.properties.
 REMOTE_BUILD_MACHINE=$(property 'remote_build.machine')
@@ -42,17 +42,41 @@ if [ -z "$BUILD_COMMAND" ]; then
 	exit 1
 fi
 
-# Sync project to remote machine.
-rsync --archive --delete --compress-level=$LOCAL_COMPRESS_LEVEL --exclude-from='.mainframerignorelocal' --rsh ssh ./ "$REMOTE_BUILD_MACHINE:~/$PROJECT_DIR_NAME"
+function syncBeforeBuild {
+	COMMAND="rsync --archive --delete --compress-level=$LOCAL_COMPRESS_LEVEL "
 
-# Build project on a remote machine.
-ssh $REMOTE_BUILD_MACHINE "echo 'set -xe && cd ~/$PROJECT_DIR_NAME/ && $BUILD_COMMAND' | bash"
+	if [ -f "$IGNORE_LOCAL_FILE" ]; then
+		COMMAND+="--exclude-from='$IGNORE_LOCAL_FILE' "
+	fi
 
-# Sync project back to local machine.
-rsync --archive --delete --compress-level=$REMOTE_COMPRESS_LEVEL --exclude-from='.mainframerignoreremote' --rsh ssh "$REMOTE_BUILD_MACHINE:~/$PROJECT_DIR_NAME/" ./
+	COMMAND+="--rsh ssh ./ $REMOTE_BUILD_MACHINE:~/$PROJECT_DIR_NAME"
+
+	eval "$COMMAND"
+}
+
+function buildProjectOnRemoteMachine {
+	ssh $REMOTE_BUILD_MACHINE "echo 'set -xe && cd ~/$PROJECT_DIR_NAME/ && $BUILD_COMMAND' | bash"
+}
+
+function syncAfterBuild {
+	COMMAND="rsync --archive --delete --compress-level=$REMOTE_COMPRESS_LEVEL "
+
+	if [ -f "$IGNORE_REMOTE_FILE" ]; then
+		COMMAND+="--exclude-from='$IGNORE_REMOTE_FILE' "
+	fi
+
+	COMMAND+="--rsh ssh $REMOTE_BUILD_MACHINE:~/$PROJECT_DIR_NAME/ ./"
+	eval "$COMMAND"
+}
+
+pushd "$PROJECT_DIR" > /dev/null
+
+syncBeforeBuild
+buildProjectOnRemoteMachine
+syncAfterBuild
+
+popd > /dev/null
 
 BUILD_END_TIME=`date +%s`
 echo "End time: $( date )"
 echo "Whole process took `expr $BUILD_END_TIME - $BUILD_START_TIME` seconds."
-
-popd > /dev/null
