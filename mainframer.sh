@@ -15,7 +15,7 @@ function property {
     grep "^${1}=" $PROJECT_DIR/local.properties | cut -d'=' -f2
 }
 
-pushd "$PROJECT_DIR"
+pushd "$PROJECT_DIR" > /dev/null
 
 # Read config variables from local.properties.
 REMOTE_BUILD_MACHINE=$(property 'remote_build.machine')
@@ -55,4 +55,4 @@ BUILD_END_TIME=`date +%s`
 echo "End time: $( date )"
 echo "Whole process took `expr $BUILD_END_TIME - $BUILD_START_TIME` seconds."
 
-popd
+popd > /dev/null
