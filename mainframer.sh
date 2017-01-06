@@ -20,7 +20,7 @@ pushd "$PROJECT_DIR" > /dev/null
 # Read config variables from local.properties.
 REMOTE_BUILD_MACHINE=$(property 'remote_build.machine')
 LOCAL_COMPRESS_LEVEL=$(property 'remote_build.local_gzip_level')
-REMOTE_COMPRESS_LEVEL=$(property 'remote_build.local_gzip_level')
+REMOTE_COMPRESS_LEVEL=$(property 'remote_build.remote_gzip_level')
 
 if [ -z "$LOCAL_COMPRESS_LEVEL" ]; then
 	LOCAL_COMPRESS_LEVEL=1
