@@ -12,7 +12,7 @@ PROJECT_DIR=$DIR
 PROJECT_DIR_NAME="$( basename "$PROJECT_DIR")"
 
 function property {
-    grep "^${1}=" $PROJECT_DIR/local.properties | cut -d'=' -f2
+    grep "^${1}=" "$PROJECT_DIR"/local.properties | cut -d'=' -f2
 }
 
 pushd "$PROJECT_DIR" > /dev/null
