@@ -13,6 +13,7 @@ function printTestResults {
 		echo "Test run SUCCESS, $TEST_COUNTER test(s)."
 	else
 		echo "Test run FAILED, $TEST_COUNTER test(s)."
+		echo "To log each step: export DEBUG_MODE_FOR_ALL_TESTS=true"
 	fi
 }
 
