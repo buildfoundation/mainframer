@@ -4,14 +4,17 @@ set -xe
 # You can run it from any directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 DIR_NAME="$( basename "$DIR")"
-BUILD_DIR="$DIR/run"
+BUILD_DIR_NAME="run"
+
+# Should be used by tests.
+BUILD_DIR="$DIR/$BUILD_DIR_NAME"
 
 function cleanBuildDirOnLocalMachine {
 	rm -rf "$BUILD_DIR"
 }
 
 function cleanMainfamerDirOnRemoteMachine {
-	ssh localhost "rm -rf ~/$DIR_NAME"
+	ssh localhost "rm -rf ~/$BUILD_DIR_NAME"
 }
 
 function fileMustExist {
@@ -22,8 +25,8 @@ function fileMustExist {
 }
 
 # Clean build directory after run.
-if [ "$CLEAN_BUILD_DIR_AFTER_RUN" == "true" ]; then
-	trap cleanBuildDirOnLocalMachine EXIT
+if [ "$CLEAN_BUILD_DIRS_AFTER_RUN" == "false" ]; then
+	trap "cleanBuildDirOnLocalMachine ; cleanMainfamerDirOnRemoteMachine" EXIT
 fi
 
 # Clean build directories.

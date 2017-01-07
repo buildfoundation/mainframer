@@ -20,8 +20,12 @@ touch "$BUILD_DIR/src/file1.txt"
 touch "$BUILD_DIR/src/file2.txt"
 touch "$BUILD_DIR/src/file3.txt"
 
+# TODO: Remove these files once they'll become non-required and create separate tests for exclude strategies.
+touch "$BUILD_DIR/.mainframerignorelocal"
+touch "$BUILD_DIR/.mainframerignoreremote"
+
 # Run mainframer.sh that'll create a file as a "build result".
-bash "$BUILD_DIR/mainframer.sh" mkdir build && touch build/buildresult.txt
+bash "$BUILD_DIR"/mainframer.sh 'mkdir build && touch build/buildresult.txt'
 
 # Make sure build result file was synced back to "local" machine.
 fileMustExist "$BUILD_DIR/build/buildresult.txt" "(sync or remote build execution problem)"
