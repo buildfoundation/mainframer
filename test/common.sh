@@ -1,5 +1,9 @@
 #!/bin/bash
-set -xe
+set -e
+
+if [ "$DEBUG_MODE_FOR_ALL_TESTS" == "true" ]; then
+	set -x
+fi
 
 # You can run it from any directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -14,6 +18,18 @@ PRIVATE_REMOTE_BUILD_DIR="~/$PRIVATE_BUILD_DIR_NAME"
 # Should be used by tests.
 BUILD_DIR="$DIR/$PRIVATE_BUILD_DIR_NAME"
 
+function printTestStarted {
+	echo ""
+	test_name=`basename "$0"`
+	echo "-------- TEST STARTED $test_name -------- "
+}
+
+function printTestEnded {
+	echo ""
+	test_name=`basename "$0"`
+	echo "-------- TEST ENDED $test_name -------- "	
+}
+
 function cleanBuildDirOnLocalMachine {
 	rm -rf "$BUILD_DIR"
 }
@@ -23,16 +39,24 @@ function cleanMainfamerDirOnRemoteMachine {
 }
 
 function fileMustExistOnLocalMachine {
-	if [ ! -f "$1" ]; then
-		echo "$1 does not exist $2"
+	local_file="$BUILD_DIR/$1"
+	if [ ! -f "$local_file" ]; then
+		echo "$local_file does not exist on local machine $2"
 		exit 1
 	fi
 }
 
 function fileMustExistOnRemoteMachine {
-	if [ ! ssh "$PRIVATE_TEST_REMOTE_MACHINE" "test -f $PRIVATE_REMOTE_BUILD_DIR/$1" ]; then
+	set +e
+	ssh "$PRIVATE_TEST_REMOTE_MACHINE" "test -f $PRIVATE_REMOTE_BUILD_DIR/$1"
+
+	if [ "$?" != "0" ]; then
 		echo "$PRIVATE_REMOTE_BUILD_DIR/$1 does not exist on remote machine $2"
+		set -e
+		exit 1
 	fi
+	
+	set -e
 }
 
 # Clean build directory after run.
