@@ -25,7 +25,7 @@ function fileMustExist {
 }
 
 # Clean build directory after run.
-if [ "$CLEAN_BUILD_DIRS_AFTER_RUN" == "false" ]; then
+if [ ! "$CLEAN_BUILD_DIRS_AFTER_RUN" == "false" ]; then
 	trap "cleanBuildDirOnLocalMachine ; cleanMainfamerDirOnRemoteMachine" EXIT
 fi
 
