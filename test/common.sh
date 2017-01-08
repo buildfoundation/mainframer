@@ -17,6 +17,8 @@ PRIVATE_REMOTE_BUILD_DIR="~/$PRIVATE_BUILD_DIR_NAME"
 
 # Should be used by tests.
 BUILD_DIR="$DIR/$PRIVATE_BUILD_DIR_NAME"
+LOCAL_IGNORE_FILE="$BUILD_DIR/.mainframerignorelocal"
+REMOTE_IGNORE_FILE="$BUILD_DIR/.mainframerignoreremote"
 
 function printTestStarted {
 	echo ""
@@ -46,12 +48,37 @@ function fileMustExistOnLocalMachine {
 	fi
 }
 
+function fileMustNotExistOnLocalMachine {
+	local_file="$BUILD_DIR/$1"
+	if [ -f "$local_file" ]; then
+		echo "$local_file exists on local machine $2"
+		exit 1
+	fi
+}
+
 function fileMustExistOnRemoteMachine {
+	# Prevent script from auto-exiting on error code, do it manually.
 	set +e
+
 	ssh "$PRIVATE_TEST_REMOTE_MACHINE" "test -f $PRIVATE_REMOTE_BUILD_DIR/$1"
 
 	if [ "$?" != "0" ]; then
 		echo "$PRIVATE_REMOTE_BUILD_DIR/$1 does not exist on remote machine $2"
+		set -e
+		exit 1
+	fi
+	
+	set -e
+}
+
+function fileMustNotExistOnRemoteMachine {
+	# Prevent script from auto-exiting on error code, do it manually.
+	set +e
+	
+	ssh "$PRIVATE_TEST_REMOTE_MACHINE" "test -f $PRIVATE_REMOTE_BUILD_DIR/$1"
+
+	if [ "$?" == "0" ]; then
+		echo "$PRIVATE_REMOTE_BUILD_DIR/$1 exists on remote machine $2"
 		set -e
 		exit 1
 	fi
@@ -76,7 +103,3 @@ cp "$DIR/../mainframer.sh" "$BUILD_DIR/"
 
 # Create local.properties that sets remote build machine for the test.
 echo "remote_build.machine=$PRIVATE_TEST_REMOTE_MACHINE" > "$BUILD_DIR/local.properties"
-
-# TODO: Remove these files once they'll become non-required and create separate tests for exclude strategies.
-touch "$BUILD_DIR/.mainframerignorelocal"
-touch "$BUILD_DIR/.mainframerignoreremote"
