@@ -11,7 +11,7 @@ before_install:
   - ssh-keyscan -t rsa localhost > ~/.ssh/known_hosts
   - chmod u+rw,go= ~/.ssh/known_hosts
   # Install dependencies to test samples projects.
-  - sudo apt-get install openjdk-8-jdk --quiet --yes 
+  - sudo apt-get install openjdk-7-jdk --quiet --yes
 
 script:
   - bash test.sh
