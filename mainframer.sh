@@ -10,11 +10,12 @@ BUILD_START_TIME=`date +%s`
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROJECT_DIR=$DIR
 PROJECT_DIR_NAME="$( basename "$PROJECT_DIR")"
-IGNORE_LOCAL_FILE=".mainframerignorelocal"
-IGNORE_REMOTE_FILE=".mainframerignoreremote"
+MAINFRAMER_DIR="$PROJECT_DIR/.mainframer"
+IGNORE_LOCAL_FILE="$MAINFRAMER_DIR/localignore"
+IGNORE_REMOTE_FILE="$MAINFRAMER_DIR/remoteignore"
 
 function property {
-    grep "^${1}=" "$PROJECT_DIR"/local.properties | cut -d'=' -f2
+    grep "^${1}=" "$MAINFRAMER_DIR"/local.properties | cut -d'=' -f2
 }
 
 # Read config variables from local.properties.
