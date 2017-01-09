@@ -44,6 +44,9 @@ if [ -z "$BUILD_COMMAND" ]; then
 fi
 
 function syncBeforeBuild {
+	echo "Syncing before build…"
+	startTime=`date +%s`
+
 	COMMAND="rsync --archive --delete --compress-level=$LOCAL_COMPRESS_LEVEL "
 
 	if [ -f "$IGNORE_LOCAL_FILE" ]; then
@@ -53,13 +56,25 @@ function syncBeforeBuild {
 	COMMAND+="--rsh ssh ./ $REMOTE_BUILD_MACHINE:~/$PROJECT_DIR_NAME"
 
 	eval "$COMMAND"
+
+	endTime=`date +%s`
+	echo "Sync done (took `expr $endTime - $startTime` seconds)."
 }
 
 function buildProjectOnRemoteMachine {
+	echo "Executing build on remote machine…"
+	startTime=`date +%s`
+
 	ssh $REMOTE_BUILD_MACHINE "echo 'set -xe && cd ~/$PROJECT_DIR_NAME/ && $BUILD_COMMAND' | bash"
+
+	endTime=`date +%s`
+	echo "Execution done (took `expr $endTime - $startTime` seconds)."
 }
 
 function syncAfterBuild {
+	echo "Syncing after build…"
+	startTime=`date +%s`
+
 	COMMAND="rsync --archive --delete --compress-level=$REMOTE_COMPRESS_LEVEL "
 
 	if [ -f "$IGNORE_REMOTE_FILE" ]; then
@@ -68,6 +83,9 @@ function syncAfterBuild {
 
 	COMMAND+="--rsh ssh $REMOTE_BUILD_MACHINE:~/$PROJECT_DIR_NAME/ ./"
 	eval "$COMMAND"
+
+	endTime=`date +%s`
+	echo "Sync done (took `expr $endTime - $startTime` seconds)."
 }
 
 pushd "$PROJECT_DIR" > /dev/null
