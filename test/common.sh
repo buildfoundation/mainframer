@@ -10,7 +10,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 DIR_NAME="$( basename "$DIR")"
 
 # This is how we test, localhost should have sshd running on port 22 and ssh key of current user allowed.
-PRIVATE_TEST_REMOTE_MACHINE="localhost"
+TEST_REMOTE_MACHINE="localhost"
 
 PRIVATE_BUILD_DIR_NAME="run"
 PRIVATE_REMOTE_BUILD_DIR="~/$PRIVATE_BUILD_DIR_NAME"
@@ -20,6 +20,7 @@ BUILD_DIR="$DIR/$PRIVATE_BUILD_DIR_NAME"
 PERSONAL_CONFIG_FILE="$BUILD_DIR/.mainframer/personalconfig"
 LOCAL_IGNORE_FILE="$BUILD_DIR/.mainframer/localignore"
 REMOTE_IGNORE_FILE="$BUILD_DIR/.mainframer/remoteignore"
+REMOTE_MACHINE_PROPERTY="remote_machine"
 
 function printTestStarted {
 	echo ""
@@ -38,7 +39,7 @@ function cleanBuildDirOnLocalMachine {
 }
 
 function cleanMainfamerDirOnRemoteMachine {
-	ssh "$PRIVATE_TEST_REMOTE_MACHINE" "rm -rf $PRIVATE_REMOTE_BUILD_DIR"
+	ssh "$TEST_REMOTE_MACHINE" "rm -rf $PRIVATE_REMOTE_BUILD_DIR"
 }
 
 function fileMustExistOnLocalMachine {
@@ -61,7 +62,7 @@ function fileMustExistOnRemoteMachine {
 	# Prevent script from auto-exiting on error code, do it manually.
 	set +e
 
-	ssh "$PRIVATE_TEST_REMOTE_MACHINE" "test -f $PRIVATE_REMOTE_BUILD_DIR/$1"
+	ssh "$TEST_REMOTE_MACHINE" "test -f $PRIVATE_REMOTE_BUILD_DIR/$1"
 
 	if [ "$?" != "0" ]; then
 		echo "$PRIVATE_REMOTE_BUILD_DIR/$1 does not exist on remote machine $2"
@@ -76,7 +77,7 @@ function fileMustNotExistOnRemoteMachine {
 	# Prevent script from auto-exiting on error code, do it manually.
 	set +e
 	
-	ssh "$PRIVATE_TEST_REMOTE_MACHINE" "test -f $PRIVATE_REMOTE_BUILD_DIR/$1"
+	ssh "$TEST_REMOTE_MACHINE" "test -f $PRIVATE_REMOTE_BUILD_DIR/$1"
 
 	if [ "$?" == "0" ]; then
 		echo "$PRIVATE_REMOTE_BUILD_DIR/$1 exists on remote machine $2"
@@ -85,6 +86,10 @@ function fileMustNotExistOnRemoteMachine {
 	fi
 	
 	set -e
+}
+
+function setTestRemoteMachineInPersonalConfig {
+	echo "$REMOTE_MACHINE_PROPERTY=$TEST_REMOTE_MACHINE" > "$PERSONAL_CONFIG_FILE"
 }
 
 # Clean build directory after run.
@@ -103,4 +108,4 @@ mkdir -p "$BUILD_DIR/.mainframer"
 cp "$DIR/../mainframer.sh" "$BUILD_DIR/"
 
 # Create config that sets remote build machine for the test.
-echo "remote_machine=$PRIVATE_TEST_REMOTE_MACHINE" > "$PERSONAL_CONFIG_FILE"
+setTestRemoteMachineInPersonalConfig
