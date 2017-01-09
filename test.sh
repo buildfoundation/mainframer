@@ -26,4 +26,12 @@ for test_ in "$DIR"/test/test_*; do
 	bash "$test_"
 done
 
+if [ "$1" == "--run-samples" ]; then
+	# Run all samples.
+	for sample_ in "$DIR"/test/sample_*; do
+		TEST_COUNTER=$((TEST_COUNTER+1))
+		bash "$sample_"
+	done	
+fi
+
 TEST_RUN_SUCCESS="true"
