@@ -1,0 +1,16 @@
+before_install:
+  - sudo apt-get update --quiet
+  - sudo apt-get install --quiet --yes openssh-server
+  - mkdir -p ~/.ssh/
+  - chmod u+rwx,go= ~/.ssh/
+  - ssh-keygen -b 2048 -t rsa -f ~/.ssh/id_rsa -q -N ""
+  - cp ~/.ssh/id_rsa.pub ~/.ssh/authorized_keys
+  - chmod u+rw,go= ~/.ssh/authorized_keys
+  - ssh-keyscan -t rsa localhost > ~/.ssh/known_hosts
+  - chmod u+rw,go= ~/.ssh/known_hosts 
+
+script:
+  - bash test.sh
+
+notifications:
+  email: false
