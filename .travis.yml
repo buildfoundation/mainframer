@@ -7,7 +7,7 @@ before_install:
   - cp ~/.ssh/id_rsa.pub ~/.ssh/authorized_keys
   - chmod u+rw,go= ~/.ssh/authorized_keys
   - ssh-keyscan -t rsa localhost > ~/.ssh/known_hosts
-  - chmod 600 ~/.ssh/known_hosts 
+  - chmod u+rw,go= ~/.ssh/known_hosts 
 
 script:
   - bash test.sh
