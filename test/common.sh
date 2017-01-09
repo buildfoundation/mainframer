@@ -17,8 +17,8 @@ PRIVATE_REMOTE_BUILD_DIR="~/$PRIVATE_BUILD_DIR_NAME"
 
 # Should be used by tests.
 BUILD_DIR="$DIR/$PRIVATE_BUILD_DIR_NAME"
-LOCAL_IGNORE_FILE="$BUILD_DIR/.mainframerignorelocal"
-REMOTE_IGNORE_FILE="$BUILD_DIR/.mainframerignoreremote"
+LOCAL_IGNORE_FILE="$BUILD_DIR/.mainframer/localignore"
+REMOTE_IGNORE_FILE="$BUILD_DIR/.mainframer/remoteignore"
 
 function printTestStarted {
 	echo ""
@@ -96,10 +96,10 @@ cleanBuildDirOnLocalMachine
 cleanMainfamerDirOnRemoteMachine
 
 # Create build directory.
-mkdir "$BUILD_DIR"
+mkdir -p "$BUILD_DIR/.mainframer"
 
 # Copy mainframer.sh into build directory.
 cp "$DIR/../mainframer.sh" "$BUILD_DIR/"
 
 # Create local.properties that sets remote build machine for the test.
-echo "remote_build.machine=$PRIVATE_TEST_REMOTE_MACHINE" > "$BUILD_DIR/local.properties"
+echo "remote_build.machine=$PRIVATE_TEST_REMOTE_MACHINE" > "$BUILD_DIR/.mainframer/local.properties"
