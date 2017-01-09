@@ -1,9 +1,9 @@
 #!/bin/bash
 set -e
 
-echo "mainframer v1.1.2"
+echo ":: mainframer v1.1.2"
+echo ""
 
-echo "Start time: $( date )"
 BUILD_START_TIME=`date +%s`
 
 # You can run it from any directory.
@@ -44,6 +44,9 @@ if [ -z "$BUILD_COMMAND" ]; then
 fi
 
 function syncBeforeBuild {
+	echo "Sync local → remote machine..."
+	startTime=`date +%s`
+
 	COMMAND="rsync --archive --delete --compress-level=$LOCAL_COMPRESS_LEVEL "
 
 	if [ -f "$IGNORE_LOCAL_FILE" ]; then
@@ -53,13 +56,27 @@ function syncBeforeBuild {
 	COMMAND+="--rsh ssh ./ $REMOTE_BUILD_MACHINE:~/$PROJECT_DIR_NAME"
 
 	eval "$COMMAND"
+
+	endTime=`date +%s`
+	echo "Sync done: took `expr $endTime - $startTime` seconds."
+	echo ""
 }
 
 function buildProjectOnRemoteMachine {
+	echo "Executing build on remote machine…"
+	startTime=`date +%s`
+
 	ssh $REMOTE_BUILD_MACHINE "echo 'set -xe && cd ~/$PROJECT_DIR_NAME/ && $BUILD_COMMAND' | bash"
+
+	endTime=`date +%s`
+	echo "Execution done: took `expr $endTime - $startTime` seconds."
+	echo ""
 }
 
 function syncAfterBuild {
+	echo "Sync remote → local machine…"
+	startTime=`date +%s`
+
 	COMMAND="rsync --archive --delete --compress-level=$REMOTE_COMPRESS_LEVEL "
 
 	if [ -f "$IGNORE_REMOTE_FILE" ]; then
@@ -68,6 +85,9 @@ function syncAfterBuild {
 
 	COMMAND+="--rsh ssh $REMOTE_BUILD_MACHINE:~/$PROJECT_DIR_NAME/ ./"
 	eval "$COMMAND"
+
+	endTime=`date +%s`
+	echo "Sync done: took `expr $endTime - $startTime` seconds."
 }
 
 pushd "$PROJECT_DIR" > /dev/null
@@ -79,5 +99,5 @@ syncAfterBuild
 popd > /dev/null
 
 BUILD_END_TIME=`date +%s`
-echo "End time: $( date )"
-echo "Whole process took `expr $BUILD_END_TIME - $BUILD_START_TIME` seconds."
+echo ""
+echo "Done: took `expr $BUILD_END_TIME - $BUILD_START_TIME` seconds."
