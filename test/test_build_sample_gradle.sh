@@ -10,13 +10,13 @@ source "$DIR/common.sh"
 printTestStarted
 
 # Copy Gradle sample to build dir.
-cp -r "$DIR/../samples/gradle/" "$BUILD_DIR"
+cp -a "$DIR/../samples/gradle/." "$BUILD_DIR"
 
 # Overwrite config to work with test remote machine.
 setTestRemoteMachineInPersonalConfig
 
 # Run mainframer.sh that builds Gradle project.
-bash "$BUILD_DIR"/mainframer.sh 'ls -la && ./gradlew clean build'
+bash "$BUILD_DIR"/mainframer.sh './gradlew build'
 
 # Run jar to ensure that it was built fine.
 java -jar "$BUILD_DIR/build/libs/sample.jar"
