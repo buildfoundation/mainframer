@@ -17,6 +17,7 @@ PRIVATE_REMOTE_BUILD_DIR="~/$PRIVATE_BUILD_DIR_NAME"
 
 # Should be used by tests.
 BUILD_DIR="$DIR/$PRIVATE_BUILD_DIR_NAME"
+PERSONAL_CONFIG_FILE="$BUILD_DIR/.mainframer/personalconfig"
 LOCAL_IGNORE_FILE="$BUILD_DIR/.mainframer/localignore"
 REMOTE_IGNORE_FILE="$BUILD_DIR/.mainframer/remoteignore"
 
@@ -101,5 +102,5 @@ mkdir -p "$BUILD_DIR/.mainframer"
 # Copy mainframer.sh into build directory.
 cp "$DIR/../mainframer.sh" "$BUILD_DIR/"
 
-# Create local.properties that sets remote build machine for the test.
-echo "remote_build.machine=$PRIVATE_TEST_REMOTE_MACHINE" > "$BUILD_DIR/.mainframer/local.properties"
+# Create config that sets remote build machine for the test.
+echo "remote_machine=$PRIVATE_TEST_REMOTE_MACHINE" > "$PERSONAL_CONFIG_FILE"

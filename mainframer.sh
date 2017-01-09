@@ -11,17 +11,23 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROJECT_DIR=$DIR
 PROJECT_DIR_NAME="$( basename "$PROJECT_DIR")"
 MAINFRAMER_DIR="$PROJECT_DIR/.mainframer"
+PERSONAL_CONFIG_FILE="$MAINFRAMER_DIR/personalconfig"
 IGNORE_LOCAL_FILE="$MAINFRAMER_DIR/localignore"
 IGNORE_REMOTE_FILE="$MAINFRAMER_DIR/remoteignore"
 
 function property {
-    grep "^${1}=" "$MAINFRAMER_DIR"/local.properties | cut -d'=' -f2
+    grep "^${1}=" "$PERSONAL_CONFIG_FILE" | cut -d'=' -f2
 }
 
-# Read config variables from local.properties.
-REMOTE_BUILD_MACHINE=$(property 'remote_build.machine')
-LOCAL_COMPRESS_LEVEL=$(property 'remote_build.local_gzip_level')
-REMOTE_COMPRESS_LEVEL=$(property 'remote_build.remote_gzip_level')
+# Config properties.
+REMOTE_MACHINE_PROPERTY="remote_machine"
+LOCAL_COMPRESS_LEVEL_PROPERTY="local_compression_level"
+REMOTE_COMPRESS_LEVEL_PROPERTY="remote_compression_level"
+
+# Read config properties.
+REMOTE_BUILD_MACHINE=$(property "$REMOTE_MACHINE_PROPERTY")
+LOCAL_COMPRESS_LEVEL=$(property "$LOCAL_COMPRESS_LEVEL_PROPERTY")
+REMOTE_COMPRESS_LEVEL=$(property "$REMOTE_COMPRESS_LEVEL_PROPERTY")
 
 if [ -z "$LOCAL_COMPRESS_LEVEL" ]; then
 	LOCAL_COMPRESS_LEVEL=1
@@ -32,7 +38,7 @@ if [ -z "$REMOTE_COMPRESS_LEVEL" ]; then
 fi
 
 if [ -z "$REMOTE_BUILD_MACHINE" ]; then
-	echo "Please specify remote build machine in local.properties"
+	echo "Please specify \"$REMOTE_MACHINE_PROPERTY\" in $PERSONAL_CONFIG_FILE"
 	exit 1
 fi
 
