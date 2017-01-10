@@ -12,8 +12,9 @@ PROJECT_DIR=$DIR
 PROJECT_DIR_NAME="$( basename "$PROJECT_DIR")"
 MAINFRAMER_DIR="$PROJECT_DIR/.mainframer"
 PERSONAL_CONFIG_FILE="$MAINFRAMER_DIR/personalconfig"
-IGNORE_LOCAL_FILE="$MAINFRAMER_DIR/localignore"
-IGNORE_REMOTE_FILE="$MAINFRAMER_DIR/remoteignore"
+LOCAL_IGNORE_FILE="$MAINFRAMER_DIR/localignore"
+REMOTE_IGNORE_FILE="$MAINFRAMER_DIR/remoteignore"
+COMMON_IGNORE_FILE="$MAINFRAMER_DIR/commonignore"
 
 function property {
     grep "^${1}=" "$PERSONAL_CONFIG_FILE" | cut -d'=' -f2
@@ -53,10 +54,14 @@ function syncBeforeBuild {
 	echo "Sync local → remote machine..."
 	startTime=`date +%s`
 
-	COMMAND="rsync --archive --delete --compress-level=$LOCAL_COMPRESS_LEVEL "
+	COMMAND="rsync --archive --delete --relative= --compress-level=$LOCAL_COMPRESS_LEVEL "
 
-	if [ -f "$IGNORE_LOCAL_FILE" ]; then
-		COMMAND+="--exclude-from='$IGNORE_LOCAL_FILE' "
+	if [ -f "$LOCAL_IGNORE_FILE" ]; then
+		COMMAND+="--exclude-from='$LOCAL_IGNORE_FILE' "
+	fi
+
+	if [ -f "$COMMON_IGNORE_FILE" ]; then
+		COMMAND+="--exclude-from='$COMMON_IGNORE_FILE' "
 	fi
 
 	COMMAND+="--rsh ssh ./ $REMOTE_BUILD_MACHINE:~/$PROJECT_DIR_NAME"
@@ -85,8 +90,12 @@ function syncAfterBuild {
 
 	COMMAND="rsync --archive --delete --compress-level=$REMOTE_COMPRESS_LEVEL "
 
-	if [ -f "$IGNORE_REMOTE_FILE" ]; then
-		COMMAND+="--exclude-from='$IGNORE_REMOTE_FILE' "
+	if [ -f "$REMOTE_IGNORE_FILE" ]; then
+		COMMAND+="--exclude-from='$REMOTE_IGNORE_FILE' "
+	fi
+
+	if [ -f "$COMMON_IGNORE_FILE" ]; then
+		COMMAND+="--exclude-from='$COMMON_IGNORE_FILE' "
 	fi
 
 	COMMAND+="--rsh ssh $REMOTE_BUILD_MACHINE:~/$PROJECT_DIR_NAME/ ./"

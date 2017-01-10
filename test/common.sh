@@ -20,6 +20,7 @@ BUILD_DIR="$DIR/$PRIVATE_BUILD_DIR_NAME"
 PERSONAL_CONFIG_FILE="$BUILD_DIR/.mainframer/personalconfig"
 LOCAL_IGNORE_FILE="$BUILD_DIR/.mainframer/localignore"
 REMOTE_IGNORE_FILE="$BUILD_DIR/.mainframer/remoteignore"
+COMMON_IGNORE_FILE="$BUILD_DIR/.mainframer/commonignore"
 
 function printTestStarted {
 	echo ""
