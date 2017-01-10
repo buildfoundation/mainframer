@@ -12,6 +12,7 @@ before_install:
   - chmod u+rw,go= ~/.ssh/known_hosts
   # Install dependencies to test samples projects.
   - sudo apt-get install openjdk-7-jdk --quiet --yes
+  - sudo curl -sf -L https://static.rust-lang.org/rustup.sh | sh
 
 script:
   - bash test.sh --run-samples
