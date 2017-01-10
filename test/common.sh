@@ -21,6 +21,7 @@ PERSONAL_CONFIG_FILE="$BUILD_DIR/.mainframer/personalconfig"
 LOCAL_IGNORE_FILE="$BUILD_DIR/.mainframer/localignore"
 REMOTE_IGNORE_FILE="$BUILD_DIR/.mainframer/remoteignore"
 REMOTE_MACHINE_PROPERTY="remote_machine"
+COMMON_IGNORE_FILE="$BUILD_DIR/.mainframer/commonignore"
 
 function printTestStarted {
 	echo ""
