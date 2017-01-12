@@ -6,9 +6,7 @@ echo ""
 
 BUILD_START_TIME=`date +%s`
 
-# You can run it from any directory.
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-PROJECT_DIR=$DIR
+PROJECT_DIR="`pwd`"
 PROJECT_DIR_NAME="$( basename "$PROJECT_DIR")"
 MAINFRAMER_DIR="$PROJECT_DIR/.mainframer"
 PERSONAL_CONFIG_FILE="$MAINFRAMER_DIR/personalconfig"

@@ -16,7 +16,7 @@ cp -a "$DIR/../samples/go/." "$BUILD_DIR"
 setTestRemoteMachineInPersonalConfig
 
 # Run mainframer.sh that builds Go project.
-bash "$BUILD_DIR"/mainframer.sh eval "export GOPATH=\`pwd\` && go install gojuno.com/mainframer/sample"
+bash "$REPO_DIR"/mainframer.sh eval "export GOPATH=\`pwd\` && go install gojuno.com/mainframer/sample"
 
 # Run binary to ensure that it was built fine.
 eval "$BUILD_DIR/bin/sample"

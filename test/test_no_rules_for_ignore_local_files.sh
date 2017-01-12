@@ -13,6 +13,6 @@ printTestStarted
 rm -f "$LOCAL_IGNORE_FILE"
 
 # Run mainframer.sh that noops to make sure that it does not exit with error.
-bash "$BUILD_DIR"/mainframer.sh 'echo noop'
+bash "$REPO_DIR"/mainframer.sh 'echo noop'
 
 printTestEnded

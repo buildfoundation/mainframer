@@ -16,7 +16,7 @@ cp -a "$DIR/../samples/rust/." "$BUILD_DIR"
 setTestRemoteMachineInPersonalConfig
 
 # Run mainframer.sh that builds Rust project.
-bash "$BUILD_DIR"/mainframer.sh 'cargo build'
+bash "$REPO_DIR"/mainframer.sh 'cargo build'
 
 # Run binary to ensure that it was built fine.
 eval "$BUILD_DIR/target/debug/mainframer_rust_sample"
