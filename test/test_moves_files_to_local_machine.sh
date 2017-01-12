@@ -16,7 +16,7 @@ touch "$BUILD_DIR/src/file2.txt"
 touch "$BUILD_DIR/src/file3.txt"
 
 # Run mainframer.sh that creates "build" result file that should be synced back to local machine.
-bash "$BUILD_DIR"/mainframer.sh 'mkdir build && touch build/buildresult.txt'
+bash "$REPO_DIR"/mainframer.sh 'mkdir build && touch build/buildresult.txt'
 
 # Make sure files exist on local machine after sync.
 fileMustExistOnLocalMachine "build/buildresult.txt" "(sync problem)"

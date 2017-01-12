@@ -15,7 +15,7 @@ echo "" > "$PERSONAL_CONFIG_FILE"
 set +e
 
 # Run mainframer.sh that noops to make sure that it exits with error.
-bash "$BUILD_DIR"/mainframer.sh 'echo noop'
+bash "$REPO_DIR"/mainframer.sh 'echo noop'
 
 if [ "$?" == "0" ]; then
 	set -e

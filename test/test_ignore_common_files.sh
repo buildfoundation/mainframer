@@ -20,7 +20,7 @@ echo "src/file2.txt" > "$COMMON_IGNORE_FILE"
 echo "build/buildfile2.txt" >> "$COMMON_IGNORE_FILE"
 
 # Run mainframer.sh that creates 3 build files.
-bash "$BUILD_DIR"/mainframer.sh 'mkdir build && touch build/buildfile1.txt && touch build/buildfile2.txt && touch build/buildfile3.txt'
+bash "$REPO_DIR"/mainframer.sh 'mkdir build && touch build/buildfile1.txt && touch build/buildfile2.txt && touch build/buildfile3.txt'
 
 # Make sure all src files except ignored exist on remote machine.
 fileMustExistOnRemoteMachine "src/file1.txt" "(sync problem)"

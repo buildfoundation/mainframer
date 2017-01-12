@@ -16,6 +16,7 @@ PRIVATE_BUILD_DIR_NAME="run"
 PRIVATE_REMOTE_BUILD_DIR="~/$PRIVATE_BUILD_DIR_NAME"
 
 # Should be used by tests.
+REPO_DIR="$DIR/.."
 BUILD_DIR="$DIR/$PRIVATE_BUILD_DIR_NAME"
 PERSONAL_CONFIG_FILE="$BUILD_DIR/.mainframer/personalconfig"
 LOCAL_IGNORE_FILE="$BUILD_DIR/.mainframer/localignore"
@@ -110,3 +111,6 @@ cp "$DIR/../mainframer.sh" "$BUILD_DIR/"
 
 # Create config that sets remote build machine for the test.
 setTestRemoteMachineInPersonalConfig
+
+# Set build directory as "working dir".
+pushd "$BUILD_DIR"
