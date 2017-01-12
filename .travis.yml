@@ -15,6 +15,8 @@ before_install:
   - sudo apt-get install openjdk-7-jdk --quiet --yes
   ## Rust.
   - sudo curl -sf -L https://static.rust-lang.org/rustup.sh | sh
+  ## Go.
+  - sudo apt-get install golang --quiet --yes
 
 script:
   - bash test.sh --run-samples
