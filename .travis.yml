@@ -12,6 +12,7 @@ before_install:
   - chmod u+rw,go= ~/.ssh/known_hosts
   # Install dependencies to test samples projects.
   - sudo apt-get install openjdk-7-jdk --quiet --yes
+  # Go build tools for Go sample.
   - sudo apt-get install golang --quiet --yes
 
 script:
