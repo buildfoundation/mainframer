@@ -10,10 +10,10 @@ before_install:
   - chmod u+rw,go= ~/.ssh/authorized_keys
   - ssh-keyscan -t rsa localhost > ~/.ssh/known_hosts
   - chmod u+rw,go= ~/.ssh/known_hosts
-  # Install dependencies for samples projects.
-  # JDK for Gradle sample.
+  # Install dependencies for sample projects.
+  ## Gradle.
   - sudo apt-get install openjdk-7-jdk --quiet --yes
-  # Rust build tools for Rust sample.
+  ## Rust.
   - sudo curl -sf -L https://static.rust-lang.org/rustup.sh | sh
 
 script:
