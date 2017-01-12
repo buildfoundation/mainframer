@@ -73,11 +73,13 @@ function syncBeforeBuild {
 
 function buildProjectOnRemoteMachine {
 	echo "Executing build on remote machine…"
+	echo ""
 	startTime=`date +%s`
 
-	ssh $REMOTE_BUILD_MACHINE "echo 'set -xe && cd ~/$PROJECT_DIR_NAME/ && $BUILD_COMMAND' | bash"
+	ssh $REMOTE_BUILD_MACHINE "echo 'set -e && cd ~/$PROJECT_DIR_NAME/ && $BUILD_COMMAND' | bash"
 
 	endTime=`date +%s`
+	echo ""
 	echo "Execution done: took `expr $endTime - $startTime` seconds."
 	echo ""
 }
