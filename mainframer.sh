@@ -24,6 +24,8 @@ BUILD_START_TIME=`date +%s`
 PROJECT_DIR="`pwd`"
 PROJECT_DIR_NAME="$( basename "$PROJECT_DIR")"
 MAINFRAMER_DIR="$PROJECT_DIR/.mainframer"
+
+PROJECT_DIR_ON_REMOTE_MACHINE="~/mainframer/$PROJECT_DIR_NAME"
 PERSONAL_CONFIG_FILE="$MAINFRAMER_DIR/personalconfig"
 LOCAL_IGNORE_FILE="$MAINFRAMER_DIR/localignore"
 REMOTE_IGNORE_FILE="$MAINFRAMER_DIR/remoteignore"
@@ -67,7 +69,7 @@ function syncBeforeBuild {
 	echo "Sync local → remote machine..."
 	startTime=`date +%s`
 
-	COMMAND="rsync --archive --delete --relative= --compress-level=$LOCAL_COMPRESS_LEVEL "
+	COMMAND="rsync --archive --delete --rsync-path=\"mkdir -p $PROJECT_DIR_ON_REMOTE_MACHINE && rsync\" --compress-level=$LOCAL_COMPRESS_LEVEL "
 
 	if [ -f "$LOCAL_IGNORE_FILE" ]; then
 		COMMAND+="--exclude-from='$LOCAL_IGNORE_FILE' "
@@ -77,7 +79,7 @@ function syncBeforeBuild {
 		COMMAND+="--exclude-from='$COMMON_IGNORE_FILE' "
 	fi
 
-	COMMAND+="--rsh ssh ./ $REMOTE_BUILD_MACHINE:~/$PROJECT_DIR_NAME"
+	COMMAND+="--rsh ssh ./ $REMOTE_BUILD_MACHINE:$PROJECT_DIR_ON_REMOTE_MACHINE"
 
 	eval "$COMMAND"
 
@@ -91,7 +93,7 @@ function buildProjectOnRemoteMachine {
 	echo ""
 	startTime=`date +%s`
 
-	ssh $REMOTE_BUILD_MACHINE "echo 'set -e && cd ~/$PROJECT_DIR_NAME/ && $BUILD_COMMAND' | bash"
+	ssh $REMOTE_BUILD_MACHINE "echo 'set -e && cd $PROJECT_DIR_ON_REMOTE_MACHINE && $BUILD_COMMAND' | bash"
 
 	endTime=`date +%s`
 	echo ""
@@ -113,7 +115,7 @@ function syncAfterBuild {
 		COMMAND+="--exclude-from='$COMMON_IGNORE_FILE' "
 	fi
 
-	COMMAND+="--rsh ssh $REMOTE_BUILD_MACHINE:~/$PROJECT_DIR_NAME/ ./"
+	COMMAND+="--rsh ssh $REMOTE_BUILD_MACHINE:$PROJECT_DIR_ON_REMOTE_MACHINE/ ./"
 	eval "$COMMAND"
 
 	endTime=`date +%s`
