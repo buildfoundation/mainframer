@@ -69,7 +69,7 @@ function syncBeforeBuild {
 	echo "Sync local → remote machine..."
 	startTime=`date +%s`
 
-	COMMAND="rsync --archive --delete --rsync-path=\"mkdir -p $PROJECT_DIR_ON_REMOTE_MACHINE && rsync\" --compress-level=$LOCAL_COMPRESS_LEVEL "
+	COMMAND="rsync --archive --delete --rsync-path='mkdir -p \"$PROJECT_DIR_ON_REMOTE_MACHINE\" && rsync' --compress-level=$LOCAL_COMPRESS_LEVEL "
 
 	if [ -f "$LOCAL_IGNORE_FILE" ]; then
 		COMMAND+="--exclude-from='$LOCAL_IGNORE_FILE' "
