@@ -125,7 +125,11 @@ function syncAfterBuild {
 pushd "$PROJECT_DIR" > /dev/null
 
 syncBeforeBuild
+
+set +e
 buildProjectOnRemoteMachine
+set -e
+
 syncAfterBuild
 
 popd > /dev/null
