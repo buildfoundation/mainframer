@@ -19,7 +19,7 @@ before_install:
   - sudo apt-get install golang --quiet --yes
 
 script:
-  - bash test.sh --run-samples
+  - bash test/test.sh --run-samples
 
 notifications:
   email: false
