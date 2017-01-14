@@ -13,7 +13,7 @@ printTestStarted
 cp -a "$DIR/../samples/gradle/." "$BUILD_DIR"
 
 # Overwrite config to work with test remote machine.
-setTestRemoteMachineInPersonalConfig
+setTestRemoteMachineInConfig
 
 # Run mainframer.sh that builds Gradle project.
 bash "$REPO_DIR"/mainframer.sh './gradlew build'

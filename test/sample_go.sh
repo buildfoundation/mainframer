@@ -13,7 +13,7 @@ printTestStarted
 cp -a "$DIR/../samples/go/." "$BUILD_DIR"
 
 # Overwrite config to work with test remote machine.
-setTestRemoteMachineInPersonalConfig
+setTestRemoteMachineInConfig
 
 # Run mainframer.sh that builds Go project.
 bash "$REPO_DIR"/mainframer.sh eval "export GOPATH=\`pwd\` && go install gojuno.com/mainframer/sample"

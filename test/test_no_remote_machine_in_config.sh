@@ -9,8 +9,8 @@ source "$DIR/common.sh"
 
 printTestStarted
 
-# Make sure personal config is empty. 
-echo "" > "$PERSONAL_CONFIG_FILE"
+# Make sure config is empty. 
+echo "" > "$CONFIG_FILE"
 
 set +e
 
@@ -19,7 +19,7 @@ bash "$REPO_DIR"/mainframer.sh 'echo noop'
 
 if [ "$?" == "0" ]; then
 	set -e
-	echo "Should have failed because personal config does not contain remote machine property."
+	echo "Should have failed because config does not contain remote machine property."
 	exit 1
 fi
 
