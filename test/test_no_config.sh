@@ -9,8 +9,8 @@ source "$DIR/common.sh"
 
 printTestStarted
 
-# Make sure personal config does not exist. 
-rm -f "$PERSONAL_CONFIG_FILE"
+# Make sure config does not exist. 
+rm -f "$CONFIG_FILE"
 
 set +e
 
@@ -19,7 +19,7 @@ bash "$REPO_DIR"/mainframer.sh 'echo noop'
 
 if [ "$?" == "0" ]; then
 	set -e
-	echo "Should have failed because personal config does not exist."
+	echo "Should have failed because config does not exist."
 	exit 1
 fi
 

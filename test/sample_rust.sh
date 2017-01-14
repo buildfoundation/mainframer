@@ -13,7 +13,7 @@ printTestStarted
 cp -a "$DIR/../samples/rust/." "$BUILD_DIR"
 
 # Overwrite config to work with test remote machine.
-setTestRemoteMachineInPersonalConfig
+setTestRemoteMachineInConfig
 
 # Run mainframer.sh that builds Rust project.
 bash "$REPO_DIR"/mainframer.sh 'cargo build'

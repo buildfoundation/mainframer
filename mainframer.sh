@@ -26,13 +26,13 @@ PROJECT_DIR_NAME="$( basename "$PROJECT_DIR")"
 MAINFRAMER_DIR="$PROJECT_DIR/.mainframer"
 
 PROJECT_DIR_ON_REMOTE_MACHINE="~/mainframer/$PROJECT_DIR_NAME"
-PERSONAL_CONFIG_FILE="$MAINFRAMER_DIR/personalconfig"
+CONFIG_FILE="$MAINFRAMER_DIR/config"
 LOCAL_IGNORE_FILE="$MAINFRAMER_DIR/localignore"
 REMOTE_IGNORE_FILE="$MAINFRAMER_DIR/remoteignore"
 COMMON_IGNORE_FILE="$MAINFRAMER_DIR/ignore"
 
 function property {
-    grep "^${1}=" "$PERSONAL_CONFIG_FILE" | cut -d'=' -f2
+    grep "^${1}=" "$CONFIG_FILE" | cut -d'=' -f2
 }
 
 # Config properties.
@@ -54,7 +54,7 @@ if [ -z "$REMOTE_COMPRESS_LEVEL" ]; then
 fi
 
 if [ -z "$REMOTE_BUILD_MACHINE" ]; then
-	echo "Please specify \"$REMOTE_MACHINE_PROPERTY\" in $PERSONAL_CONFIG_FILE"
+	echo "Please specify \"$REMOTE_MACHINE_PROPERTY\" in $CONFIG_FILE"
 	exit 1
 fi
 

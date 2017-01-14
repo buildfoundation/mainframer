@@ -18,7 +18,7 @@ PRIVATE_REMOTE_BUILD_DIR="~/mainframer/$PRIVATE_BUILD_DIR_NAME"
 # Should be used by tests.
 REPO_DIR="$DIR/.."
 BUILD_DIR="$DIR/$PRIVATE_BUILD_DIR_NAME"
-PERSONAL_CONFIG_FILE="$BUILD_DIR/.mainframer/personalconfig"
+CONFIG_FILE="$BUILD_DIR/.mainframer/config"
 LOCAL_IGNORE_FILE="$BUILD_DIR/.mainframer/localignore"
 REMOTE_IGNORE_FILE="$BUILD_DIR/.mainframer/remoteignore"
 REMOTE_MACHINE_PROPERTY="remote_machine"
@@ -90,8 +90,8 @@ function fileMustNotExistOnRemoteMachine {
 	set -e
 }
 
-function setTestRemoteMachineInPersonalConfig {
-	echo "$REMOTE_MACHINE_PROPERTY=$TEST_REMOTE_MACHINE" > "$PERSONAL_CONFIG_FILE"
+function setTestRemoteMachineInConfig {
+	echo "$REMOTE_MACHINE_PROPERTY=$TEST_REMOTE_MACHINE" > "$CONFIG_FILE"
 }
 
 # Clean build directory after run.
@@ -110,7 +110,7 @@ mkdir -p "$BUILD_DIR/.mainframer"
 cp "$DIR/../mainframer.sh" "$BUILD_DIR/"
 
 # Create config that sets remote build machine for the test.
-setTestRemoteMachineInPersonalConfig
+setTestRemoteMachineInConfig
 
 # Set build directory as "working dir".
 pushd "$BUILD_DIR"
