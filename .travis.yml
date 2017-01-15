@@ -18,7 +18,7 @@ before_install:
   ## Go.
   - sudo apt-get install golang --quiet --yes
   ## Clang.
-  - sudo apt-get install clang-3.8 --quiet --yes
+  - sudo apt-get install clang-3.7 --quiet --yes
 
 script:
   - bash test/test.sh --run-samples
