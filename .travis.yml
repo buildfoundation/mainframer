@@ -17,6 +17,8 @@ before_install:
   - sudo curl -sf -L https://static.rust-lang.org/rustup.sh | sh
   ## Go.
   - sudo apt-get install golang --quiet --yes
+  ## Clang.
+  - sudo apt-get install clang --quiet --yes
 
 script:
   - bash test/test.sh --run-samples
