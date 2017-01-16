@@ -102,7 +102,7 @@ function buildProjectOnRemoteMachine {
 }
 
 function syncAfterBuild {
-	echo "Sync remote → local machine…"
+	echo "Sync local ← remote machine…"
 	startTime=`date +%s`
 
 	COMMAND="rsync --archive --delete --compress-level=$REMOTE_COMPRESS_LEVEL "
