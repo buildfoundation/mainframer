@@ -19,6 +19,8 @@ before_install:
   - sudo apt-get install golang --quiet --yes
   ## Clang.
   - sudo apt-get install clang --quiet --yes
+  ## GCC.
+  - sudo apt-get install build-essential --quiet --yes
 
 script:
   - bash test/test.sh --run-samples
