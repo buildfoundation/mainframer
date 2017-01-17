@@ -27,7 +27,7 @@ before_install:
   - cd buck
   - git checkout v2016.11.11.01
   - ant
-  - export PATH="$PATH:`pwd`/bin"
+  - cp bin/buck /usr/local/bin/
   - cd ..
 
 script:
