@@ -27,7 +27,7 @@ before_install:
   - cd buck
   - git checkout v2016.11.11.01
   - ant
-  - cp bin/buck /usr/local/bin/
+  - sudo cp bin/buck /usr/local/bin/
   - cd ..
 
 script:
