@@ -22,28 +22,31 @@ echo ""
 BUILD_START_TIME=`date +%s`
 
 PROJECT_DIR="`pwd`"
-PROJECT_DIR_NAME="$( basename "$PROJECT_DIR")"
-MAINFRAMER_DIR="$PROJECT_DIR/.mainframer"
-
+PROJECT_DIR_NAME="$( basename "$PROJECT_DIR" )"
 PROJECT_DIR_ON_REMOTE_MACHINE="~/mainframer/$PROJECT_DIR_NAME"
-CONFIG_FILE="$MAINFRAMER_DIR/config"
-LOCAL_IGNORE_FILE="$MAINFRAMER_DIR/localignore"
-REMOTE_IGNORE_FILE="$MAINFRAMER_DIR/remoteignore"
-COMMON_IGNORE_FILE="$MAINFRAMER_DIR/ignore"
 
-function property {
+CONFIG_DIR="$PROJECT_DIR/.mainframer"
+CONFIG_FILE="$CONFIG_DIR/config"
+COMMON_IGNORE_FILE="$CONFIG_DIR/ignore"
+LOCAL_IGNORE_FILE="$CONFIG_DIR/localignore"
+REMOTE_IGNORE_FILE="$CONFIG_DIR/remoteignore"
+
+function read_config_property {
     grep "^${1}=" "$CONFIG_FILE" | cut -d'=' -f2
 }
 
-# Config properties.
-REMOTE_MACHINE_PROPERTY="remote_machine"
-LOCAL_COMPRESS_LEVEL_PROPERTY="local_compression_level"
-REMOTE_COMPRESS_LEVEL_PROPERTY="remote_compression_level"
+REMOTE_MACHINE_CONFIG_PROPERTY="remote_machine"
+LOCAL_COMPRESS_LEVEL_CONFIG_PROPERTY="local_compression_level"
+REMOTE_COMPRESS_LEVEL_CONFIG_PROPERTY="remote_compression_level"
 
-# Read config properties.
-REMOTE_BUILD_MACHINE=$(property "$REMOTE_MACHINE_PROPERTY")
-LOCAL_COMPRESS_LEVEL=$(property "$LOCAL_COMPRESS_LEVEL_PROPERTY")
-REMOTE_COMPRESS_LEVEL=$(property "$REMOTE_COMPRESS_LEVEL_PROPERTY")
+REMOTE_MACHINE=$(read_config_property "$REMOTE_MACHINE_CONFIG_PROPERTY")
+LOCAL_COMPRESS_LEVEL=$(read_config_property "$LOCAL_COMPRESS_LEVEL_CONFIG_PROPERTY")
+REMOTE_COMPRESS_LEVEL=$(read_config_property "$REMOTE_COMPRESS_LEVEL_CONFIG_PROPERTY")
+
+if [ -z "$REMOTE_MACHINE" ]; then
+	echo "Please specify \"$REMOTE_MACHINE_PROPERTY\" in $CONFIG_FILE"
+	exit 1
+fi
 
 if [ -z "$LOCAL_COMPRESS_LEVEL" ]; then
 	LOCAL_COMPRESS_LEVEL=1
@@ -53,10 +56,6 @@ if [ -z "$REMOTE_COMPRESS_LEVEL" ]; then
 	REMOTE_COMPRESS_LEVEL=1
 fi
 
-if [ -z "$REMOTE_BUILD_MACHINE" ]; then
-	echo "Please specify \"$REMOTE_MACHINE_PROPERTY\" in $CONFIG_FILE"
-	exit 1
-fi
 
 BUILD_COMMAND="$@"
 
@@ -79,7 +78,7 @@ function syncBeforeBuild {
 		COMMAND+="--exclude-from='$COMMON_IGNORE_FILE' "
 	fi
 
-	COMMAND+="--rsh ssh ./ $REMOTE_BUILD_MACHINE:$PROJECT_DIR_ON_REMOTE_MACHINE"
+	COMMAND+="--rsh ssh ./ $REMOTE_MACHINE:$PROJECT_DIR_ON_REMOTE_MACHINE"
 
 	eval "$COMMAND"
 
@@ -93,7 +92,7 @@ function buildProjectOnRemoteMachine {
 	echo ""
 	startTime=`date +%s`
 
-	ssh $REMOTE_BUILD_MACHINE "echo 'set -e && cd $PROJECT_DIR_ON_REMOTE_MACHINE && $BUILD_COMMAND' | bash"
+	ssh $REMOTE_MACHINE "echo 'set -e && cd $PROJECT_DIR_ON_REMOTE_MACHINE && $BUILD_COMMAND' | bash"
 
 	endTime=`date +%s`
 	echo ""
@@ -115,7 +114,7 @@ function syncAfterBuild {
 		COMMAND+="--exclude-from='$COMMON_IGNORE_FILE' "
 	fi
 
-	COMMAND+="--rsh ssh $REMOTE_BUILD_MACHINE:$PROJECT_DIR_ON_REMOTE_MACHINE/ ./"
+	COMMAND+="--rsh ssh $REMOTE_MACHINE:$PROJECT_DIR_ON_REMOTE_MACHINE/ ./"
 	eval "$COMMAND"
 
 	endTime=`date +%s`
@@ -134,6 +133,6 @@ syncAfterBuild
 
 popd > /dev/null
 
-BUILD_END_TIME=`date +%s`
+BUILD_FINISH_TIME=`date +%s`
 echo ""
-echo "Done: took `expr $BUILD_END_TIME - $BUILD_START_TIME` seconds."
+echo "Done: took `expr $BUILD_FINISH_TIME - $BUILD_START_TIME` seconds."
