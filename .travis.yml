@@ -21,6 +21,14 @@ before_install:
   - sudo apt-get install clang --quiet --yes
   ## GCC.
   - sudo apt-get install build-essential --quiet --yes
+  ## Buck.
+  - sudo apt-get install ant python git
+  - git clone https://github.com/facebook/buck.git
+  - cd buck
+  - git checkout v2016.11.11.01
+  - ant
+  - export PATH="$PATH:`pwd`/bin"
+  - cd ..
 
 script:
   - bash test/test.sh --run-samples
