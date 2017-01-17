@@ -1,4 +1,8 @@
-language: generic
+# We could use "generic", but it's easier to use java for our samples.
+language: java
+
+jdk:
+  - oraclejdk8
 
 before_install:
   - sudo apt-get update --quiet
@@ -12,9 +16,7 @@ before_install:
   - chmod u+rw,go= ~/.ssh/known_hosts
   # Install dependencies for sample projects.
   ## Gradle, Maven, Buck.
-  - java -version
-  - sudo add-apt-repository ppa:openjdk-r/ppa --yes && sudo apt-get update --quiet && sudo apt-get install openjdk-8-jdk --quiet --yes
-  - java -version
+  - java -version && javac --version
   ## Rust.
   - sudo curl -sf -L https://static.rust-lang.org/rustup.sh | sh
   ## Go.
