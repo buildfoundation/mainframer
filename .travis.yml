@@ -27,7 +27,7 @@ before_install:
   - cd buck
   - git checkout v2016.11.11.01
   - ant
-  - sudo cp bin/buck /usr/local/bin/
+  - mv .bashrc .bashrc_original && echo -e "export PATH=$PATH:`pwd`/bin\n" > ~/.bashrc && cat .bashrc_original >> .bashrc && rm .bashrc_original
   - cd ..
 
 script:
