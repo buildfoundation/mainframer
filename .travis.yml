@@ -11,7 +11,7 @@ before_install:
   - ssh-keyscan -t rsa localhost > ~/.ssh/known_hosts
   - chmod u+rw,go= ~/.ssh/known_hosts
   # Install dependencies for sample projects.
-  ## Gradle, Maven.
+  ## Gradle, Maven, Buck.
   - jdk_switcher use oraclejdk8
   - java -version && javac -version
   ## Rust.
@@ -32,6 +32,14 @@ before_install:
   - eval $ANDROID_SDK_INSTALL_COMPONENT "build-tools-25.0.2"
   - eval $ANDROID_SDK_INSTALL_COMPONENT "android-25"
   - mv ~/.bashrc ~/.bashrc_original && echo -e "export ANDROID_HOME=$ANDROID_HOME\nJAVA_HOME=$JAVA_HOME" > ~/.bashrc && cat ~/.bashrc_original >> ~/.bashrc && rm ~/.bashrc_original
+  ## Buck.
+  - sudo apt-get install ant python git
+  - git clone https://github.com/facebook/buck.git
+  - cd buck
+  - git checkout v2016.11.11.01
+  - ant
+  - mv ~/.bashrc ~/.bashrc_original && echo -e "export PATH=$PATH:`pwd`/bin\n" > ~/.bashrc && cat ~/.bashrc_original >> ~/.bashrc && rm ~/.bashrc_original
+  - cd ..
 
 script:
   - bash test/test.sh --run-samples
