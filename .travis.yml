@@ -1,4 +1,8 @@
-language: generic
+# We could use "generic", but it's easier to use java for our samples.
+language: java
+
+jdk:
+  - oraclejdk8
 
 before_install:
   - sudo apt-get update --quiet
@@ -11,8 +15,8 @@ before_install:
   - ssh-keyscan -t rsa localhost > ~/.ssh/known_hosts
   - chmod u+rw,go= ~/.ssh/known_hosts
   # Install dependencies for sample projects.
-  ## Gradle, Maven.
-  - sudo apt-get install openjdk-7-jdk --quiet --yes
+  ## Gradle, Maven, Buck.
+  - java -version && javac -version
   ## Rust.
   - sudo curl -sf -L https://static.rust-lang.org/rustup.sh | sh
   ## Go.
@@ -21,6 +25,14 @@ before_install:
   - sudo apt-get install clang --quiet --yes
   ## GCC.
   - sudo apt-get install build-essential --quiet --yes
+  ## Buck.
+  - sudo apt-get install ant python git
+  - git clone https://github.com/facebook/buck.git
+  - cd buck
+  - git checkout v2016.11.11.01
+  - ant
+  - mv ~/.bashrc ~/.bashrc_original && echo -e "export PATH=$PATH:`pwd`/bin\n" > ~/.bashrc && cat ~/.bashrc_original >> ~/.bashrc && rm ~/.bashrc_original
+  - cd ..
 
 script:
   - bash test/test.sh --run-samples
