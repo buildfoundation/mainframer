@@ -19,7 +19,7 @@ set -e
 echo ":: mainframer v2.0.0-dev"
 echo ""
 
-BUILD_START_TIME=`date +%s`
+START_TIME=`date +%s`
 
 PROJECT_DIR="`pwd`"
 PROJECT_DIR_NAME="$( basename "$PROJECT_DIR" )"
@@ -89,7 +89,7 @@ function syncBeforeRemoteCommand {
 }
 
 function executeRemoteCommand {
-	echo "Executing build on remote machine…"
+	echo "Executing command on remote machine…"
 	echo ""
 	startTime=`date +%s`
 
@@ -141,12 +141,12 @@ syncAfterRemoteCommand
 
 popd > /dev/null
 
-BUILD_FINISH_TIME=`date +%s`
+FINISH_TIME=`date +%s`
 echo ""
 
 if [ "$REMOTE_COMMAND_SUCCESSFUL" == "true" ]; then
-	echo "Success: took `expr $BUILD_FINISH_TIME - $BUILD_START_TIME` seconds."
+	echo "Success: took `expr $FINISH_TIME - $START_TIME` seconds."
 else 
-	echo "Failure: took `expr $BUILD_FINISH_TIME - $BUILD_START_TIME` seconds."
+	echo "Failure: took `expr $FINISH_TIME - $START_TIME` seconds."
 	exit 1
 fi
