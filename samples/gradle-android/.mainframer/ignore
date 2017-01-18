@@ -9,3 +9,6 @@
 
 # Synching local.properties usually very bad idea because they contain machine specific properties like paths to SDKs and so on.
 /local.properties
+
+# Syncing captures from Android Studio is usually not required.
+/captures
