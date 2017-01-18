@@ -10,7 +10,9 @@ source "$DIR/common.sh"
 printTestStarted
 
 # Run mainframer.sh that creates "build" result file that should be synced back to local machine even after error exit code.
+set +e
 bash "$REPO_DIR"/mainframer.sh 'mkdir build && touch build/buildresult.txt && exit 1'
+set -e
 
 # Make sure files exist on local machine after sync.
 fileMustExistOnLocalMachine "build/buildresult.txt" "(sync after error code problem)"

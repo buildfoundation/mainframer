@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2016 Juno, Inc.
+# Copyright 2017 Juno, Inc.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ set -e
 echo ":: mainframer v2.0.0-dev"
 echo ""
 
-BUILD_START_TIME=`date +%s`
+START_TIME=`date +%s`
 
 PROJECT_DIR="`pwd`"
 PROJECT_DIR_NAME="$( basename "$PROJECT_DIR" )"
@@ -57,14 +57,15 @@ if [ -z "$REMOTE_COMPRESS_LEVEL" ]; then
 fi
 
 
-BUILD_COMMAND="$@"
+REMOTE_COMMAND="$@"
+REMOTE_COMMAND_SUCCESSFUL="false"
 
-if [ -z "$BUILD_COMMAND" ]; then
-	echo "Please pass build command."
+if [ -z "$REMOTE_COMMAND" ]; then
+	echo "Please pass remote command."
 	exit 1
 fi
 
-function syncBeforeBuild {
+function syncBeforeRemoteCommand {
 	echo "Sync local → remote machine..."
 	startTime=`date +%s`
 
@@ -87,20 +88,31 @@ function syncBeforeBuild {
 	echo ""
 }
 
-function buildProjectOnRemoteMachine {
-	echo "Executing build on remote machine…"
+function executeRemoteCommand {
+	echo "Executing command on remote machine…"
 	echo ""
 	startTime=`date +%s`
 
-	ssh $REMOTE_MACHINE "echo 'set -e && cd $PROJECT_DIR_ON_REMOTE_MACHINE && $BUILD_COMMAND' | bash"
+	set +e
+	ssh $REMOTE_MACHINE "echo 'set -e && cd $PROJECT_DIR_ON_REMOTE_MACHINE && $REMOTE_COMMAND' | bash"
+	if [ "$?" == "0" ]; then
+		REMOTE_COMMAND_SUCCESSFUL="true"
+	fi
+	set -e
 
 	endTime=`date +%s`
 	echo ""
-	echo "Execution done: took `expr $endTime - $startTime` seconds."
+
+	if [ "$REMOTE_COMMAND_SUCCESSFUL" == "true" ]; then
+		echo "Execution done: took `expr $endTime - $startTime` seconds."
+	else
+		echo "Execution failed: took `expr $endTime - $startTime` seconds."
+	fi
+
 	echo ""
 }
 
-function syncAfterBuild {
+function syncAfterRemoteCommand {
 	echo "Sync remote → local machine…"
 	startTime=`date +%s`
 
@@ -123,16 +135,18 @@ function syncAfterBuild {
 
 pushd "$PROJECT_DIR" > /dev/null
 
-syncBeforeBuild
-
-set +e
-buildProjectOnRemoteMachine
-set -e
-
-syncAfterBuild
+syncBeforeRemoteCommand
+executeRemoteCommand
+syncAfterRemoteCommand
 
 popd > /dev/null
 
-BUILD_FINISH_TIME=`date +%s`
+FINISH_TIME=`date +%s`
 echo ""
-echo "Done: took `expr $BUILD_FINISH_TIME - $BUILD_START_TIME` seconds."
+
+if [ "$REMOTE_COMMAND_SUCCESSFUL" == "true" ]; then
+	echo "Success: took `expr $FINISH_TIME - $START_TIME` seconds."
+else 
+	echo "Failure: took `expr $FINISH_TIME - $START_TIME` seconds."
+	exit 1
+fi
