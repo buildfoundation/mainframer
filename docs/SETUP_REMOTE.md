@@ -2,8 +2,8 @@
 
 ## Dependencies
 
-* `ssh`
-* `rsync`
+* SSH Server
+* rsync
 
 ## Users
 
@@ -21,20 +21,10 @@
   $ echo {SSH_KEY} >> ~/.ssh/authorized_keys
   $ chmod u+rw,go= ~/.ssh
   ```
+
+We recommend to create a separate user per person.
+There are other options like a Docker container per person though.
   
 ## Environment
 
-### Android
-
-We need JDK and Android SDK installed. Each user has its own Android SDK copy.
-
-```
-$ wget https://dl.google.com/android/repository/tools_r25.2.3-linux.zip
-$ unzip tools_r25.2.3-linux.zip -d android-sdk-linux
-```
-
-Append the following line to the `~/.bashrc`.
-
-```
-export ANDROID_HOME=~/android-sdk-linux
-```
+Install tools you need to perform remote processing.
