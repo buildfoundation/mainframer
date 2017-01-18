@@ -1,8 +1,8 @@
 # Synching .git or other VCS folders is very bad idea, they are usually very heavy and not required for the build.
-**/.git/
+.git
 
 # Synching IDE specific folders is really not needed for remote build.
-.idea
+/.idea
 
 # Synching local.properties usually very bad idea because they contain machine specific properties like paths to SDKs and so on.
-local.properties
+/local.properties
