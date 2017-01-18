@@ -15,4 +15,4 @@ Or any other Buck task you want, btw it integrates with IntelliJ pretty easily! 
 ### Requirements
 
 * Buck installed on remote machine.
-* JDK 6+ installed on remote machine. (Because sample is in Java)
+* JDK 8+ installed on remote machine.
