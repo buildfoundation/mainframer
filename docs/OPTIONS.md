@@ -40,20 +40,44 @@ remote_compression_level={LEVEL}
  
 ## Ignore Rule Files
 
+To speedup execution you might want to **ignore large directories and files** not required for remote command such as `/.git` and so on. 
+
+Please see our samples:
+
+* [Gradle](samples/gradle)
+* [Gradle Android](samples/gradle-android)
+* [Rust](samples/rust)
+* [Clang](samples/clang)
+* [GCC](samples/gcc)
+* [Maven](samples/mvn)
+* [Go](samples/go)
+
+#### `ignore`
+
+Used both when transferring files from local machine to remote one and vice versa.
+
 * Format: `rsync` exclusion rules.
  * Be aware that it is similar but not the same as `.gitignore`.
  * Refer to [rsync `Include/exclude pattern rules`](https://download.samba.org/pub/rsync/rsync.html).
 * Required: no.
 * Put in VCS: yes.
 
-### `ignore`
-
-Used both when transferring files from local machine to remote one and vice versa.
-
-### `localignore`
+#### `localignore`
 
 Used only when transferring files from local machine to remote one.
 
-### `remoteignore`
+* Format: `rsync` exclusion rules.
+ * Be aware that it is similar but not the same as `.gitignore`.
+ * Refer to [rsync `Include/exclude pattern rules`](https://download.samba.org/pub/rsync/rsync.html).
+* Required: no.
+* Put in VCS: yes.
+
+#### `remoteignore`
 
 Used only when transferring files from remote machine to local one.
+
+* Format: `rsync` exclusion rules.
+ * Be aware that it is similar but not the same as `.gitignore`.
+ * Refer to [rsync `Include/exclude pattern rules`](https://download.samba.org/pub/rsync/rsync.html).
+* Required: no.
+* Put in VCS: yes.
