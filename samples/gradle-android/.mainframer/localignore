@@ -1,0 +1,2 @@
+# Usually you don't need to sync build folder to remote machine since it will have one as result of build.
+build

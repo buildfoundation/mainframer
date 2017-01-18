@@ -15,6 +15,7 @@ The script will sync files to remote machine, execute a command and sync files b
 We have quite a bunch of samples showing off some practical applications.
 
 * [Gradle](samples/gradle)
+* [Gradle Android](samples/gradle-android)
 * [Rust](samples/rust)
 * [Clang](samples/clang)
 * [GCC](samples/gcc)

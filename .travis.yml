@@ -21,6 +21,16 @@ before_install:
   - sudo apt-get install clang --quiet --yes
   ## GCC.
   - sudo apt-get install build-essential --quiet --yes
+  ## Gradle Android.
+  - sudo apt-get install lib32stdc++6 lib32z1
+  - export ANDROID_HOME=/opt/android-sdk-linux && export ANDROID_SDK_FILE_NAME=android-sdk_r24.4.1-linux.tgz && export ANDROID_SDK_INSTALL_COMPONENT="echo \"y\" | \"$ANDROID_HOME\"/tools/android update sdk --no-ui --all --filter"
+  - mkdir -p "$ANDROID_HOME" && curl https://dl.google.com/android/$ANDROID_SDK_FILE_NAME --progress-bar --location --output $ANDROID_SDK_FILE_NAME && tar -xzf $ANDROID_SDK_FILE_NAME --directory /opt/
+  - "$ANDROID_HOME"/tools/android list sdk --all --no-ui --extended
+  - eval $ANDROID_SDK_INSTALL_COMPONENT "tools"
+  - eval $ANDROID_SDK_INSTALL_COMPONENT "platform-tools"
+  - eval $ANDROID_SDK_INSTALL_COMPONENT "build-tools-25.0.2"
+  - eval $ANDROID_SDK_INSTALL_COMPONENT "android-25"
+  - mv ~/.bashrc ~/.bashrc_original && echo -e "export ANDROID_HOME=$ANDROID_HOME" > ~/.bashrc && cat ~/.bashrc_original >> ~/.bashrc && rm ~/.bashrc_original
 
 script:
   - bash test/test.sh --run-samples
