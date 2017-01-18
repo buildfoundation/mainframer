@@ -61,11 +61,11 @@ REMOTE_COMMAND="$@"
 REMOTE_COMMAND_SUCCESSFUL="false"
 
 if [ -z "$REMOTE_COMMAND" ]; then
-	echo "Please pass build command."
+	echo "Please pass remote command."
 	exit 1
 fi
 
-function syncBeforeBuild {
+function syncBeforeRemoteCommand {
 	echo "Sync local → remote machine..."
 	startTime=`date +%s`
 
@@ -88,7 +88,7 @@ function syncBeforeBuild {
 	echo ""
 }
 
-function buildProjectOnRemoteMachine {
+function executeRemoteCommand {
 	echo "Executing build on remote machine…"
 	echo ""
 	startTime=`date +%s`
@@ -112,7 +112,7 @@ function buildProjectOnRemoteMachine {
 	echo ""
 }
 
-function syncAfterBuild {
+function syncAfterRemoteCommand {
 	echo "Sync remote → local machine…"
 	startTime=`date +%s`
 
@@ -135,9 +135,9 @@ function syncAfterBuild {
 
 pushd "$PROJECT_DIR" > /dev/null
 
-syncBeforeBuild
-buildProjectOnRemoteMachine
-syncAfterBuild
+syncBeforeRemoteCommand
+executeRemoteCommand
+syncAfterRemoteCommand
 
 popd > /dev/null
 
