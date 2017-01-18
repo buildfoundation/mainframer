@@ -12,7 +12,8 @@ before_install:
   - chmod u+rw,go= ~/.ssh/known_hosts
   # Install dependencies for sample projects.
   ## Gradle, Maven.
-  - sudo apt-get install openjdk-7-jdk --quiet --yes
+  - jdk_switcher use oraclejdk8
+  - java -version && javac -version
   ## Rust.
   - sudo curl -sf -L https://static.rust-lang.org/rustup.sh | sh
   ## Go.
