@@ -1,7 +1,12 @@
 # mainframer
 
-Blip-blop, it's `mainframer`, a simple script that allows you to move build process
-from your local machine to some remote one. This way you can free up your local machine
+Script that allows you to move build process
+from a local machine to a remote one.
+
+**Why?** 
+
+Because remote machine might be much faster than your laptop. 
+With `mainframer` you can free up your local machine
 for better things — like editing source code in your IDE without lags,
 freezes and running into swap, being able to actually _use_ your computer
 when the build is happening somewhere else.
