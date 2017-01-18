@@ -11,6 +11,7 @@ in the root directory of your project.
 │   ├── localignore
 │   └── remoteignore
 └── mainframer.sh
+└── your_project_files
 ```
 
 ## Configuration Files
@@ -19,7 +20,7 @@ in the root directory of your project.
 
 * Format: [properties](https://en.wikipedia.org/wiki/.properties).
 * Required: yes.
-* Put in VCS: no.
+* Commit into VCS: no.
 
 ```properties
 remote_machine={REMOTE_MACHINE}
@@ -60,7 +61,7 @@ Used both when transferring files from local machine to remote one and vice vers
  * Be aware that it is similar but not the same as `.gitignore`.
  * Refer to [rsync `Include/exclude pattern rules`](https://download.samba.org/pub/rsync/rsync.html).
 * Required: no.
-* Put in VCS: yes.
+* Commit into VCS: yes.
 
 #### `localignore`
 
@@ -70,7 +71,7 @@ Used only when transferring files from local machine to remote one.
  * Be aware that it is similar but not the same as `.gitignore`.
  * Refer to [rsync `Include/exclude pattern rules`](https://download.samba.org/pub/rsync/rsync.html).
 * Required: no.
-* Put in VCS: yes.
+* Commit into VCS: yes.
 
 #### `remoteignore`
 
@@ -80,4 +81,4 @@ Used only when transferring files from remote machine to local one.
  * Be aware that it is similar but not the same as `.gitignore`.
  * Refer to [rsync `Include/exclude pattern rules`](https://download.samba.org/pub/rsync/rsync.html).
 * Required: no.
-* Put in VCS: yes.
+* Commit into VCS: yes.
