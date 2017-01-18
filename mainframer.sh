@@ -70,12 +70,12 @@ function syncBeforeBuild {
 
 	COMMAND="rsync --archive --delete --rsync-path=\"mkdir -p \"$PROJECT_DIR_ON_REMOTE_MACHINE\" && rsync\" --compress-level=$LOCAL_COMPRESS_LEVEL "
 
-	if [ -f "$LOCAL_IGNORE_FILE" ]; then
-		COMMAND+="--exclude-from='$LOCAL_IGNORE_FILE' "
-	fi
-
 	if [ -f "$COMMON_IGNORE_FILE" ]; then
 		COMMAND+="--exclude-from='$COMMON_IGNORE_FILE' "
+	fi
+
+	if [ -f "$LOCAL_IGNORE_FILE" ]; then
+		COMMAND+="--exclude-from='$LOCAL_IGNORE_FILE' "
 	fi
 
 	COMMAND+="--rsh ssh ./ $REMOTE_MACHINE:$PROJECT_DIR_ON_REMOTE_MACHINE"
@@ -106,12 +106,12 @@ function syncAfterBuild {
 
 	COMMAND="rsync --archive --delete --compress-level=$REMOTE_COMPRESS_LEVEL "
 
-	if [ -f "$REMOTE_IGNORE_FILE" ]; then
-		COMMAND+="--exclude-from='$REMOTE_IGNORE_FILE' "
-	fi
-
 	if [ -f "$COMMON_IGNORE_FILE" ]; then
 		COMMAND+="--exclude-from='$COMMON_IGNORE_FILE' "
+	fi
+
+	if [ -f "$REMOTE_IGNORE_FILE" ]; then
+		COMMAND+="--exclude-from='$REMOTE_IGNORE_FILE' "
 	fi
 
 	COMMAND+="--rsh ssh $REMOTE_MACHINE:$PROJECT_DIR_ON_REMOTE_MACHINE/ ./"
