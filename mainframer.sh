@@ -57,10 +57,10 @@ if [ -z "$REMOTE_COMPRESS_LEVEL" ]; then
 fi
 
 
-BUILD_COMMAND="$@"
+REMOTE_COMMAND="$@"
 REMOTE_COMMAND_SUCCESSFUL="false"
 
-if [ -z "$BUILD_COMMAND" ]; then
+if [ -z "$REMOTE_COMMAND" ]; then
 	echo "Please pass build command."
 	exit 1
 fi
@@ -94,7 +94,7 @@ function buildProjectOnRemoteMachine {
 	startTime=`date +%s`
 
 	set +e
-	ssh $REMOTE_MACHINE "echo 'set -e && cd $PROJECT_DIR_ON_REMOTE_MACHINE && $BUILD_COMMAND' | bash"
+	ssh $REMOTE_MACHINE "echo 'set -e && cd $PROJECT_DIR_ON_REMOTE_MACHINE && $REMOTE_COMMAND' | bash"
 	if [ "$?" == "0" ]; then
 		REMOTE_COMMAND_SUCCESSFUL="true"
 	fi
