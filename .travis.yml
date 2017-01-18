@@ -31,7 +31,7 @@ before_install:
   - eval $ANDROID_SDK_INSTALL_COMPONENT "platform-tools"
   - eval $ANDROID_SDK_INSTALL_COMPONENT "build-tools-25.0.2"
   - eval $ANDROID_SDK_INSTALL_COMPONENT "android-25"
-  - mv ~/.bashrc ~/.bashrc_original && echo -e "export ANDROID_HOME=$ANDROID_HOME" > ~/.bashrc && cat ~/.bashrc_original >> ~/.bashrc && rm ~/.bashrc_original
+  - mv ~/.bashrc ~/.bashrc_original && echo -e "export ANDROID_HOME=$ANDROID_HOME\nJAVA_HOME=$JAVA_HOME" > ~/.bashrc && cat ~/.bashrc_original >> ~/.bashrc && rm ~/.bashrc_original
 
 script:
   - bash test/test.sh --run-samples
