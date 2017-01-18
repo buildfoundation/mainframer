@@ -25,11 +25,11 @@ We have quite a bunch of samples showing off some practical applications.
 
 * [Remote machine](docs/SETUP_REMOTE.md)
 * [Local machine](docs/SETUP_LOCAL.md)
-* [Configuration files](docs/CONFIG.md)
+* [Options](docs/OPTIONS.md)
 
 ## Demo
 
-[![Video](video_preview.png)](https://youtu.be/xysQXMaPaGw "Remote Build — mainframer v1.0.0")
+[![Demo](img/demo.png)](https://youtu.be/xysQXMaPaGw "Remote Build — mainframer v1.0.0")
 
 ## License
 
