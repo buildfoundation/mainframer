@@ -5,8 +5,8 @@ android {
     buildToolsVersion '25.0.2'
 
     defaultConfig {
-    	applicationId 'com.gojuno.mainframer.gradleandroidsample'
-    	minSdkVersion 25
-		targetSdkVersion 25
+        applicationId 'com.gojuno.mainframer.gradleandroidsample'
+        minSdkVersion 25
+        targetSdkVersion 25
     }
 }
