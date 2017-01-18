@@ -58,6 +58,7 @@ fi
 
 
 BUILD_COMMAND="$@"
+REMOTE_COMMAND_SUCCESSFUL="false"
 
 if [ -z "$BUILD_COMMAND" ]; then
 	echo "Please pass build command."
@@ -92,11 +93,22 @@ function buildProjectOnRemoteMachine {
 	echo ""
 	startTime=`date +%s`
 
+	set +e
 	ssh $REMOTE_MACHINE "echo 'set -e && cd $PROJECT_DIR_ON_REMOTE_MACHINE && $BUILD_COMMAND' | bash"
+	if [ "$?" == "0" ]; then
+		REMOTE_COMMAND_SUCCESSFUL="true"
+	fi
+	set -e
 
 	endTime=`date +%s`
 	echo ""
-	echo "Execution done: took `expr $endTime - $startTime` seconds."
+
+	if [ "$REMOTE_COMMAND_SUCCESSFUL" == "true" ]; then
+		echo "Execution done: took `expr $endTime - $startTime` seconds."
+	else
+		echo "Execution failed: took `expr $endTime - $startTime` seconds."
+	fi
+
 	echo ""
 }
 
@@ -124,15 +136,17 @@ function syncAfterBuild {
 pushd "$PROJECT_DIR" > /dev/null
 
 syncBeforeBuild
-
-set +e
 buildProjectOnRemoteMachine
-set -e
-
 syncAfterBuild
 
 popd > /dev/null
 
 BUILD_FINISH_TIME=`date +%s`
 echo ""
-echo "Done: took `expr $BUILD_FINISH_TIME - $BUILD_START_TIME` seconds."
+
+if [ "$REMOTE_COMMAND_SUCCESSFUL" == "true" ]; then
+	echo "Success: took `expr $BUILD_FINISH_TIME - $BUILD_START_TIME` seconds."
+else 
+	echo "Failure: took `expr $BUILD_FINISH_TIME - $BUILD_START_TIME` seconds."
+	exit 1
+fi
