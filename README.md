@@ -6,11 +6,7 @@ for better things — like editing source code in your IDE without lags,
 freezes and running into swap, being able to actually _use_ your computer
 when the build is happening somewhere else.
 
-## Demo
-
-[![Video](video_preview.png)](https://youtu.be/xysQXMaPaGw "Remote Build — mainframer v1.0.0")
-
-## Application
+## Supported Actions
 
 `mainframer` supports basically anything you can execute as a command.
 The idea is quite simple. The script will sync files to remote machine,
@@ -18,18 +14,22 @@ execute a command and sync files back.
 
 We have quite a bunch of samples showing off some practical applications.
 
+* [Gradle](samples/gradle)
+* [Rust](samples/rust)
 * [Clang](samples/clang)
 * [GCC](samples/gcc)
-* [Go](samples/go)
-* [Gradle](samples/gradle)
 * [Maven](samples/mvn)
-* [Rust](samples/rust)
+* [Go](samples/go)
 
 ## Setup
 
 * [Remote machine](docs/SETUP_REMOTE.md)
 * [Local machine](docs/SETUP_LOCAL.md)
 * [Configuration files](docs/CONFIG.md)
+
+## Demo
+
+[![Video](video_preview.png)](https://youtu.be/xysQXMaPaGw "Remote Build — mainframer v1.0.0")
 
 # License
 
