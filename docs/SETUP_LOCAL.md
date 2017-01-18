@@ -63,5 +63,5 @@
 3. Finally you can test the build.
 
   ```
-  $ bash mainframer.sh ./gradlew assembleDebug
+  $ bash mainframer.sh echo "It works!" > success.txt
   ```
