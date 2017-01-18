@@ -1,5 +1,10 @@
 # Local Machine Setup
 
+## Dependencies
+
+* `ssh`
+* `rsync`
+
 ## Info You’ll Need to Start
 
 * `REMOTE_MACHINE_NAME` — remote machine name. Something like `blood-dragon`.
