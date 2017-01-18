@@ -18,6 +18,7 @@ before_install:
   - sudo curl -sf -L https://static.rust-lang.org/rustup.sh | sh
   ## Go.
   - sudo apt-get install golang --quiet --yes
+  - mv ~/.bashrc ~/.bashrc_original && echo -e "export GOROOT=$GOROOT\n" > ~/.bashrc && cat ~/.bashrc_original >> ~/.bashrc && rm ~/.bashrc_original
   ## Clang.
   - sudo apt-get install clang --quiet --yes
   ## GCC.
