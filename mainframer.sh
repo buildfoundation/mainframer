@@ -39,12 +39,17 @@ REMOTE_MACHINE_CONFIG_PROPERTY="remote_machine"
 LOCAL_COMPRESS_LEVEL_CONFIG_PROPERTY="local_compression_level"
 REMOTE_COMPRESS_LEVEL_CONFIG_PROPERTY="remote_compression_level"
 
+if [ ! -f $CONFIG_FILE ]; then
+	echo "Please create and fill $CONFIG_FILE."
+	exit 1
+fi
+
 REMOTE_MACHINE=$(read_config_property "$REMOTE_MACHINE_CONFIG_PROPERTY")
 LOCAL_COMPRESS_LEVEL=$(read_config_property "$LOCAL_COMPRESS_LEVEL_CONFIG_PROPERTY")
 REMOTE_COMPRESS_LEVEL=$(read_config_property "$REMOTE_COMPRESS_LEVEL_CONFIG_PROPERTY")
 
 if [ -z "$REMOTE_MACHINE" ]; then
-	echo "Please specify \"$REMOTE_MACHINE_PROPERTY\" in $CONFIG_FILE"
+	echo "Please specify \"$REMOTE_MACHINE_CONFIG_PROPERTY\" in $CONFIG_FILE."
 	exit 1
 fi
 
@@ -146,7 +151,7 @@ echo ""
 
 if [ "$REMOTE_COMMAND_SUCCESSFUL" == "true" ]; then
 	echo "Success: took `expr $FINISH_TIME - $START_TIME` seconds."
-else 
+else
 	echo "Failure: took `expr $FINISH_TIME - $START_TIME` seconds."
 	exit 1
 fi
