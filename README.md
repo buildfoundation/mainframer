@@ -20,6 +20,7 @@ We have quite a bunch of samples showing off some practical applications.
 * [Clang](samples/clang)
 * [GCC](samples/gcc)
 * [Maven](samples/mvn)
+* [Buck](samples/buck)
 * [Go](samples/go)
 
 ## Setup

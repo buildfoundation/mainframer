@@ -1,0 +1,2 @@
+# Usually you don't need to sync buck-out folder to remote machine since it will have one as result of build.
+/buck-out
