@@ -54,7 +54,7 @@
 
   We recommend you to subscribe to changes in this repo (follow it on GitHub / watch for tweets of its maintainers / etc). This will allow you to apply best practises we found to make `mainframer` faster and safer.
 
-2. Carefully read [Options documentation](OPTIONS.md) and configure mainframer for *your kind of project*.
+2. Carefully read [Options documentation](OPTIONS.md) and configure mainframer for your kind of project.
 
 3. Finally you can test the build.
 
