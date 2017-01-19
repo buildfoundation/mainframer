@@ -22,7 +22,7 @@ in the root directory of your project.
 * Put in VCS: no.
 
 ```properties
-remote_machine={REMOTE_MACHINE}
+remote_machine={REMOTE_MACHINE_ALIAS}
 local_compression_level={LEVEL}
 remote_compression_level={LEVEL}
 ```
