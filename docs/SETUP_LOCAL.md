@@ -7,7 +7,7 @@
 
 ## Info You’ll Need to Start
 
-* `REMOTE_MACHINE_ALIAS` — ssh alias for remote machine. Something like `blood-dragon` or `sonic`.
+* `REMOTE_MACHINE_ALIAS` — SSH alias for remote machine. Something like `blood-dragon` or `sonic`.
 * `REMOTE_MACHINE_IP_OR_HOSTNAME` — remote machine IP or hostname. Something like `42.42.42.42` or `remote.domain.com`.
 * `REMOTE_MACHINE_USERNAME` — your remote machine user. Something like `john_doe`.
 
@@ -51,7 +51,7 @@
 
 ## Configuration
 
-1. Download [latest release version of `mainframer.sh`](https://github.com/gojuno/mainframer/releases/latest) and save it in your project. Most likely commit it into version control system so you could sync changes across all team members.
+1. Download [latest release version of `mainframer.sh`](https://github.com/gojuno/mainframer/releases/latest) and save it in your project. Most likely commit it to version control system so you could sync changes across all team members.
 
   We recommend you to subscribe to changes in this repo (follow it on GitHub / watch for tweets of its maintainers / etc). This will allow you to apply best practises we found to make `mainframer` faster and safer.
 
