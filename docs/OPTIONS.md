@@ -23,7 +23,7 @@ in the root directory of your project.
 * Commit into version control system: no.
 
 ```properties
-remote_machine={REMOTE_MACHINE}
+remote_machine={REMOTE_MACHINE_ALIAS}
 local_compression_level={LEVEL}
 remote_compression_level={LEVEL}
 ```
