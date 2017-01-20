@@ -1,6 +1,6 @@
 ## Recipe: Setup Remote Machine
 
-Bash script that allows easily add new users with ssh keys to the remote machine.
+Bash script that allows easily add new users with SSH keys to the remote machine.
 
 How to use:
 
@@ -43,9 +43,9 @@ pushd "/home/$NEW_USER"
 
 # Setup ssh access.
 mkdir -p .ssh
-chmod 700 .ssh
+chmod +urwx,go= .ssh
 echo "$AUTHORIZED_SSH_KEY" > .ssh/authorized_keys
-chmod 600 .ssh/authorized_keys
+chmod +urw,go= .ssh/authorized_keys
 
 # Example of adding env variable to user's ~/.bashrc.
 mv .bashrc .bashrc_original
