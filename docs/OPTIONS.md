@@ -10,7 +10,8 @@ in the root directory of your project.
 │   ├── ignore
 │   ├── localignore
 │   └── remoteignore
-└── mainframer.sh
+│── mainframer.sh
+└── your_project_files
 ```
 
 ## Configuration Files
@@ -19,7 +20,7 @@ in the root directory of your project.
 
 * Format: [properties](https://en.wikipedia.org/wiki/.properties).
 * Required: yes.
-* Put in VCS: no.
+* Commit into version control system: no.
 
 ```properties
 remote_machine={REMOTE_MACHINE}
@@ -40,20 +41,45 @@ remote_compression_level={LEVEL}
  
 ## Ignore Rule Files
 
+Ignoring large directories (`/.git`, etc) and files not required for remote command execution can significantly speedup sync process.
+
+Please see our samples:
+
+* [Gradle](../samples/gradle)
+* [Gradle Android](../samples/gradle-android)
+* [Rust](../samples/rust)
+* [Clang](../samples/clang)
+* [GCC](../samples/gcc)
+* [Maven](../samples/mvn)
+* [Buck](../samples/buck)
+* [Go](../samples/go)
+
+#### `ignore`
+
+Used both when transferring files from local machine to remote one and vice versa.
+
 * Format: `rsync` exclusion rules.
  * Be aware that it is similar but not the same as `.gitignore`.
  * Refer to [rsync `Include/exclude pattern rules`](https://download.samba.org/pub/rsync/rsync.html).
 * Required: no.
-* Put in VCS: yes.
+* Commit into version control system: yes.
 
-### `ignore`
-
-Used both when transferring files from local machine to remote one and vice versa.
-
-### `localignore`
+#### `localignore`
 
 Used only when transferring files from local machine to remote one.
 
-### `remoteignore`
+* Format: `rsync` exclusion rules.
+ * Be aware that it is similar but not the same as `.gitignore`.
+ * Refer to [rsync `Include/exclude pattern rules`](https://download.samba.org/pub/rsync/rsync.html).
+* Required: no.
+* Commit into version control system: yes.
+
+#### `remoteignore`
 
 Used only when transferring files from remote machine to local one.
+
+* Format: `rsync` exclusion rules.
+ * Be aware that it is similar but not the same as `.gitignore`.
+ * Refer to [rsync `Include/exclude pattern rules`](https://download.samba.org/pub/rsync/rsync.html).
+* Required: no.
+* Commit into version control system: yes.
