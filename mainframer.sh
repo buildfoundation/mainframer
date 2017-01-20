@@ -99,7 +99,7 @@ function executeRemoteCommand {
 	startTime=`date +%s`
 
 	set +e
-	ssh $REMOTE_MACHINE "echo 'set -e && cd $PROJECT_DIR_ON_REMOTE_MACHINE && $REMOTE_COMMAND' | bash"
+	ssh $REMOTE_MACHINE "echo 'set -e && cd $PROJECT_DIR_ON_REMOTE_MACHINE && echo \"$REMOTE_COMMAND\" && $REMOTE_COMMAND' | bash"
 	if [ "$?" == "0" ]; then
 		REMOTE_COMMAND_SUCCESSFUL="true"
 	fi
