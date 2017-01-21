@@ -1,5 +1,13 @@
 language: generic
 
+# Tool to find issues in shell scripts.
+addons:
+  apt:
+    sources:
+    - debian-sid 
+    packages:
+    - shellcheck
+
 before_install:
   # Set up localhost as "remote machine".
   - sudo apt-get update --quiet
@@ -11,8 +19,6 @@ before_install:
   - chmod u+rw,go= ~/.ssh/authorized_keys
   - ssh-keyscan -t rsa localhost > ~/.ssh/known_hosts
   - chmod u+rw,go= ~/.ssh/known_hosts
-  # Tool to find issues in shell scripts.
-  - sudo apt-get install shellcheck
   # Install dependencies for sample projects.
   ## Gradle, Maven, Buck.
   - jdk_switcher use oraclejdk8
