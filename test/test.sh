@@ -4,7 +4,7 @@ set -e
 # You can run it from any directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-TEST_COUNTER=0
+TEST_COUNTER=1
 TEST_RUN_SUCCESS="false"
 
 function printTestResults {
@@ -19,6 +19,10 @@ function printTestResults {
 
 # Hook to exit happened either because of success or error.
 trap printTestResults EXIT
+
+echo "Checking for syntax errors…"
+bash -n "$DIR/../mainframer.sh"
+echo "Done, running tests…"
 
 # Run all tests.
 for test_ in "$DIR"/test_*; do
