@@ -12,7 +12,8 @@ before_install:
   - ssh-keyscan -t rsa localhost > ~/.ssh/known_hosts
   - chmod u+rw,go= ~/.ssh/known_hosts
   # Tool to find issues in shell scripts.
-  - sudo apt-get install cabal-install && cabal update && cabal install ShellCheck
+  - wget http://ftp.debian.org/debian/pool/main/s/shellcheck/shellcheck_0.4.4-4_amd64.deb
+  - sudo dpkg -i shellcheck_0.4.4-4_amd64.deb
   # Install dependencies for sample projects.
   ## Gradle, Maven, Buck.
   - jdk_switcher use oraclejdk8
