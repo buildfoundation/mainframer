@@ -23,7 +23,7 @@ START_TIME="$(date +%s)"
 
 PROJECT_DIR="$(pwd)"
 PROJECT_DIR_NAME="$( basename "$PROJECT_DIR" )"
-PROJECT_DIR_ON_REMOTE_MACHINE="\$HOME/mainframer/$PROJECT_DIR_NAME"
+PROJECT_DIR_ON_REMOTE_MACHINE="~/mainframer/$PROJECT_DIR_NAME"
 
 CONFIG_DIR="$PROJECT_DIR/.mainframer"
 CONFIG_FILE="$CONFIG_DIR/config"
@@ -84,7 +84,7 @@ function syncBeforeRemoteCommand {
 		COMMAND+="--exclude-from='$LOCAL_IGNORE_FILE' "
 	fi
 
-	COMMAND+="--rsh ssh ./ $REMOTE_MACHINE:$PROJECT_DIR_ON_REMOTE_MACHINE"
+	COMMAND+="--rsh ssh ./ $REMOTE_MACHINE:'$PROJECT_DIR_ON_REMOTE_MACHINE'"
 
 	eval "$COMMAND"
 
@@ -99,7 +99,7 @@ function executeRemoteCommand {
 	startTime="$(date +%s)"
 
 	set +e
-	if ssh "$REMOTE_MACHINE" "echo 'set -e && cd \"$PROJECT_DIR_ON_REMOTE_MACHINE\" && $REMOTE_COMMAND' | bash" ; then
+	if ssh "$REMOTE_MACHINE" "echo 'set -e && cd '$PROJECT_DIR_ON_REMOTE_MACHINE' && $REMOTE_COMMAND' | bash" ; then
 		REMOTE_COMMAND_SUCCESSFUL="true"
 	fi
 	set -e
@@ -132,7 +132,7 @@ function syncAfterRemoteCommand {
 		COMMAND+="--exclude-from='$REMOTE_IGNORE_FILE' "
 	fi
 
-	COMMAND+="--rsh ssh $REMOTE_MACHINE:$PROJECT_DIR_ON_REMOTE_MACHINE/ ./"
+	COMMAND+="--rsh ssh $REMOTE_MACHINE:'$PROJECT_DIR_ON_REMOTE_MACHINE'/ ./"
 	eval "$COMMAND"
 
 	endTime="$(date +%s)"
