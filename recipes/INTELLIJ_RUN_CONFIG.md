@@ -20,7 +20,7 @@ Tip: you can override default run configuration options to to run tasks through 
 
 ---
 
-Follow [mainframer IntelliJ Plugin development](#125).
+Follow [mainframer IntelliJ Plugin development](https://github.com/gojuno/mainframer/issues/125).
 
 ### Performance Optimizations
 
