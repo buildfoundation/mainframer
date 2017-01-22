@@ -74,7 +74,7 @@ function syncBeforeRemoteCommand {
 	echo "Sync local → remote machine..."
 	startTime="$(date +%s)"
 
-	COMMAND="rsync --archive --delete --rsync-path=\"mkdir -p '$PROJECT_DIR_ON_REMOTE_MACHINE' && rsync\" --compress-level=$LOCAL_COMPRESS_LEVEL "
+	COMMAND="rsync --archive --delete --rsync-path=\"mkdir -p \"$PROJECT_DIR_ON_REMOTE_MACHINE\" && rsync\" --compress-level=$LOCAL_COMPRESS_LEVEL "
 
 	if [ -f "$COMMON_IGNORE_FILE" ]; then
 		COMMAND+="--exclude-from='$COMMON_IGNORE_FILE' "
