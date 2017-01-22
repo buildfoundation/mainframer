@@ -19,9 +19,9 @@ set -e
 echo ":: mainframer v2.0.0-dev"
 echo ""
 
-START_TIME=`date +%s`
+START_TIME="$(date +%s)"
 
-PROJECT_DIR="`pwd`"
+PROJECT_DIR="$(pwd)"
 PROJECT_DIR_NAME="$( basename "$PROJECT_DIR" )"
 PROJECT_DIR_ON_REMOTE_MACHINE="~/mainframer/$PROJECT_DIR_NAME"
 
@@ -39,7 +39,7 @@ REMOTE_MACHINE_CONFIG_PROPERTY="remote_machine"
 LOCAL_COMPRESS_LEVEL_CONFIG_PROPERTY="local_compression_level"
 REMOTE_COMPRESS_LEVEL_CONFIG_PROPERTY="remote_compression_level"
 
-if [ ! -f $CONFIG_FILE ]; then
+if [ ! -f "$CONFIG_FILE" ]; then
 	echo "Please create and fill $CONFIG_FILE."
 	exit 1
 fi
@@ -62,7 +62,7 @@ if [ -z "$REMOTE_COMPRESS_LEVEL" ]; then
 fi
 
 
-REMOTE_COMMAND="$@"
+REMOTE_COMMAND="$*"
 REMOTE_COMMAND_SUCCESSFUL="false"
 
 if [ -z "$REMOTE_COMMAND" ]; then
@@ -72,7 +72,7 @@ fi
 
 function syncBeforeRemoteCommand {
 	echo "Sync local → remote machine..."
-	startTime=`date +%s`
+	startTime="$(date +%s)"
 
 	COMMAND="rsync --archive --delete --rsync-path=\"mkdir -p \"$PROJECT_DIR_ON_REMOTE_MACHINE\" && rsync\" --compress-level=$LOCAL_COMPRESS_LEVEL "
 
@@ -84,34 +84,35 @@ function syncBeforeRemoteCommand {
 		COMMAND+="--exclude-from='$LOCAL_IGNORE_FILE' "
 	fi
 
-	COMMAND+="--rsh ssh ./ $REMOTE_MACHINE:$PROJECT_DIR_ON_REMOTE_MACHINE"
+	COMMAND+="--rsh ssh ./ $REMOTE_MACHINE:'$PROJECT_DIR_ON_REMOTE_MACHINE'"
 
 	eval "$COMMAND"
 
-	endTime=`date +%s`
-	echo "Sync done: took `expr $endTime - $startTime` seconds."
+	endTime="$(date +%s)"
+	echo "Sync done: took $((endTime-startTime)) seconds."
 	echo ""
 }
 
 function executeRemoteCommand {
 	echo "Executing command on remote machine…"
 	echo ""
-	startTime=`date +%s`
+	startTime="$(date +%s)"
 
 	set +e
-	ssh $REMOTE_MACHINE "echo 'set -e && cd $PROJECT_DIR_ON_REMOTE_MACHINE && echo \"$REMOTE_COMMAND\" && $REMOTE_COMMAND' | bash"
-	if [ "$?" == "0" ]; then
+	if ssh $REMOTE_MACHINE "echo 'set -e && cd $PROJECT_DIR_ON_REMOTE_MACHINE && echo \"$REMOTE_COMMAND\" && $REMOTE_COMMAND' | bash" ; then
 		REMOTE_COMMAND_SUCCESSFUL="true"
 	fi
 	set -e
 
-	endTime=`date +%s`
+	endTime="$(date +%s)"
 	echo ""
 
+	duration="$((endTime-startTime))"
+
 	if [ "$REMOTE_COMMAND_SUCCESSFUL" == "true" ]; then
-		echo "Execution done: took `expr $endTime - $startTime` seconds."
+		echo "Execution done: took $duration seconds."
 	else
-		echo "Execution failed: took `expr $endTime - $startTime` seconds."
+		echo "Execution failed: took $duration seconds."
 	fi
 
 	echo ""
@@ -119,7 +120,7 @@ function executeRemoteCommand {
 
 function syncAfterRemoteCommand {
 	echo "Sync remote → local machine…"
-	startTime=`date +%s`
+	startTime="$(date +%s)"
 
 	COMMAND="rsync --archive --delete --compress-level=$REMOTE_COMPRESS_LEVEL "
 
@@ -131,11 +132,11 @@ function syncAfterRemoteCommand {
 		COMMAND+="--exclude-from='$REMOTE_IGNORE_FILE' "
 	fi
 
-	COMMAND+="--rsh ssh $REMOTE_MACHINE:$PROJECT_DIR_ON_REMOTE_MACHINE/ ./"
+	COMMAND+="--rsh ssh $REMOTE_MACHINE:'$PROJECT_DIR_ON_REMOTE_MACHINE'/ ./"
 	eval "$COMMAND"
 
-	endTime=`date +%s`
-	echo "Sync done: took `expr $endTime - $startTime` seconds."
+	endTime="$(date +%s)"
+	echo "Sync done: took $((endTime-startTime)) seconds."
 }
 
 pushd "$PROJECT_DIR" > /dev/null
@@ -146,12 +147,14 @@ syncAfterRemoteCommand
 
 popd > /dev/null
 
-FINISH_TIME=`date +%s`
+FINISH_TIME="$(date +%s)"
 echo ""
 
+DURATION="$((FINISH_TIME-START_TIME))"
+
 if [ "$REMOTE_COMMAND_SUCCESSFUL" == "true" ]; then
-	echo "Success: took `expr $FINISH_TIME - $START_TIME` seconds."
+	echo "Success: took $DURATION seconds."
 else
-	echo "Failure: took `expr $FINISH_TIME - $START_TIME` seconds."
+	echo "Failure: took $DURATION seconds."
 	exit 1
 fi

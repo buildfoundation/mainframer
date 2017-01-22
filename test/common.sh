@@ -13,7 +13,8 @@ DIR_NAME="$( basename "$DIR")"
 TEST_REMOTE_MACHINE="localhost"
 
 PRIVATE_BUILD_DIR_NAME="run"
-PRIVATE_REMOTE_BUILD_DIR="~/mainframer/$PRIVATE_BUILD_DIR_NAME"
+PRIVATE_REMOTE_BUILD_ROOT_DIR="~/mainframer"
+PRIVATE_REMOTE_BUILD_DIR="$PRIVATE_REMOTE_BUILD_ROOT_DIR/$PRIVATE_BUILD_DIR_NAME"
 
 # Should be used by tests.
 REPO_DIR="$DIR/.."
@@ -41,7 +42,7 @@ function cleanBuildDirOnLocalMachine {
 }
 
 function cleanMainfamerDirOnRemoteMachine {
-	ssh "$TEST_REMOTE_MACHINE" "rm -rf $PRIVATE_REMOTE_BUILD_DIR"
+	ssh "$TEST_REMOTE_MACHINE" "rm -rf $PRIVATE_REMOTE_BUILD_ROOT_DIR"
 }
 
 function fileMustExistOnLocalMachine {

@@ -15,3 +15,7 @@ Or any other Gradle task you want, btw it integrates with IntelliJ pretty easily
 ### Requirements
 
 JDK 6+ installed on remote machine.
+
+### Recipes
+
+* [IntelliJ Run Config Recipe](../../recipes/INTELLIJ_RUN_CONFIG.md)
