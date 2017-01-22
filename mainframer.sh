@@ -74,7 +74,7 @@ function syncBeforeRemoteCommand {
 	echo "Sync local → remote machine..."
 	startTime="$(date +%s)"
 
-	COMMAND="rsync --archive --delete --rsync-path=\"mkdir -p \"$PROJECT_DIR_ON_REMOTE_MACHINE\" && rsync\" --compress-level=$LOCAL_COMPRESS_LEVEL "
+	COMMAND="rsync --archive --delete --rsync-path=\"mkdir -p '$PROJECT_DIR_ON_REMOTE_MACHINE' && rsync\" --compress-level=$LOCAL_COMPRESS_LEVEL "
 
 	if [ -f "$COMMON_IGNORE_FILE" ]; then
 		COMMAND+="--exclude-from='$COMMON_IGNORE_FILE' "
@@ -84,7 +84,7 @@ function syncBeforeRemoteCommand {
 		COMMAND+="--exclude-from='$LOCAL_IGNORE_FILE' "
 	fi
 
-	COMMAND+="--rsh ssh ./ $REMOTE_MACHINE:$PROJECT_DIR_ON_REMOTE_MACHINE"
+	COMMAND+="--rsh ssh ./ $REMOTE_MACHINE:'$PROJECT_DIR_ON_REMOTE_MACHINE'"
 
 	eval "$COMMAND"
 
@@ -99,7 +99,7 @@ function executeRemoteCommand {
 	startTime="$(date +%s)"
 
 	set +e
-	if ssh "$REMOTE_MACHINE" "echo 'set -e && cd $PROJECT_DIR_ON_REMOTE_MACHINE && $REMOTE_COMMAND' | bash" ; then
+	if ssh "$REMOTE_MACHINE" "echo 'set -e && cd '$PROJECT_DIR_ON_REMOTE_MACHINE' && $REMOTE_COMMAND' | bash" ; then
 		REMOTE_COMMAND_SUCCESSFUL="true"
 	fi
 	set -e
@@ -132,7 +132,7 @@ function syncAfterRemoteCommand {
 		COMMAND+="--exclude-from='$REMOTE_IGNORE_FILE' "
 	fi
 
-	COMMAND+="--rsh ssh $REMOTE_MACHINE:$PROJECT_DIR_ON_REMOTE_MACHINE/ ./"
+	COMMAND+="--rsh ssh $REMOTE_MACHINE:'$PROJECT_DIR_ON_REMOTE_MACHINE'/ ./"
 	eval "$COMMAND"
 
 	endTime="$(date +%s)"
