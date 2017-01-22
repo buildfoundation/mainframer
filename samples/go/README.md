@@ -17,3 +17,7 @@ To properly export `GOPATH` env variable on remote machine we use `eval`.
 ### Requirements
 
 Go tools installed on remote machine.
+
+### Recipes
+
+* [IntelliJ/Gogland Run Config Recipe](../../recipes/INTELLIJ_RUN_CONFIG.md)
