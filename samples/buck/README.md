@@ -16,3 +16,7 @@ Or any other Buck task you want, btw it integrates with IntelliJ pretty easily! 
 
 * Buck installed on remote machine.
 * JDK 8+ installed on remote machine.
+
+### Recipes
+
+* [IntelliJ Run Config Recipe](../../recipes/INTELLIJ_RUN_CONFIG.md)
