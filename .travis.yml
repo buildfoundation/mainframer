@@ -12,6 +12,7 @@ before_install:
   - ssh-keyscan -t rsa localhost > ~/.ssh/known_hosts
   - chmod u+rw,go= ~/.ssh/known_hosts
   # Tool to find issues in shell scripts.
+  - sudo add-apt-repository ppa:ubuntu/shellcheck
   - sudo apt-get install shellcheck
   # Install dependencies for sample projects.
   ## Gradle, Maven, Buck.
