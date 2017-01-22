@@ -17,3 +17,7 @@ Or any other Maven goal you want, btw it integrates with IntelliJ pretty easily!
 JDK 6+ installed on remote machine.
 
 BTW, Maven users, we strongly recommend you use [Maven Wrapper](https://github.com/takari/maven-wrapper) so remote machine will install required version of `mvn` transparently. 
+
+### Recipes
+
+* [IntelliJ Run Config Recipe](../../recipes/INTELLIJ_RUN_CONFIG.md)
