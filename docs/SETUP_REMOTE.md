@@ -1,6 +1,6 @@
 # Remote Machine Setup
 
-## Required Dependencies
+## Dependencies
 
 * SSH Server
 * rsync
