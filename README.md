@@ -5,7 +5,8 @@ Script that allows you to move build process from a local machine to a remote on
 Remote machine ought to be much faster than a laptop. 
 With `mainframer` you can free up your local machine for better things —
 like editing source code in your IDE without lags and
-freezes, being able to actually _use_ your computer when the build is happening.
+freezes, getting those *"Up to 10 hours of battery life"*, 
+being able to actually _use_ your computer when the build is happening.
 
 ## Supported Actions
 
