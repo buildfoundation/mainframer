@@ -1,5 +1,9 @@
 ## Sample Gradle Android project
 
+## Demo
+
+[![Video](demo.png)](https://youtu.be/xysQXMaPaGw "mainframer Android Sample")
+
 Most interesting for you here is not the source code, but configs in [`.mainframer`](.mainframer) folder.
 
 This is a very common setup for basically any Gradle Android project (including multimodule), but of course you might need to tune some ignore configs for your project.
