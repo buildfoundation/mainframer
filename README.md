@@ -31,13 +31,13 @@ We have quite a bunch of samples showing off some practical applications.
 
 ## Demo
 
-```
+```console
 # Local execution.
-[~] → uname -nms
+$ uname -nms
 Darwin MacBook-Pro.local x86_64
 
 # Remote execution.
-[~] → bash mainframer.sh uname -nms
+$ bash mainframer.sh uname -nms
 :: mainframer v2.0.0
 
 Sync local → remote machine...
