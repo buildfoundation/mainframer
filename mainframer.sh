@@ -96,12 +96,10 @@ function syncBeforeRemoteCommand {
 function executeRemoteCommand {
 	echo "Executing command on remote machine…"
 	echo ""
-	echo "$REMOTE_COMMAND"
-	echo ""
 	startTime="$(date +%s)"
 
 	set +e
-	if ssh "$REMOTE_MACHINE" "echo 'set -e && cd '$PROJECT_DIR_ON_REMOTE_MACHINE' && $REMOTE_COMMAND' | bash" ; then
+	if ssh "$REMOTE_MACHINE" "echo 'set -e && cd '$PROJECT_DIR_ON_REMOTE_MACHINE' && echo \"$REMOTE_COMMAND\" && echo "" && $REMOTE_COMMAND' | bash" ; then
 		REMOTE_COMMAND_SUCCESSFUL="true"
 	fi
 	set -e
