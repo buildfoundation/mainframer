@@ -96,6 +96,8 @@ Note: it doesn’t work very well with Unit tests and it’s actually flaky at t
 $ ./gradlew :app:assembleDebug -Pkotlin.incremental=true
 ```
 
-# Protips
+# Tips
 
-* [Auto-download missing Android SDK packages](https://developer.android.com/studio/intro/update.html#download-with-gradle) on remote machine.
+## Auto-download missing Android SDK packages on remote machine
+
+See https://developer.android.com/studio/intro/update.html#download-with-gradle.
