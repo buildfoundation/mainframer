@@ -95,3 +95,9 @@ Note: it doesn’t work very well with Unit tests and it’s actually flaky at t
 ```
 $ ./gradlew :app:assembleDebug -Pkotlin.incremental=true
 ```
+
+# Tips
+
+## Auto-download missing Android SDK packages on remote machine
+
+See https://developer.android.com/studio/intro/update.html#download-with-gradle.
