@@ -31,29 +31,7 @@ We have quite a bunch of samples showing off some practical applications.
 
 ## Demo
 
-```console
-# Local execution.
-$ uname -nms
-Darwin MacBook-Pro.local x86_64
-
-# Remote execution.
-$ bash mainframer.sh uname -nms
-:: mainframer v2.0.0
-
-Sync local → remote machine...
-Sync done: took 2 seconds.
-
-Executing build on remote machine…
-
-Linux CI.remote x86_64
-
-Execution done: took 0 seconds.
-
-Sync remote → local machine…
-Sync done: took 2 seconds.
-
-Done: took 4 seconds.
-```
+[![asciicast demo](samples/demo.png)](https://asciinema.org/a/101327)
 
 ## License
 
