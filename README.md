@@ -1,6 +1,6 @@
 # mainframer
 
-Script that allows you to move build process from a local machine to a remote one.
+Tool that allows you to move build process from a local machine to a remote one.
 
 Remote machine ought to be much faster than a laptop. 
 With `mainframer` you can free up your local machine for better things —
@@ -10,7 +10,7 @@ freezes, being able to actually _use_ your computer when the build is happening.
 ## Supported Actions
 
 `mainframer` supports basically anything you can execute as a command.
-The script will sync files to remote machine, execute a command and sync files back.
+It will sync files to remote machine, execute a command and sync files back.
 
 We have quite a bunch of samples showing off some practical applications.
 
