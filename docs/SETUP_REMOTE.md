@@ -33,7 +33,7 @@ If some tool require shell initialization scripts or special environment variabl
 
 Be sure to add all your configurations at the beginning of the file before this line :
 
-  ```
+  ```bash
   # If not running interactively, don't do anything
   ```
 
