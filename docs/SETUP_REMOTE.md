@@ -29,7 +29,7 @@ There are other options like a Docker container per person though.
 
 Install tools you need to perform remote processing.
 
-If some tool require shell initialization scripts or special environment variables you should add them to your ~/.bashrc or ~/.bash_profile file depending on your remote operating system.
+If some tool require shell initialization scripts or special environment variables you should add them to your `~/.bashrc` or `~/.bash_profile` file depending on your remote operating system.
 
 Be sure to add all your configurations at the beginning of the file before this line :
 
