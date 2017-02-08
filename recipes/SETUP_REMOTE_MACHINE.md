@@ -43,9 +43,9 @@ pushd "/home/$NEW_USER"
 
 # Setup ssh access.
 mkdir -p .ssh
-chmod +urwx,go= .ssh
+chmod u+rwx,go= .ssh
 echo "$AUTHORIZED_SSH_KEY" > .ssh/authorized_keys
-chmod +urw,go= .ssh/authorized_keys
+chmod u+rw,go= .ssh/authorized_keys
 
 # Example of adding env variable to user's ~/.bashrc.
 mv .bashrc .bashrc_original
