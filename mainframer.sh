@@ -70,6 +70,13 @@ if [ -z "$REMOTE_COMMAND" ]; then
 	exit 1
 fi
 
+function convertSecondsToTime {
+ ((h=${1}/3600))
+ ((m=(${1}%3600)/60))
+ ((s=${1}%60))
+ printf "%02d:%02d:%02d\n" $h $m $s
+}
+
 function syncBeforeRemoteCommand {
 	echo "Sync local → remote machine..."
 	startTime="$(date +%s)"
@@ -89,7 +96,7 @@ function syncBeforeRemoteCommand {
 	eval "$COMMAND"
 
 	endTime="$(date +%s)"
-	echo "Sync done: took $((endTime-startTime)) seconds."
+	echo "Sync done: took $(convertsecs $((endTime-startTime)))"
 	echo ""
 }
 
@@ -110,9 +117,9 @@ function executeRemoteCommand {
 	duration="$((endTime-startTime))"
 
 	if [ "$REMOTE_COMMAND_SUCCESSFUL" == "true" ]; then
-		echo "Execution done: took $duration seconds."
+		echo "Execution done: took $(convertsecs $duration)"
 	else
-		echo "Execution failed: took $duration seconds."
+		echo "Execution failed: took $(convertsecs $duration)"
 	fi
 
 	echo ""
@@ -136,7 +143,7 @@ function syncAfterRemoteCommand {
 	eval "$COMMAND"
 
 	endTime="$(date +%s)"
-	echo "Sync done: took $((endTime-startTime)) seconds."
+	echo "Sync done: took $(convertsecs $((endTime-startTime)))"
 }
 
 pushd "$PROJECT_DIR" > /dev/null
@@ -153,8 +160,8 @@ echo ""
 DURATION="$((FINISH_TIME-START_TIME))"
 
 if [ "$REMOTE_COMMAND_SUCCESSFUL" == "true" ]; then
-	echo "Success: took $DURATION seconds."
+	echo "Success: took $(convertsecs $DURATION)"
 else
-	echo "Failure: took $DURATION seconds."
+	echo "Failure: took $(convertsecs $DURATION)"
 	exit 1
 fi
