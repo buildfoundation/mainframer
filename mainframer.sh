@@ -34,9 +34,6 @@ REMOTE_IGNORE_FILE="$CONFIG_DIR/remoteignore"
  HOURS_TAG="hours"
  MINUTES_TAG="minutes"
  SECONDS_TAG="seconds"
- HOURS_FORMAT="%02d"
- MINUTES_FORMAT="%02d"
- SECONDS_FORMAT="%02d"
 
 function read_config_property {
     grep "^${1}=" "$CONFIG_FILE" | cut -d'=' -f2
@@ -85,24 +82,25 @@ function convertSecondsToTime {
     #Find out the time format and correct string.
     if [ "$h" -eq "1" ]; then
         HOURS_TAG="hour"
-        HOURS_FORMAT="%01d"
     fi
     if [ "$m" -eq "1" ]; then
         MINUTES_TAG="minute"
-        MINUTES_FORMAT="%01d"
     fi
     if [ "$s" -eq "1" ]; then
         SECONDS_TAG="second"
-        SECONDS_FORMAT="%01d"
     fi
 
      #Check if hour is 0, so it doesn't need to be shown.
-     if [ "$h" -eq "0" ]; then
-        # shellcheck disable=SC2059
-        printf "$MINUTES_FORMAT $MINUTES_TAG $SECONDS_FORMAT $SECONDS_TAG\n" ${m} ${s}
+     if [ "$h" -eq "0" ] && [ "$m" -eq "0" ]; then
+        printf "%d $SECONDS_TAG\n" ${s}
+     elif [ "$h" -eq "0" ]; then
+        printf "%d $MINUTES_TAG %d $SECONDS_TAG\n" ${m} ${s}
+     elif [ "$m" -eq "0" ]; then
+        printf "%d $HOURS_TAG %d $SECONDS_TAG\n" ${h} ${s}
+     elif [ "$s" -eq "0" ]; then
+        printf "%d $HOURS_TAG %d $MINUTES_TAG\n" ${h} ${m}
      else
-        # shellcheck disable=SC2059
-        printf "$HOURS_FORMAT $HOURS_TAG $MINUTES_FORMAT $MINUTES_TAG $SECONDS_FORMAT $SECONDS_TAG\n" ${h} ${m} ${s}
+        printf "%d $HOURS_TAG %d $MINUTES_TAG %d $SECONDS_TAG\n" ${h} ${m} ${s}
       fi
 }
 
