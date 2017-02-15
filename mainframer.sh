@@ -90,7 +90,7 @@ function convertSecondsToTime {
         SECONDS_TAG="second"
     fi
 
-     #Check if hour is 0, so it doesn't need to be shown.
+     #See if we can emit one of the time units, because it's 0.
      if [ "$h" -eq "0" ] && [ "$m" -eq "0" ]; then
         printf "%d $SECONDS_TAG\n" ${s}
      elif [ "$h" -eq "0" ]; then
