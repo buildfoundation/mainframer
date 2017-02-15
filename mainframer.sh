@@ -90,9 +90,9 @@ function formatTime {
         SECONDS_TAG="second"
     fi
 
-    (( $h > 0 )) && printf "%d $HOURS_TAG " ${h}
-    (( $m > 0 )) && printf "%d $MINUTES_TAG " ${m}
-    (( $s > 0 )) && printf "%d $SECONDS_TAG \n" ${s}
+    (( h > 0 )) && printf "%d $HOURS_TAG " ${h}
+    (( m > 0 )) && printf "%d $MINUTES_TAG " ${m}
+    (( s > 0 )) && printf "%d $SECONDS_TAG \n" ${s}
 }
 
 function syncBeforeRemoteCommand {
