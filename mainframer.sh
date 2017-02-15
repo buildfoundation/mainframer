@@ -31,9 +31,9 @@ COMMON_IGNORE_FILE="$CONFIG_DIR/ignore"
 LOCAL_IGNORE_FILE="$CONFIG_DIR/localignore"
 REMOTE_IGNORE_FILE="$CONFIG_DIR/remoteignore"
 
- HOURS_TAG="hours"
- MINUTES_TAG="minutes"
- SECONDS_TAG="seconds"
+HOURS_TAG="hours"
+MINUTES_TAG="minutes"
+SECONDS_TAG="seconds"
 
 function read_config_property {
     grep "^${1}=" "$CONFIG_FILE" | cut -d'=' -f2
@@ -74,7 +74,7 @@ if [ -z "$REMOTE_COMMAND" ]; then
 	exit 1
 fi
 
-function convertSecondsToTime {
+function formatTime {
     ((h=${1}/3600))
     ((m=(${1}%3600)/60))
     ((s=${1}%60))
@@ -90,18 +90,9 @@ function convertSecondsToTime {
         SECONDS_TAG="second"
     fi
 
-     #See if we can emit one of the time units, because it's 0.
-     if [ "$h" -eq "0" ] && [ "$m" -eq "0" ]; then
-        printf "%d $SECONDS_TAG\n" ${s}
-     elif [ "$h" -eq "0" ]; then
-        printf "%d $MINUTES_TAG %d $SECONDS_TAG\n" ${m} ${s}
-     elif [ "$m" -eq "0" ]; then
-        printf "%d $HOURS_TAG %d $SECONDS_TAG\n" ${h} ${s}
-     elif [ "$s" -eq "0" ]; then
-        printf "%d $HOURS_TAG %d $MINUTES_TAG\n" ${h} ${m}
-     else
-        printf "%d $HOURS_TAG %d $MINUTES_TAG %d $SECONDS_TAG\n" ${h} ${m} ${s}
-      fi
+    (( $h > 0 )) && printf "%d $HOURS_TAG " ${h}
+    (( $m > 0 )) && printf "%d $MINUTES_TAG " ${m}
+    (( $s > 0 )) && printf "%d $SECONDS_TAG \n" ${s}
 }
 
 function syncBeforeRemoteCommand {
@@ -123,7 +114,7 @@ function syncBeforeRemoteCommand {
 	eval "$COMMAND"
 
 	endTime="$(date +%s)"
-	echo "Sync done: took $(convertSecondsToTime $((endTime-startTime)))"
+	echo "Sync done: took $(formatTime $((endTime-startTime)))"
 	echo ""
 }
 
@@ -144,9 +135,9 @@ function executeRemoteCommand {
 	duration="$((endTime-startTime))"
 
 	if [ "$REMOTE_COMMAND_SUCCESSFUL" == "true" ]; then
-		echo "Execution done: took $(convertSecondsToTime $duration)"
+		echo "Execution done: took $(formatTime $duration)"
 	else
-		echo "Execution failed: took $(convertSecondsToTime $duration)"
+		echo "Execution failed: took $(formatTime $duration)"
 	fi
 
 	echo ""
@@ -170,7 +161,7 @@ function syncAfterRemoteCommand {
 	eval "$COMMAND"
 
 	endTime="$(date +%s)"
-	echo "Sync done: took $(convertSecondsToTime $((endTime-startTime)))"
+	echo "Sync done: took $(formatTime $((endTime-startTime)))"
 }
 
 pushd "$PROJECT_DIR" > /dev/null
@@ -187,8 +178,8 @@ echo ""
 DURATION="$((FINISH_TIME-START_TIME))"
 
 if [ "$REMOTE_COMMAND_SUCCESSFUL" == "true" ]; then
-	echo "Success: took $(convertSecondsToTime $DURATION)"
+	echo "Success: took $(formatTime $DURATION)"
 else
-	echo "Failure: took $(convertSecondsToTime $DURATION)"
+	echo "Failure: took $(formatTime $DURATION)"
 	exit 1
 fi
