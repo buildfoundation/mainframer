@@ -31,10 +31,6 @@ COMMON_IGNORE_FILE="$CONFIG_DIR/ignore"
 LOCAL_IGNORE_FILE="$CONFIG_DIR/localignore"
 REMOTE_IGNORE_FILE="$CONFIG_DIR/remoteignore"
 
-HOURS_TAG="hours"
-MINUTES_TAG="minutes"
-SECONDS_TAG="seconds"
-
 function read_config_property {
     grep "^${1}=" "$CONFIG_FILE" | cut -d'=' -f2
 }
@@ -75,24 +71,19 @@ if [ -z "$REMOTE_COMMAND" ]; then
 fi
 
 function formatTime {
-    ((h=${1}/3600))
-    ((m=(${1}%3600)/60))
-    ((s=${1}%60))
+    local time=$1
 
-    #Find out the time format and correct string.
-    if [ "$h" -eq "1" ]; then
-        HOURS_TAG="hour"
-    fi
-    if [ "$m" -eq "1" ]; then
-        MINUTES_TAG="minute"
-    fi
-    if [ "$s" -eq "1" ]; then
-        SECONDS_TAG="second"
-    fi
+    local hours=$((time/3600))
+    local minutes=$(((time % 3600) / 60))
+    local seconds=$((time % 60))
 
-    (( h > 0 )) && printf "%d $HOURS_TAG " ${h}
-    (( m > 0 )) && printf "%d $MINUTES_TAG " ${m}
-    (( s > 0 )) && printf "%d $SECONDS_TAG \n" ${s}
+    if [ "$hours" -eq "1" ]; then HOURS_LABEL="hour"; else HOURS_LABEL="hours"; fi
+    if [ "$minutes" -eq "1" ]; then MINUTES_LABEL="minute"; else MINUTES_LABEL="minutes"; fi
+    if [ "$seconds" -eq "1" ]; then SECONDS_LABEL="second"; else SECONDS_LABEL="seconds"; fi
+
+    (( hours > 0 )) && printf "%d $HOURS_LABEL " ${hours}
+    (( minutes > 0 )) && printf "%d $MINUTES_LABEL " ${minutes}
+    (( seconds > 0 )) && printf "%d $SECONDS_LABEL \n" ${seconds}
 }
 
 function syncBeforeRemoteCommand {
