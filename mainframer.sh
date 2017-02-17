@@ -73,7 +73,7 @@ fi
 function formatTime {
     local time=$1
 
-    local hours=$((time/3600))
+    local hours=$((time / 3600))
     local minutes=$(((time % 3600) / 60))
     local seconds=$((time % 60))
 
@@ -83,7 +83,7 @@ function formatTime {
 
     (( hours > 0 )) && printf "%d $HOURS_LABEL " ${hours}
     (( minutes > 0 )) && printf "%d $MINUTES_LABEL " ${minutes}
-    (( seconds > 0 )) && printf "%d $SECONDS_LABEL \n" ${seconds}
+    (( seconds >= 0 )) && printf "%d $SECONDS_LABEL \n" ${seconds}
 }
 
 function syncBeforeRemoteCommand {
