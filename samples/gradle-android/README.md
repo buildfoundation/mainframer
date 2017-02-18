@@ -39,7 +39,7 @@ Note: local Gradle sync is required sometimes because this is how Android Studio
 
 # Android Studio Configuration to Run JUnit tests
 
-1. `Run` → `Edit Configuration` → `Defaults` → `JUnit`.
+1. `Run` → `Edit Configuration` → `Defaults` → `Android JUnit`.
 * Remove default entry from `Before Launch` section.
 * Create a step in `Before Launch` section for `Run External Tool`.
   * Name: use something meaningful, like `remote compileDebugUnitTestSources`.
