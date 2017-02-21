@@ -16,7 +16,7 @@
 
 set -e
 
-echo ":: mainframer v2.0.0"
+echo ":: mainframer v2.1.0"
 echo ""
 
 START_TIME="$(date +%s)"
