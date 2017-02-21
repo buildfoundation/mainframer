@@ -31,8 +31,8 @@ COMMON_IGNORE_FILE="$CONFIG_DIR/ignore"
 LOCAL_IGNORE_FILE="$CONFIG_DIR/localignore"
 REMOTE_IGNORE_FILE="$CONFIG_DIR/remoteignore"
 
-function read_config_property {
-    grep "^${1}=" "$CONFIG_FILE" | cut -d'=' -f2
+function readConfigProperty {
+	grep "^${1}=" "$CONFIG_FILE" | cut -d'=' -f2
 }
 
 REMOTE_MACHINE_CONFIG_PROPERTY="remote_machine"
@@ -44,9 +44,9 @@ if [ ! -f "$CONFIG_FILE" ]; then
 	exit 1
 fi
 
-REMOTE_MACHINE=$(read_config_property "$REMOTE_MACHINE_CONFIG_PROPERTY")
-LOCAL_COMPRESS_LEVEL=$(read_config_property "$LOCAL_COMPRESS_LEVEL_CONFIG_PROPERTY")
-REMOTE_COMPRESS_LEVEL=$(read_config_property "$REMOTE_COMPRESS_LEVEL_CONFIG_PROPERTY")
+REMOTE_MACHINE=$(readConfigProperty "$REMOTE_MACHINE_CONFIG_PROPERTY")
+LOCAL_COMPRESS_LEVEL=$(readConfigProperty "$LOCAL_COMPRESS_LEVEL_CONFIG_PROPERTY")
+REMOTE_COMPRESS_LEVEL=$(readConfigProperty "$REMOTE_COMPRESS_LEVEL_CONFIG_PROPERTY")
 
 if [ -z "$REMOTE_MACHINE" ]; then
 	echo "Please specify \"$REMOTE_MACHINE_CONFIG_PROPERTY\" in $CONFIG_FILE."
@@ -71,19 +71,19 @@ if [ -z "$REMOTE_COMMAND" ]; then
 fi
 
 function formatTime {
-    local time=$1
+	local time=$1
 
-    local hours=$((time / 3600))
-    local minutes=$(((time % 3600) / 60))
-    local seconds=$((time % 60))
+	local hours=$((time / 3600))
+	local minutes=$(((time % 3600) / 60))
+	local seconds=$((time % 60))
 
-    if [ "$hours" -eq "1" ]; then HOURS_LABEL="hour"; else HOURS_LABEL="hours"; fi
-    if [ "$minutes" -eq "1" ]; then MINUTES_LABEL="minute"; else MINUTES_LABEL="minutes"; fi
-    if [ "$seconds" -eq "1" ]; then SECONDS_LABEL="second"; else SECONDS_LABEL="seconds"; fi
+	if [ "$hours" -eq "1" ]; then HOURS_LABEL="hour"; else HOURS_LABEL="hours"; fi
+	if [ "$minutes" -eq "1" ]; then MINUTES_LABEL="minute"; else MINUTES_LABEL="minutes"; fi
+	if [ "$seconds" -eq "1" ]; then SECONDS_LABEL="second"; else SECONDS_LABEL="seconds"; fi
 
-    (( hours > 0 )) && printf "%d $HOURS_LABEL " ${hours}
-    (( minutes > 0 )) && printf "%d $MINUTES_LABEL " ${minutes}
-    (( seconds >= 0 )) && printf "%d $SECONDS_LABEL \n" ${seconds}
+	(( hours > 0 )) && printf "%d $HOURS_LABEL " ${hours}
+	(( minutes > 0 )) && printf "%d $MINUTES_LABEL " ${minutes}
+	(( seconds >= 0 )) && printf "%d $SECONDS_LABEL \n" ${seconds}
 }
 
 function syncBeforeRemoteCommand {
