@@ -27,7 +27,7 @@ We have quite a bunch of samples showing off some practical applications.
 
 * [Remote machine](docs/SETUP_REMOTE.md)
 * [Local machine](docs/SETUP_LOCAL.md)
-* [Options](docs/OPTIONS.md)
+* [Configuration](docs/CONFIGURATION.md)
 
 ## Demo
 
