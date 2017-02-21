@@ -24,10 +24,18 @@ There are other options like a Docker container per person though.
   $ echo {SSH_KEY} >> ~/.ssh/authorized_keys
   $ chmod u+rw,go= ~/.ssh
   ```
-  
+
 ## Environment
 
 Install tools you need to perform remote processing.
+
+If some tool requires shell initialization scripts or special environment variables, you should add them to your `~/.bashrc` or `~/.bash_profile` file depending on your remote operating system.
+
+Be sure to add all your configurations at the beginning of the file before this line :
+
+  ```bash
+  # If not running interactively, don't do anything
+  ```
 
 ## Recipe
 
