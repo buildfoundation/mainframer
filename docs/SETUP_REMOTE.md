@@ -29,13 +29,14 @@ There are other options like a Docker container per person though.
 
 Install tools you need to perform remote processing.
 
-If some tool requires shell initialization scripts or special environment variables, you should add them to your `~/.bashrc` or `~/.bash_profile` file depending on your remote operating system.
+If a build system requires Shell initialization scripts or special environment variables,
+you should place them to your `~/.bashrc` or `~/.bash_profile` file depending on your remote OS.
+Be careful, some Bash configurations do block config evaluation when detecting non-interactive mode.
+In such case, you should place your declarations before the blocking instruction such as the following one.
 
-Be sure to add all your configurations at the beginning of the file before this line :
-
-  ```bash
-  # If not running interactively, don't do anything
-  ```
+```bash
+# If not running interactively, don't do anything
+```
 
 ## Recipe
 
