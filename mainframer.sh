@@ -83,7 +83,7 @@ function formatTime {
 
 	(( hours > 0 )) && printf "%d $HOURS_LABEL " ${hours}
 	(( minutes > 0 )) && printf "%d $MINUTES_LABEL " ${minutes}
-	(( seconds >= 0 )) && printf "%d $SECONDS_LABEL \n" ${seconds}
+	(( seconds >= 0 )) && printf "%d $SECONDS_LABEL" ${seconds}
 }
 
 function syncBeforeRemoteCommand {
@@ -105,7 +105,7 @@ function syncBeforeRemoteCommand {
 	eval "$COMMAND"
 
 	endTime="$(date +%s)"
-	echo "Sync done: took $(formatTime $((endTime-startTime)))"
+	echo "Sync done: took $(formatTime $((endTime-startTime)))."
 	echo ""
 }
 
@@ -126,9 +126,9 @@ function executeRemoteCommand {
 	duration="$((endTime-startTime))"
 
 	if [ "$REMOTE_COMMAND_SUCCESSFUL" == "true" ]; then
-		echo "Execution done: took $(formatTime $duration)"
+		echo "Execution done: took $(formatTime $duration)."
 	else
-		echo "Execution failed: took $(formatTime $duration)"
+		echo "Execution failed: took $(formatTime $duration)."
 	fi
 
 	echo ""
@@ -152,7 +152,7 @@ function syncAfterRemoteCommand {
 	eval "$COMMAND"
 
 	endTime="$(date +%s)"
-	echo "Sync done: took $(formatTime $((endTime-startTime)))"
+	echo "Sync done: took $(formatTime $((endTime-startTime)))."
 }
 
 pushd "$PROJECT_DIR" > /dev/null
@@ -169,8 +169,8 @@ echo ""
 DURATION="$((FINISH_TIME-START_TIME))"
 
 if [ "$REMOTE_COMMAND_SUCCESSFUL" == "true" ]; then
-	echo "Success: took $(formatTime $DURATION)"
+	echo "Success: took $(formatTime $DURATION)."
 else
-	echo "Failure: took $(formatTime $DURATION)"
+	echo "Failure: took $(formatTime $DURATION)."
 	exit 1
 fi
