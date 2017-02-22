@@ -83,7 +83,7 @@ function formatTime {
 
 	(( hours > 0 )) && printf "%d $HOURS_LABEL " ${hours}
 	(( minutes > 0 )) && printf "%d $MINUTES_LABEL " ${minutes}
-	(( seconds >= 0 )) && printf "%d $SECONDS_LABEL \n" ${seconds}
+	(( seconds >= 0 )) && printf "%d $SECONDS_LABEL" ${seconds}
 }
 
 function syncBeforeRemoteCommand {
