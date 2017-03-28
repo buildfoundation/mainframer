@@ -31,7 +31,7 @@ Install tools you need to perform remote processing.
 
 If a build system requires Shell initialization scripts or special **environment variables**,
 you should place them to your `~/.bashrc` or `~/.bash_profile` file depending on your remote OS.
-Be careful, some Bash configurations stop config evaluation when non-interactive mode is detected (mainframer runs ssh in non-interactive mode).
+Be careful, some Bash configurations stop config evaluation when non-interactive mode is detected (mainframer runs SSH in non-interactive mode).
 In such a case, you should place your declarations before the `stop` instruction such as the following one.
 
 ```bash
