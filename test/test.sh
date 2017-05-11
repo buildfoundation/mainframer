@@ -24,9 +24,6 @@ echo "Checking for syntax errors…"
 bash -n "$DIR/../mainframer.sh"
 TEST_COUNTER=$((TEST_COUNTER+1))
 
-echo "Running shellcheck…"
-shellcheck --exclude SC2088 --exclude SC2029 "$DIR/../mainframer.sh"
-TEST_COUNTER=$((TEST_COUNTER+1))
 echo "Done, running tests…"
 
 # Run all tests.

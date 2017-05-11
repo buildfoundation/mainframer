@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # See https://denibertovic.com/posts/handling-permissions-with-docker-volumes/
 
@@ -13,6 +14,9 @@ useradd --shell /bin/bash --uid $USER_ID --gid $USER_ID --comment "User for cont
 
 # Grant build_user access to Android SDK.
 chown -R build_user:build_user $ANDROID_HOME
+
+# Start ssh server for tests.
+service ssh status && service ssh start
 
 # Run original docker run command as build_user.
 sudo --set-home --preserve-env -u build_user "$@"
