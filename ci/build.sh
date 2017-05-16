@@ -13,8 +13,15 @@ trap 'rm "$PROJECT_DIR/Dockerfile" && rm "$PROJECT_DIR/.dockerignore"' EXIT
 
 pushd "$PROJECT_DIR"
 
+# Files created in mounted volume by container should have same owner as host machine user to prevent chmod problems.
+USER_ID=`id -u $USER`
+
+if [ "$USER_ID" == "0" ]; then
+    echo "Warning: running as r00t."
+fi
+
 # Run shellcheck.
-docker run --rm --env SHELLCHECK_OPTS="--exclude SC2088" --volume `"pwd"`:/scripts koalaman/shellcheck:v0.4.6 /scripts/mainframer.sh
+docker run --rm --env SHELLCHECK_OPTS="--exclude SC2088" --volume `"pwd"`:/scripts:ro koalaman/shellcheck:v0.4.6 /scripts/mainframer.sh
 
 docker build -t mainframer:latest .
 
@@ -39,6 +46,7 @@ BUILD_COMMAND+="bash /opt/project/test/test.sh --run-samples"
 docker run \
 --rm \
 --volume `"pwd"`:/opt/project \
+--env LOCAL_USER_ID="$USER_ID" \
 mainframer:latest \
 bash -c "$BUILD_COMMAND"
 
