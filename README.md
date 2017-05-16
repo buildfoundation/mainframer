@@ -33,6 +33,14 @@ We have quite a bunch of samples showing off some practical applications.
 
 [![asciicast demo](samples/demo.png)](https://asciinema.org/a/101327)
 
+### How to build (for contributors)
+
+Dependencies: you only need `docker` and `bash` installed on your machine.
+
+```console
+bash ci/build.sh
+```
+
 ## License
 
 ```
