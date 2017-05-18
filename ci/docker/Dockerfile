@@ -23,10 +23,10 @@ ENV PATH ${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}
 ENV ANDROID_SDK_INSTALL_COMPONENT "echo \"y\" | \"$ANDROID_HOME\"/tools/bin/sdkmanager --verbose"
 
 RUN mkdir -p $ANDROID_HOME && \
-	curl https://dl.google.com/android/repository/$ANDROID_SDK_FILE_NAME --progress-bar --location --output $ANDROID_SDK_FILE_NAME && \
-	unzip $ANDROID_SDK_FILE_NAME -d $ANDROID_HOME && \
-	rm $ANDROID_SDK_FILE_NAME && \
-	eval $ANDROID_SDK_INSTALL_COMPONENT '"tools"' && \
+    curl https://dl.google.com/android/repository/$ANDROID_SDK_FILE_NAME --progress-bar --location --output $ANDROID_SDK_FILE_NAME && \
+    unzip $ANDROID_SDK_FILE_NAME -d $ANDROID_HOME && \
+    rm $ANDROID_SDK_FILE_NAME && \
+    eval $ANDROID_SDK_INSTALL_COMPONENT '"tools"' && \
     eval $ANDROID_SDK_INSTALL_COMPONENT '"platform-tools"' && \
     eval $ANDROID_SDK_INSTALL_COMPONENT '"build-tools;25.0.2"' && \
     eval $ANDROID_SDK_INSTALL_COMPONENT '"platforms;android-25"'
