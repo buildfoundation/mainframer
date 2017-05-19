@@ -87,7 +87,7 @@ function formatTime {
 }
 
 function syncBeforeRemoteCommand {
-	echo "Sync local → remote machine…"
+	echo "Sync local → remote machine..."
 	startTime="$(date +%s)"
 
 	COMMAND="rsync --archive --delete --rsync-path=\"mkdir -p \"$PROJECT_DIR_ON_REMOTE_MACHINE\" && rsync\" --compress-level=$LOCAL_COMPRESS_LEVEL "
@@ -110,7 +110,7 @@ function syncBeforeRemoteCommand {
 }
 
 function executeRemoteCommand {
-	echo "Executing command on remote machine…"
+	echo "Executing command on remote machine..."
 	echo ""
 	startTime="$(date +%s)"
 
@@ -135,7 +135,7 @@ function executeRemoteCommand {
 }
 
 function syncAfterRemoteCommand {
-	echo "Sync remote → local machine…"
+	echo "Sync remote → local machine..."
 	startTime="$(date +%s)"
 
 	COMMAND="rsync --archive --delete --compress-level=$REMOTE_COMPRESS_LEVEL "
