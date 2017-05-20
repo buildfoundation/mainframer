@@ -6,3 +6,5 @@ build/
 *.iml
 
 *.DS_STORE
+
+app/src/main/gen

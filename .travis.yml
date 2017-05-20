@@ -1,53 +1,11 @@
-language: generic
+# We use Docker → we need sudo.
+sudo: required
 
-before_install:
-  # Set up localhost as "remote machine".
-  - sudo apt-get update --quiet
-  - sudo apt-get install --quiet --yes openssh-server
-  - mkdir -p ~/.ssh/
-  - chmod u+rwx,go= ~/.ssh/
-  - ssh-keygen -b 2048 -t rsa -f ~/.ssh/id_rsa -q -N ""
-  - cp ~/.ssh/id_rsa.pub ~/.ssh/authorized_keys
-  - chmod u+rw,go= ~/.ssh/authorized_keys
-  - ssh-keyscan -t rsa localhost > ~/.ssh/known_hosts
-  - chmod u+rw,go= ~/.ssh/known_hosts
-  # Tool to find issues in shell scripts.
-  - wget http://ftp.debian.org/debian/pool/main/s/shellcheck/shellcheck_0.4.4-4_amd64.deb
-  - sudo dpkg -i shellcheck_0.4.4-4_amd64.deb
-  # Install dependencies for sample projects.
-  ## Gradle, Maven, Buck.
-  - jdk_switcher use oraclejdk8
-  - java -version && javac -version
-  ## Rust.
-  - sudo curl -sf -L https://static.rust-lang.org/rustup.sh | sh
-  ## Go.
-  - sudo apt-get install golang --quiet --yes
-  - mv ~/.bashrc ~/.bashrc_original && echo -e "export GOROOT=$GOROOT\n" > ~/.bashrc && cat ~/.bashrc_original >> ~/.bashrc && rm ~/.bashrc_original
-  ## Clang.
-  - sudo apt-get install clang --quiet --yes
-  ## GCC.
-  - sudo apt-get install build-essential --quiet --yes
-  ## Gradle Android.
-  - sudo apt-get install lib32stdc++6 lib32z1
-  - export ANDROID_HOME=/opt/android-sdk-linux && export ANDROID_SDK_FILE_NAME=android-sdk_r24.4.1-linux.tgz && export ANDROID_SDK_INSTALL_COMPONENT="echo \"y\" | \"$ANDROID_HOME\"/tools/android update sdk --no-ui --all --filter"
-  - mkdir -p "$ANDROID_HOME" && curl https://dl.google.com/android/$ANDROID_SDK_FILE_NAME --progress-bar --location --output $ANDROID_SDK_FILE_NAME && tar -xzf $ANDROID_SDK_FILE_NAME --directory /opt/
-  - eval "$ANDROID_HOME"/tools/android list sdk --all --no-ui --extended
-  - eval $ANDROID_SDK_INSTALL_COMPONENT "tools"
-  - eval $ANDROID_SDK_INSTALL_COMPONENT "platform-tools"
-  - eval $ANDROID_SDK_INSTALL_COMPONENT "build-tools-25.0.2"
-  - eval $ANDROID_SDK_INSTALL_COMPONENT "android-25"
-  - mv ~/.bashrc ~/.bashrc_original && echo -e "export ANDROID_HOME=$ANDROID_HOME\nJAVA_HOME=$JAVA_HOME" > ~/.bashrc && cat ~/.bashrc_original >> ~/.bashrc && rm ~/.bashrc_original
-  ## Buck.
-  - sudo apt-get install ant python git
-  - git clone https://github.com/facebook/buck.git
-  - cd buck
-  - git checkout v2016.11.11.01
-  - ant
-  - mv ~/.bashrc ~/.bashrc_original && echo -e "export PATH=$PATH:`pwd`/bin\n" > ~/.bashrc && cat ~/.bashrc_original >> ~/.bashrc && rm ~/.bashrc_original
-  - cd ..
+services:
+  - docker
 
 script:
-  - bash test/test.sh --run-samples
+  - bash ci/build.sh
 
 notifications:
   email: false

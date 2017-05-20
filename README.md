@@ -33,6 +33,14 @@ We have quite a bunch of samples showing off some practical applications.
 
 [![asciicast demo](samples/demo.png)](https://asciinema.org/a/101327)
 
+### How to Run Tests (for contributors)
+
+Dependencies: Bash, Docker.
+
+```console
+$ bash ci/build.sh
+```
+
 ## License
 
 ```
