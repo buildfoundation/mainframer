@@ -11,7 +11,7 @@ This is a very common setup for basically any Gradle Android project (including 
 ### How to build
 
 ```bash
-$ bash mainframer ./gradlew build
+$ ./mainframer ./gradlew build
 ```
 
 Or any other Gradle task you want, btw it integrates with Android Studio and IntelliJ pretty easily!

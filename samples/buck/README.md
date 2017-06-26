@@ -7,7 +7,7 @@ This is a very common setup for basically any Buck project (including multimodul
 ### How to build
 
 ```bash
-$ bash mainframer buck build sample
+$ ./mainframer buck build sample
 ```
 
 Or any other Buck task you want, btw it integrates with IntelliJ pretty easily! TODO add link to docs.
