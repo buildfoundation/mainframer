@@ -15,8 +15,8 @@ cp -a "$DIR/../samples/mvn/." "$BUILD_DIR"
 # Overwrite config to work with test remote machine.
 setTestRemoteMachineInConfig
 
-# Run mainframer.sh that builds Maven project.
-bash "$REPO_DIR"/mainframer.sh './mvnw clean package'
+# Run mainframer that builds Maven project.
+bash "$REPO_DIR"/mainframer './mvnw clean package'
 
 # Run jar to ensure that it was built fine.
 java -jar "$BUILD_DIR/target/sample-1.0.jar"

@@ -15,8 +15,8 @@ cp -a "$DIR/../samples/clang/." "$BUILD_DIR"
 # Overwrite config to work with test remote machine.
 setTestRemoteMachineInConfig
 
-# Run mainframer.sh that builds Clang project.
-bash "$REPO_DIR"/mainframer.sh 'clang sample.c -o sample'
+# Run mainframer that builds Clang project.
+bash "$REPO_DIR"/mainframer 'clang sample.c -o sample'
 
 # Run binary to ensure that it was built fine.
 eval "$BUILD_DIR/sample"

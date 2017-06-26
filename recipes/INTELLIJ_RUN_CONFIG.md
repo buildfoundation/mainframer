@@ -9,7 +9,7 @@
 * Create a step in `Before Launch` section for `Run External Tool`.
   * Name: use something meaningful, like `remote assembleDebug`.
   * Program: `bash`.
-  * Parameters: `mainframer.sh somebuildcommand with parameters` or any command you want\*.
+  * Parameters: `mainframer somebuildcommand with parameters` or any command you want\*.
   * Working directory: `$ProjectFileDir$`.
 
 This also works for tests, you can compile tests on remote machine and then IntelliJ will simply run compiled code on your local machine.

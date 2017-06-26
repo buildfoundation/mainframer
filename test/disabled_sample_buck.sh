@@ -15,8 +15,8 @@ cp -a "$DIR/../samples/buck/." "$BUILD_DIR"
 # Overwrite config to work with test remote machine.
 setTestRemoteMachineInConfig
 
-# Run mainframer.sh that builds Buck project.
-bash "$REPO_DIR"/mainframer.sh 'buck clean && buck build sample'
+# Run mainframer that builds Buck project.
+bash "$REPO_DIR"/mainframer 'buck clean && buck build sample'
 
 # Run jar to ensure that it was built fine.
 java -jar "$BUILD_DIR/buck-out/gen/sample/sample.jar"

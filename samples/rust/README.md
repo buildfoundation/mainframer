@@ -7,7 +7,7 @@ This is a very common setup for Rust project (Cargo), but of course you might ne
 ### How to build
 
 ```bash
-$ bash mainframer.sh cargo build
+$ bash mainframer cargo build
 ```
 
 Or any other Cargo task you want.

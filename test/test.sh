@@ -21,7 +21,7 @@ function printTestResults {
 trap printTestResults EXIT
 
 echo "Checking for syntax errors…"
-bash -n "$DIR/../mainframer.sh"
+bash -n "$DIR/../mainframer"
 TEST_COUNTER=$((TEST_COUNTER+1))
 
 echo "Done, running tests…"

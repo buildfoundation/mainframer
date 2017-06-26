@@ -9,9 +9,9 @@ source "$DIR/common.sh"
 
 printTestStarted
 
-# Run mainframer.sh that exits with error code on remote machine.
+# Run mainframer that exits with error code on remote machine.
 set +e
-bash "$REPO_DIR"/mainframer.sh 'exit 1'
+bash "$REPO_DIR"/mainframer 'exit 1'
 
 # Make sure mainframer also exits with error code.
 if [ "$?" == "0" ]; then

@@ -7,7 +7,7 @@ This is a very common setup for GCC project, but of course you might need to tun
 ### How to build
 
 ```bash
-$ bash mainframer.sh gcc -Wall sample.c -o sample
+$ bash mainframer gcc -Wall sample.c -o sample
 ```
 
 Or any other GCC build task you want.
