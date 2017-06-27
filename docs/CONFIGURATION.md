@@ -10,7 +10,7 @@ in the root directory of your project.
 │   ├── ignore
 │   ├── localignore
 │   └── remoteignore
-│── mainframer.sh
+│── mainframer
 └── your_project_files
 ```
 

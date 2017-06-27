@@ -15,8 +15,8 @@ touch "$BUILD_DIR/src/file1.txt"
 touch "$BUILD_DIR/src/file2.txt"
 touch "$BUILD_DIR/src/file3.txt"
 
-# Run mainframer.sh that basically noop except syncing.
-bash "$REPO_DIR"/mainframer.sh 'echo noop'
+# Run mainframer that basically noop except syncing.
+"$REPO_DIR"/mainframer 'echo noop'
 
 # Make sure files exist on remote machine after sync.
 fileMustExistOnRemoteMachine "src/file1.txt" "(sync problem)"

@@ -38,7 +38,7 @@ We have quite a bunch of samples showing off some practical applications.
 Dependencies: Bash, Docker.
 
 ```console
-$ bash ci/build.sh
+$ ci/build.sh
 ```
 
 ## License

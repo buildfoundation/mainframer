@@ -11,7 +11,7 @@ This is a very common setup for basically any Gradle Android project (including 
 ### How to build
 
 ```bash
-$ bash mainframer.sh ./gradlew build
+$ ./mainframer ./gradlew build
 ```
 
 Or any other Gradle task you want, btw it integrates with Android Studio and IntelliJ pretty easily!
@@ -30,7 +30,7 @@ Or any other Gradle task you want, btw it integrates with Android Studio and Int
 * Create a step in `Before Launch` section for `Run External Tool`.
   * Name: use something meaningful, like `remote assembleDebug`.
   * Program: `bash`.
-  * Parameters: `mainframer.sh ./gradlew :app:assembleDebug` or any command you want\*.
+  * Parameters: `mainframer ./gradlew :app:assembleDebug` or any command you want\*.
   * Working directory: `$ProjectFileDir$`.
 
 Note: local Gradle sync is required sometimes because this is how Android Studio determines resulting APK name even though we’ll build it on a remote machine.
@@ -44,11 +44,11 @@ Note: local Gradle sync is required sometimes because this is how Android Studio
 * Create a step in `Before Launch` section for `Run External Tool`.
   * Name: use something meaningful, like `remote compileDebugUnitTestSources`.
   * Program: `bash`.
-  * Parameters: `mainframer.sh ./gradlew compileDebugUnitTestSources mockableAndroidJar`
+  * Parameters: `mainframer ./gradlew compileDebugUnitTestSources mockableAndroidJar`
 (NOTE: Turning incremental kotlin compilation ON can lead to test run issues. Build Cache and Minimum SDK tunings are OK.).
   * Working directory: `$ProjectFileDir$`.
 2. Run required JUnit tests as usual.
-3. If tests are failing with configuration issues, run remote clean: `mainframer.sh ./gradlew clean`, then run Gradle sync locally and repeat step `2`.
+3. If tests are failing with configuration issues, run remote clean: `mainframer ./gradlew clean`, then run Gradle sync locally and repeat step `2`.
 
 ### Pro: Any Android Studio / IntelliJ Configuration / Run from Terminal
 

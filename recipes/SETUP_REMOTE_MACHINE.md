@@ -6,7 +6,7 @@ How to use:
 
 ```
 $ scp remote_machine_setup.sh root@remote-machine
-$ ssh root@remote-machine 'bash remote_machine_setup.sh new_user_name "new_user_ssh_public_key"'
+$ ssh root@remote-machine 'remote_machine_setup.sh new_user_name "new_user_ssh_public_key"'
 ```
 
 Content of `remote_machine_setup.sh`:

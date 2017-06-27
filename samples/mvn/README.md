@@ -7,7 +7,7 @@ This is a very common setup for basically any Maven project (including multimodu
 ### How to build
 
 ```bash
-$ bash mainframer.sh ./mvnw package
+$ ./mainframer ./mvnw package
 ```
 
 Or any other Maven goal you want, btw it integrates with IntelliJ pretty easily! TODO add link to docs.

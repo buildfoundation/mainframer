@@ -21,7 +21,7 @@ function printTestResults {
 trap printTestResults EXIT
 
 echo "Checking for syntax errors…"
-bash -n "$DIR/../mainframer.sh"
+bash -n "$DIR/../mainframer"
 TEST_COUNTER=$((TEST_COUNTER+1))
 
 echo "Done, running tests…"
@@ -29,14 +29,14 @@ echo "Done, running tests…"
 # Run all tests.
 for test_ in "$DIR"/test_*; do
 	TEST_COUNTER=$((TEST_COUNTER+1))
-	bash "$test_"
+	"$test_"
 done
 
 if [ "$1" == "--run-samples" ]; then
 	# Run all samples.
 	for sample_ in "$DIR"/sample_*; do
 		TEST_COUNTER=$((TEST_COUNTER+1))
-		bash "$sample_"
+		"$sample_"
 	done	
 fi
 

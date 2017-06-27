@@ -7,7 +7,7 @@ This is a very common setup for Clang project, but of course you might need to t
 ### How to build
 
 ```bash
-$ bash mainframer.sh clang sample.c -o sample
+$ ./mainframer clang sample.c -o sample
 ```
 
 Or any other Clang build task you want.

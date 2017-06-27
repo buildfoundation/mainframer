@@ -15,8 +15,8 @@ touch "$BUILD_DIR/src/file1.txt"
 touch "$BUILD_DIR/src/file2.txt"
 touch "$BUILD_DIR/src/file3.txt"
 
-# Run mainframer.sh that noops.
-bash "$REPO_DIR"/mainframer.sh 'echo noop'
+# Run mainframer that noops.
+"$REPO_DIR"/mainframer 'echo noop'
 
 # Make sure files STILL exist on local machine after execution.
 fileMustExistOnLocalMachine "src/file1.txt" "(sync problem)"

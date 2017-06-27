@@ -12,7 +12,7 @@ printTestStarted
 # Make sure common ignore rules do not exist. 
 rm -f "$COMMON_IGNORE_FILE"
 
-# Run mainframer.sh that noops to make sure that it does not exit with error.
-bash "$REPO_DIR"/mainframer.sh 'echo noop'
+# Run mainframer that noops to make sure that it does not exit with error.
+"$REPO_DIR"/mainframer 'echo noop'
 
 printTestEnded

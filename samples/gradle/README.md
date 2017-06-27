@@ -7,7 +7,7 @@ This is a very common setup for basically any Gradle project (including multimod
 ### How to build
 
 ```bash
-$ bash mainframer.sh ./gradlew build
+$ ./mainframer ./gradlew build
 ```
 
 Or any other Gradle task you want, btw it integrates with IntelliJ pretty easily! TODO add link to docs.
