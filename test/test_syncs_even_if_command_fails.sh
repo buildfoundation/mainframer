@@ -11,7 +11,7 @@ printTestStarted
 
 # Run mainframer that creates "build" result file that should be synced back to local machine even after error exit code.
 set +e
-bash "$REPO_DIR"/mainframer 'mkdir build && touch build/buildresult.txt && exit 1'
+"$REPO_DIR"/mainframer 'mkdir build && touch build/buildresult.txt && exit 1'
 set -e
 
 # Make sure files exist on local machine after sync.

@@ -15,7 +15,7 @@ echo "" > "$CONFIG_FILE"
 set +e
 
 # Run mainframer that noops to make sure that it exits with error.
-bash "$REPO_DIR"/mainframer 'echo noop'
+"$REPO_DIR"/mainframer 'echo noop'
 
 if [ "$?" == "0" ]; then
 	set -e

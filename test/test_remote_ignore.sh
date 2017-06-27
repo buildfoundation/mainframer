@@ -14,7 +14,7 @@ echo "build/file2.txt" > "$REMOTE_IGNORE_FILE"
 echo "build/file3.txt" >> "$REMOTE_IGNORE_FILE"
 
 # Run mainframer that creates 4 files on remote machine.
-bash "$REPO_DIR"/mainframer 'mkdir build && touch build/file1.txt && touch build/file2.txt && touch build/file3.txt && touch build/file4.txt'
+"$REPO_DIR"/mainframer 'mkdir build && touch build/file1.txt && touch build/file2.txt && touch build/file3.txt && touch build/file4.txt'
 
 # Make sure all files except ignored exist on local machine.
 fileMustExistOnLocalMachine "build/file1.txt" "(sync problem)"

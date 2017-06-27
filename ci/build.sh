@@ -41,7 +41,7 @@ BUILD_COMMAND+="chmod u+rw,go= ~/.ssh/known_hosts && "
 # Add ANDROID_HOME to bashrc for ssh sessions.
 BUILD_COMMAND+="mv ~/.bashrc ~/.bashrc_original && echo -e 'export ANDROID_HOME=/opt/android-sdk-linux\n' > ~/.bashrc && cat ~/.bashrc_original >> ~/.bashrc && rm ~/.bashrc_original && "
 
-BUILD_COMMAND+="bash /opt/project/test/test.sh --run-samples"
+BUILD_COMMAND+="/opt/project/test/test.sh --run-samples"
 
 docker run \
 --rm \

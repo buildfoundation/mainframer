@@ -29,14 +29,14 @@ echo "Done, running tests…"
 # Run all tests.
 for test_ in "$DIR"/test_*; do
 	TEST_COUNTER=$((TEST_COUNTER+1))
-	bash "$test_"
+	"$test_"
 done
 
 if [ "$1" == "--run-samples" ]; then
 	# Run all samples.
 	for sample_ in "$DIR"/sample_*; do
 		TEST_COUNTER=$((TEST_COUNTER+1))
-		bash "$sample_"
+		"$sample_"
 	done	
 fi
 

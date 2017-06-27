@@ -5,7 +5,7 @@ services:
   - docker
 
 script:
-  - bash ci/build.sh
+  - ci/build.sh
 
 notifications:
   email: false

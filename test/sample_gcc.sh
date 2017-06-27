@@ -16,7 +16,7 @@ cp -a "$DIR/../samples/gcc/." "$BUILD_DIR"
 setTestRemoteMachineInConfig
 
 # Run mainframer that builds GCC project.
-bash "$REPO_DIR"/mainframer 'gcc -Wall sample.c -o sample'
+"$REPO_DIR"/mainframer 'gcc -Wall sample.c -o sample'
 
 # Run binary to ensure that it was built fine.
 eval "$BUILD_DIR/sample"

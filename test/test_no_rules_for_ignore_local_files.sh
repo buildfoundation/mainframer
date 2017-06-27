@@ -13,6 +13,6 @@ printTestStarted
 rm -f "$LOCAL_IGNORE_FILE"
 
 # Run mainframer that noops to make sure that it does not exit with error.
-bash "$REPO_DIR"/mainframer 'echo noop'
+"$REPO_DIR"/mainframer 'echo noop'
 
 printTestEnded

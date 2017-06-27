@@ -21,7 +21,7 @@ echo "src/file2.txt" > "$LOCAL_IGNORE_FILE"
 echo "src/file3.txt" >> "$LOCAL_IGNORE_FILE"
 
 # Run mainframer that noops.
-bash "$REPO_DIR"/mainframer 'echo noop'
+"$REPO_DIR"/mainframer 'echo noop'
 
 # Make sure all files except ignored exist on remote machine.
 fileMustExistOnRemoteMachine "src/file1.txt" "(sync problem)"
