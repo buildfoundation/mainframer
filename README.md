@@ -1,4 +1,4 @@
-# mainframer
+# Mainframer
 
 Tool that allows you to move build process from a local machine to a remote one.
 
