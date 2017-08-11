@@ -11,8 +11,8 @@ freezes, being able to actually _use_ your computer when the build is happening.
 
 - [Supported Actions](#supported-actions)
 - [Setup](#setup)
-- [3rd-party IntelliJ Mainframer Plugin](#3rd-party-intellij-mainframer-plugin)
 - [Demo](#demo)
+- [3rd-party IntelliJ Mainframer Plugin](#3rd-party-intellij-mainframer-plugin)
 - [How to Run Tests (for contributors)](#how-to-run-tests-for-contributors)
 - [License](#license)
 
