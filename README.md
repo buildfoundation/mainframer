@@ -7,6 +7,15 @@ With `mainframer` you can free up your local machine for better things —
 like editing source code in your IDE without lags and
 freezes, being able to actually _use_ your computer when the build is happening.
 
+## Table of contents
+
+- [Supported Actions](#supported-actions)
+- [Setup](#setup)
+- [Demo](#demo)
+- [3rd-party IntelliJ Mainframer Plugin](#3rd-party-intellij-mainframer-plugin)
+- [How to Run Tests (for contributors)](#how-to-run-tests-for-contributors)
+- [License](#license)
+
 ## Supported Actions
 
 `mainframer` supports basically anything you can execute as a command.
@@ -32,6 +41,12 @@ We have quite a bunch of samples showing off some practical applications.
 ## Demo
 
 [![asciicast demo](samples/demo.png)](https://asciinema.org/a/101327)
+
+## 3rd-party IntelliJ Mainframer Plugin
+
+Guys from [@elpassion](https://github.com/elpassion) maintain [IntelliJ Plugin for Mainframer](https://github.com/elpassion/mainframer-intellij-plugin) that makes integration of Mainframer with any IntelliJ project better. 
+
+We highly recommend the plugin if you use IntelliJ with Mainframer!
 
 ### How to Run Tests (for contributors)
 
