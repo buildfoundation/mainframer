@@ -41,4 +41,4 @@ Perform following steps in AWS to create a new EC2 instance with a static public
 13. Select your instance EC2 instance in `Instance`
 14. Select a private IP in `Private IP`
 15. Click `Associate`
-16. Copy the IP address and use it ad `{REMOTE_MACHINE_IP_OR_HOSTNAME}` in [the local setup](SETUP_LOCAL.md)
+16. Copy the IP address and use it as `{REMOTE_MACHINE_IP_OR_HOSTNAME}` in [the local setup](SETUP_LOCAL.md)
