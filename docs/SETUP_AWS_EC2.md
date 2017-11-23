@@ -6,7 +6,7 @@
 
 ## Setup on Local Machine
 You can use a AWS EC2 instance as remote build machine. Simple define `ec2_instance_id`
-in the `config` with the instance id to use. Install and setup AWS CLI using:
+in the `config` (see ["local setup"](SETUP_LOCAL.md)) with the instance id to use. Install and setup AWS CLI using:
 
 ```
 brew install awscli
@@ -30,7 +30,7 @@ Perform following steps in AWS:
 2. Select Amazon Linux (SSD Volume Type)
 3. Select a instance type. It's recommended to use a t2.* instance as they are able to provide higher performance in bursts which is usually the case when developing and compiling every now and then. Using a t2.large instance is a good point of start, you then can either go up and down the instance types based on your needs (you also can change the instance later).
 4. Click `Review and Launch` and then `Launch`
-5. Create a new key pair and store the `.pem` file. Store this file in `~/.ssh/` and use it as `{SSH_KEY_NAME}` in ["the local setup"](SETUP_LOCAL.md)
+5. Create a new key pair. Store the `.pem` file downloaded at `~/.ssh/` and use it as `{SSH_KEY_NAME}` in ["the local setup"](SETUP_LOCAL.md)
 6. In the list of instances, select the newly created instance
 7. Select the `Monitoring` tab and then `Create Alarm`
 8. Uncheck `Send a notification to` and check `Take action`and `Stop this instance`
