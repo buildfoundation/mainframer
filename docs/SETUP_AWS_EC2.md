@@ -21,7 +21,7 @@ It is strongly recommended to use a Cloud Watch alarm to automatically shutdown 
 EC2 instance when not in use. Mainframer will automatically start the instance when
 a build is started but the EC2 instance is not running.
 
-*Disclaimer*: Running a t2.large instance will cost you roughly $ 0.10 per hour. Look [here](https://aws.amazon.com/en/ec2/pricing/) for details.
+*Disclaimer*: Running a t2.large instance will cost you roughly $0.10 per hour. Look [here](https://aws.amazon.com/en/ec2/pricing/) for details.
 
 Perform following steps in AWS to create a new EC2 instance with a static public IPv4 address which automatically shuts down if not used for 30 minutes:
 
