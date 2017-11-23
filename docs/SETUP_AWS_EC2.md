@@ -23,7 +23,7 @@ a build is started but the EC2 instance is not running.
 
 *Disclaimer*: Running a t2.large instance will cost you roughly $ 0.10 per hour. Look [here](https://aws.amazon.com/en/ec2/pricing/) for details.
 
-Perform following steps in AWS:
+Perform following steps in AWS to create a new EC2 instance with a static public IPv4 address which automatically shuts down if not used for 30 minutes:
 
 0. Create a new AWS account if not done yet and add a new payment method
 1. Go to `Services` -> `EC2` -> `Instances` -> `Launch Instance`
