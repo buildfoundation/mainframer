@@ -92,21 +92,21 @@ function startAwsEc2 {
 	echo "Checking state of EC2 instance $EC2_INSTANCE_ID..."
 	startTime="$(date +%s)"
 
-	EC2_STATE=`aws ec2 start-instances --instance-ids $EC2_INSTANCE_ID`
+	EC2_STATE=$(aws ec2 start-instances --instance-ids "$EC2_INSTANCE_ID")
 	if [[ "$EC2_STATE" =~ "pending" ]]; then
 		# Wait for instance to have state "running"
-		printf "Starting EC2 instance $EC2_INSTANCE_ID..."
+		printf "Starting EC2 instance %s..." "$EC2_INSTANCE_ID"
 		while [[ "$EC2_STATE" != *running* ]]; do
-			EC2_STATE=`aws ec2 describe-instances --instance-ids $EC2_INSTANCE_ID`
+			EC2_STATE=$(aws ec2 describe-instances --instance-ids "$EC2_INSTANCE_ID")
 			sleep .1
 			printf "."
 		done
 		printf "\n"
 
 		# Wait for instance to be usable
-		printf "Waiting for EC2 instance $EC2_INSTANCE_ID to be ready..."
-		while [[ 1 ]]; do
-			if ssh $REMOTE_MACHINE "echo test" &> /dev/null; then
+		printf "Waiting for EC2 instance %s to be ready..." "$EC2_INSTANCE_ID"
+		while true; do
+			if ssh "$REMOTE_MACHINE" "echo test" &> /dev/null; then
 				break
 			else
 				printf '.'
