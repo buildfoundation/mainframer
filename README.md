@@ -2,7 +2,7 @@
 
 Tool that allows you to move build process from a local machine to a remote one.
 
-Remote machine ought to be much faster than a laptop. 
+Remote machine ought to be much faster than a laptop.
 With `mainframer` you can free up your local machine for better things —
 like editing source code in your IDE without lags and
 freezes, being able to actually _use_ your computer when the build is happening.
@@ -35,6 +35,7 @@ We have quite a bunch of samples showing off some practical applications.
 ## Setup
 
 * [Remote machine](docs/SETUP_REMOTE.md)
+* [AWS EC2 integration](docs/SETUP_AWS_EC2.md)
 * [Local machine](docs/SETUP_LOCAL.md)
 * [Configuration](docs/CONFIGURATION.md)
 
@@ -44,7 +45,7 @@ We have quite a bunch of samples showing off some practical applications.
 
 ## 3rd-party IntelliJ Mainframer Plugin
 
-Guys from [@elpassion](https://github.com/elpassion) maintain [IntelliJ Plugin for Mainframer](https://github.com/elpassion/mainframer-intellij-plugin) that makes integration of Mainframer with any IntelliJ project better. 
+Guys from [@elpassion](https://github.com/elpassion) maintain [IntelliJ Plugin for Mainframer](https://github.com/elpassion/mainframer-intellij-plugin) that makes integration of Mainframer with any IntelliJ project better.
 
 We highly recommend the plugin if you use IntelliJ with Mainframer!
 

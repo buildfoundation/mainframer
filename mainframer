@@ -38,6 +38,7 @@ function readConfigProperty {
 REMOTE_MACHINE_CONFIG_PROPERTY="remote_machine"
 LOCAL_COMPRESS_LEVEL_CONFIG_PROPERTY="local_compression_level"
 REMOTE_COMPRESS_LEVEL_CONFIG_PROPERTY="remote_compression_level"
+EC2_INSTANCE_ID_PROPERTY="ec2_instance_id"
 
 if [ ! -f "$CONFIG_FILE" ]; then
 	echo "Please create and fill $CONFIG_FILE."
@@ -47,6 +48,7 @@ fi
 REMOTE_MACHINE=$(readConfigProperty "$REMOTE_MACHINE_CONFIG_PROPERTY")
 LOCAL_COMPRESS_LEVEL=$(readConfigProperty "$LOCAL_COMPRESS_LEVEL_CONFIG_PROPERTY")
 REMOTE_COMPRESS_LEVEL=$(readConfigProperty "$REMOTE_COMPRESS_LEVEL_CONFIG_PROPERTY")
+EC2_INSTANCE_ID=$(readConfigProperty "$EC2_INSTANCE_ID_PROPERTY")
 
 if [ -z "$REMOTE_MACHINE" ]; then
 	echo "Please specify \"$REMOTE_MACHINE_CONFIG_PROPERTY\" in $CONFIG_FILE."
@@ -60,7 +62,6 @@ fi
 if [ -z "$REMOTE_COMPRESS_LEVEL" ]; then
 	REMOTE_COMPRESS_LEVEL=1
 fi
-
 
 REMOTE_COMMAND="$*"
 REMOTE_COMMAND_SUCCESSFUL="false"
@@ -84,6 +85,42 @@ function formatTime {
 	(( hours > 0 )) && printf "%d $HOURS_LABEL " ${hours}
 	(( minutes > 0 )) && printf "%d $MINUTES_LABEL " ${minutes}
 	(( seconds >= 0 )) && printf "%d $SECONDS_LABEL" ${seconds}
+}
+
+function startAwsEc2 {
+	# Start AWS instance
+	echo "Checking state of EC2 instance $EC2_INSTANCE_ID..."
+	startTime="$(date +%s)"
+
+	EC2_STATE=$(aws ec2 start-instances --instance-ids "$EC2_INSTANCE_ID")
+	if [[ "$EC2_STATE" =~ "pending" ]]; then
+		# Wait for instance to have state "running"
+		printf "Starting EC2 instance %s..." "$EC2_INSTANCE_ID"
+		while [[ "$EC2_STATE" != *running* ]]; do
+			EC2_STATE=$(aws ec2 describe-instances --instance-ids "$EC2_INSTANCE_ID")
+			sleep .1
+			printf "."
+		done
+		printf "\n"
+
+		# Wait for instance to be usable
+		printf "Waiting for EC2 instance %s to be ready..." "$EC2_INSTANCE_ID"
+		while true; do
+			if ssh "$REMOTE_MACHINE" "echo test" &> /dev/null; then
+				break
+			else
+				printf '.'
+			fi
+			sleep .5
+		done
+		printf "\n"
+
+		endTime="$(date +%s)"
+		echo "Startup done: took $(formatTime $((endTime-startTime)))."
+	else
+		endTime="$(date +%s)"
+		echo "Check done: took $(formatTime $((endTime-startTime)))."
+	fi
 }
 
 function syncBeforeRemoteCommand {
@@ -156,6 +193,10 @@ function syncAfterRemoteCommand {
 }
 
 pushd "$PROJECT_DIR" > /dev/null
+
+if [[ "$EC2_INSTANCE_ID" != "" ]]; then
+	startAwsEc2
+fi
 
 syncBeforeRemoteCommand
 executeRemoteCommand
