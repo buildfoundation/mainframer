@@ -38,6 +38,7 @@ function readConfigProperty {
 REMOTE_MACHINE_CONFIG_PROPERTY="remote_machine"
 LOCAL_COMPRESS_LEVEL_CONFIG_PROPERTY="local_compression_level"
 REMOTE_COMPRESS_LEVEL_CONFIG_PROPERTY="remote_compression_level"
+LOCAL_DIR_IN_OUTPUT_CONFIG_PROPERTY="local_dir_in_output"
 
 if [ ! -f "$CONFIG_FILE" ]; then
 	echo "Please create and fill $CONFIG_FILE."
@@ -47,6 +48,7 @@ fi
 REMOTE_MACHINE=$(readConfigProperty "$REMOTE_MACHINE_CONFIG_PROPERTY")
 LOCAL_COMPRESS_LEVEL=$(readConfigProperty "$LOCAL_COMPRESS_LEVEL_CONFIG_PROPERTY")
 REMOTE_COMPRESS_LEVEL=$(readConfigProperty "$REMOTE_COMPRESS_LEVEL_CONFIG_PROPERTY")
+LOCAL_DIR_IN_OUTPUT=$(readConfigProperty "$LOCAL_DIR_IN_OUTPUT_CONFIG_PROPERTY")
 
 if [ -z "$REMOTE_MACHINE" ]; then
 	echo "Please specify \"$REMOTE_MACHINE_CONFIG_PROPERTY\" in $CONFIG_FILE."
@@ -61,6 +63,9 @@ if [ -z "$REMOTE_COMPRESS_LEVEL" ]; then
 	REMOTE_COMPRESS_LEVEL=1
 fi
 
+if [ -z "$LOCAL_DIR_IN_OUTPUT" ]; then
+	LOCAL_DIR_IN_OUTPUT="false"
+fi
 
 REMOTE_COMMAND="$*"
 REMOTE_COMMAND_SUCCESSFUL="false"
@@ -115,8 +120,20 @@ function executeRemoteCommand {
 	startTime="$(date +%s)"
 
 	set +e
-	if ssh "$REMOTE_MACHINE" "echo 'set -e && cd '$PROJECT_DIR_ON_REMOTE_MACHINE' && echo \"$REMOTE_COMMAND\" && echo "" && $REMOTE_COMMAND' | bash" ; then
-		REMOTE_COMMAND_SUCCESSFUL="true"
+	if [ "$LOCAL_DIR_IN_OUTPUT" == "true" ]; then
+		# We indeed want PROJECT_DIR_ON_REMOTE_MACHINE to expand locally
+		# shellcheck disable=SC2029
+		REMOTE_PROJECT_DIR_ABSOLUTE=$(ssh "$REMOTE_MACHINE" "cd $PROJECT_DIR_ON_REMOTE_MACHINE && pwd")
+
+		if ssh "$REMOTE_MACHINE" "echo 'set -e && cd '$PROJECT_DIR_ON_REMOTE_MACHINE' && echo \"$REMOTE_COMMAND\" && echo "" && $REMOTE_COMMAND' | bash" \
+		2> >(sed -l "s|$REMOTE_PROJECT_DIR_ABSOLUTE|$PROJECT_DIR|g" >&2) \
+		1> >(sed -l "s|$REMOTE_PROJECT_DIR_ABSOLUTE|$PROJECT_DIR|g" >&1); then
+			REMOTE_COMMAND_SUCCESSFUL="true"
+		fi
+	else
+		if ssh "$REMOTE_MACHINE" "echo 'set -e && cd '$PROJECT_DIR_ON_REMOTE_MACHINE' && echo \"$REMOTE_COMMAND\" && echo "" && $REMOTE_COMMAND' | bash"; then
+			REMOTE_COMMAND_SUCCESSFUL="true"
+		fi
 	fi
 	set -e
 
