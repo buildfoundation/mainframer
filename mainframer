@@ -26,6 +26,11 @@ PROJECT_DIR_NAME="$( basename "$PROJECT_DIR" )"
 PROJECT_DIR_ON_REMOTE_MACHINE="~/mainframer/$PROJECT_DIR_NAME"
 
 CONFIG_DIR="$PROJECT_DIR/.mainframer"
+
+if [ ! -d $CONFIG_DIR ]; then
+	CONFIG_DIR="$HOME/.mainframer"
+fi;
+
 CONFIG_FILE="$CONFIG_DIR/config"
 COMMON_IGNORE_FILE="$CONFIG_DIR/ignore"
 LOCAL_IGNORE_FILE="$CONFIG_DIR/localignore"
