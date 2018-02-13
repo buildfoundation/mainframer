@@ -13,6 +13,7 @@ freezes, being able to actually _use_ your computer when the build is happening.
 - [Setup](#setup)
 - [Demo](#demo)
 - [3rd-party IntelliJ Mainframer Plugin](#3rd-party-intellij-mainframer-plugin)
+- [3rd-party Mainframer analogue for Gradle](#3rd-party-mainframer-analogue-for-gradle)
 - [How to Run Tests (for contributors)](#how-to-run-tests-for-contributors)
 - [License](#license)
 
@@ -47,6 +48,12 @@ We have quite a bunch of samples showing off some practical applications.
 Guys from [@elpassion](https://github.com/elpassion) maintain [IntelliJ Plugin for Mainframer](https://github.com/elpassion/mainframer-intellij-plugin) that makes integration of Mainframer with any IntelliJ project better. 
 
 We highly recommend the plugin if you use IntelliJ with Mainframer!
+
+## 3rd-party Mainframer analogue for Gradle
+
+[Mirakle](https://github.com/Instamotor-Labs/mirakle) is a Gradle plugin which does the same as Mainframer, but works seamlessly with Gradle build system and doesn't require a plugin for IntelliJ or Android Studio.
+
+If you tied to use of Gradle you may find it more convenient to integrate Mirakle to your workflow.
 
 ### How to Run Tests (for contributors)
 
