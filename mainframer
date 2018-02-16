@@ -26,19 +26,25 @@ PROJECT_DIR_NAME="$( basename "$PROJECT_DIR" )"
 PROJECT_DIR_ON_REMOTE_MACHINE="~/mainframer/$PROJECT_DIR_NAME"
 
 CONFIG_DIR="$PROJECT_DIR/.mainframer"
-
-if [ ! -d $CONFIG_DIR ]; then
-	CONFIG_DIR="$HOME/.mainframer"
-fi;
+GLOBAL_CONFIG_DIR="$HOME/.mainframer"
 
 CONFIG_FILE="$CONFIG_DIR/config"
 COMMON_IGNORE_FILE="$CONFIG_DIR/ignore"
 LOCAL_IGNORE_FILE="$CONFIG_DIR/localignore"
 REMOTE_IGNORE_FILE="$CONFIG_DIR/remoteignore"
 
+GLOBAL_CONFIG_FILE="$GLOBAL_CONFIG_DIR/config"
+
 function readConfigProperty {
-	grep "^${1}=" "$CONFIG_FILE" | cut -d'=' -f2
+	local config=$(grep "^${1}=" "$CONFIG_FILE" | cut -d'=' -f2)
+	if [[ ( -z "$config" ) && ( -f "$GLOBAL_CONFIG_FILE" ) ]]; then
+		config=$(grep "^${1}=" "$GLOBAL_CONFIG_FILE" | cut -d'=' -f2)
+	fi
+	echo $config
 }
+
+readConfigProperty "remote_machine"
+exit 0
 
 REMOTE_MACHINE_CONFIG_PROPERTY="remote_machine"
 LOCAL_COMPRESS_LEVEL_CONFIG_PROPERTY="local_compression_level"
@@ -48,6 +54,9 @@ if [ ! -f "$CONFIG_FILE" ]; then
 	echo "Please create and fill $CONFIG_FILE."
 	exit 1
 fi
+
+# Posso colocar aqui a verificacao do arquivo de configuracao global
+# Se ele existir ai faco o merge entre as configuracoes
 
 REMOTE_MACHINE=$(readConfigProperty "$REMOTE_MACHINE_CONFIG_PROPERTY")
 LOCAL_COMPRESS_LEVEL=$(readConfigProperty "$LOCAL_COMPRESS_LEVEL_CONFIG_PROPERTY")
@@ -65,7 +74,6 @@ fi
 if [ -z "$REMOTE_COMPRESS_LEVEL" ]; then
 	REMOTE_COMPRESS_LEVEL=1
 fi
-
 
 REMOTE_COMMAND="$*"
 REMOTE_COMMAND_SUCCESSFUL="false"
