@@ -18,7 +18,15 @@ fn main() {
         Ok(value) => value,
     };
 
-    let config = match Config::from_file("") {
+    let working_dir = match env::current_dir() {
+        Err(_) => exit_with_error(&"Could not resolve working directory, make sure it exists and user has enough permissions to work with it.", 1),
+        Ok(value) => value
+    };
+
+    let mut config_file = working_dir.clone();
+    config_file.push(".mainframer/config");
+
+    let config = match Config::from_file(config_file.as_path()) {
         Err(message) => exit_with_error(&message, 1),
         Ok(value) => value
     };
