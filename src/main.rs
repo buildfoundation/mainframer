@@ -1,10 +1,12 @@
 mod args;
 mod config;
+mod ignore;
 mod sync;
 mod remote_command;
 
 use args::Args;
 use config::Config;
+use ignore::*;
 use std::env;
 use std::process;
 use sync::*;

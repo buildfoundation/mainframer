@@ -4,9 +4,9 @@ use std::path::Path;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Config {
-    remote_machine_name: String,
-    local_compression_level: u8,
-    remote_compression_level: u8
+    pub remote_machine_name: String,
+    pub local_compression_level: u8,
+    pub remote_compression_level: u8
 }
 
 impl Config {
