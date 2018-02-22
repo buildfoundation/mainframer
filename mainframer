@@ -157,6 +157,25 @@ function executeRemoteCommand {
 	echo ""
 }
 
+function sendServerCommand {
+# ssh pozzo@pozzo 'sleep 1 & echo $!'
+# Should save this pid somewhere so I can use in the abort server
+#
+
+        trap abortServer INT 
+        set +e
+        if ssh "$REMOTE_MACHINE" "echo 'set -e && cd '$PROJECT_DIR_ON_REMOTE_MACHINE' && echo \"$REMOTE_COMMAND\" && echo "" && $REMOTE_COMMAND' | bash & " ; then
+                REMOTE_COMMAND_SUCCESSFUL="true"
+        fi
+        set -e
+        trap - INT
+}
+
+function abortServer {
+	echo "quiting"
+	exit 1
+}
+
 function syncAfterRemoteCommand {
 	echo "Sync remote → local machine..."
 	startTime="$(date +%s)"
