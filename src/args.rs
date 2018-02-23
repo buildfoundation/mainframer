@@ -1,6 +1,6 @@
 #[derive(Debug, PartialEq, Eq)]
 pub struct Args {
-    command: String
+    pub command: String
 }
 
 impl Args {

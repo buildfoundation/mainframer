@@ -17,7 +17,7 @@ pub fn execute_remote_command(remote_command: &str, config: &Config, project_dir
         .unwrap();
 
     match process.wait() {
-        Err(error) => Err(()),
+        Err(_) => Err(()), // No need to get error description as we pipe command output to Mainframer output.
         Ok(exit_status) => match exit_status.success() {
             false => Err(()),
             true => Ok(())

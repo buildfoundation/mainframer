@@ -7,10 +7,11 @@ mod remote_command;
 use args::Args;
 use config::Config;
 use ignore::*;
+use remote_command::execute_remote_command as execute_remote_command_impl;
 use std::env;
+use std::path::PathBuf;
 use std::process;
 use sync::*;
-use remote_command::*;
 
 fn main() {
     print_header();
@@ -32,6 +33,12 @@ fn main() {
         Err(message) => exit_with_error(&message, 1),
         Ok(value) => value
     };
+
+    let ignore = Ignore::from_working_dir(&working_dir);
+
+    sync_before_remote_command(&working_dir, &config, &ignore);
+    execute_remote_command(&working_dir, &args, &config);
+    sync_after_remote_command(&working_dir, &config, &ignore);
 }
 
 fn print_header() {
@@ -41,4 +48,20 @@ fn print_header() {
 fn exit_with_error(message: &str, code: i32) -> ! {
     eprintln!("Error: {}", message);
     process::exit(code);
+}
+
+fn sync_before_remote_command(working_dir: &PathBuf, config: &Config, ignore: &Ignore) {
+    sync_local_to_remote(&working_dir.file_name().unwrap().to_string_lossy().clone(), config, ignore);
+}
+
+fn execute_remote_command(working_dir: &PathBuf, args: &Args, config: &Config) {
+    execute_remote_command_impl(
+        &args.command.clone(),
+        config,
+        &format!("~/mainframer/{}", working_dir.file_name().unwrap().to_string_lossy().clone())
+    );
+}
+
+fn sync_after_remote_command(working_dir: &PathBuf, config: &Config, ignore: &Ignore) {
+    sync_remote_to_local(&working_dir.file_name().unwrap().to_string_lossy().clone(), config, ignore);
 }
