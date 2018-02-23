@@ -16,7 +16,7 @@ cp -a "$DIR/../samples/gradle/." "$BUILD_DIR"
 setTestRemoteMachineInConfig
 
 # Run mainframer that builds Gradle project.
-"$REPO_DIR"/mainframer './gradlew build'
+"$MAINFRAMER_EXECUTABLE" './gradlew build'
 
 # Run jar to ensure that it was built fine.
 java -jar "$BUILD_DIR/build/libs/sample.jar"

@@ -3,6 +3,7 @@ FROM ubuntu:16.04
 MAINTAINER Mainframer Team
 
 # "sudo": switch user in entrypoint.
+# "curl rustup": build Mainframer and sample Rust project.
 # "openssh-server": testing.
 # "openjdk-8-jdk": build sample Gradle, Maven, Buck projects.
 # "golang": build sample Go project.
@@ -10,7 +11,6 @@ MAINTAINER Mainframer Team
 # "build-essential": build sample GCC project.
 # "lib32stdc++6 lib32z1 unzip": build sample Android project.
 # "ant python git": build sample Buck project.
-# "curl rustup": build sample Rust project.
 RUN apt-get update --quiet && \
     apt-get --assume-yes --quiet install sudo openssh-server openjdk-8-jdk \
     golang clang build-essential lib32stdc++6 lib32z1 unzip ant python git curl && \

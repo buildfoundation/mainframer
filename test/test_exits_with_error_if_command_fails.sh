@@ -11,7 +11,7 @@ printTestStarted
 
 # Run mainframer that exits with error code on remote machine.
 set +e
-"$REPO_DIR"/mainframer 'exit 1'
+"$MAINFRAMER_EXECUTABLE" 'exit 1'
 
 # Make sure mainframer also exits with error code.
 if [ "$?" == "0" ]; then

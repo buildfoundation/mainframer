@@ -21,7 +21,7 @@ if [ "$USER_ID" == "0" ]; then
 fi
 
 # Run shellcheck.
-docker run --rm --env SHELLCHECK_OPTS="--exclude SC2088" --volume `"pwd"`:/scripts:ro koalaman/shellcheck:v0.4.6 /scripts/mainframer
+# docker run --rm --env SHELLCHECK_OPTS="--exclude SC2088" --volume `"pwd"`:/scripts:ro koalaman/shellcheck:v0.4.6 /scripts/mainframer
 
 docker build -t mainframer:latest .
 

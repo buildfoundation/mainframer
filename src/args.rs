@@ -5,14 +5,14 @@ pub struct Args {
 
 impl Args {
     pub fn parse(raw_args: Vec<String>) -> Result<Args, String> {
-        if raw_args.len() == 0 {
-            return Err(String::from("Please pass remote command.")); // TODO more user friendly message, for now it's consistent with Bash version.
-        } else if raw_args.len() > 1 {
-            return Err(String::from("Mainframer supports only 1 argument which is a command that need to be executed."));
-        } else {
-            return Ok(Args {
-                command: raw_args[0].clone()
-            });
+        match raw_args.len() {
+            0 => Err(String::from("Please pass remote command.")), // TODO more user friendly message, for now it's consistent with Bash version.
+            _ => Ok(Args {
+                command: {
+                    let str: String = raw_args.iter().cloned().map(|arg| format!("{} ", arg)).collect();
+                    String::from(str.trim())
+                }
+            })
         }
     }
 }
@@ -22,7 +22,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn parse_ok() {
+    fn parse_command_passed_as_single_parameter() {
         let raw_args = vec![String::from("test command")];
         assert_eq!(Args::parse(raw_args), Ok(Args { command: String::from("test command") }));
     }
@@ -34,8 +34,8 @@ mod tests {
     }
 
     #[test]
-    fn parse_more_than_1_arg() {
+    fn parse_command_passed_as_multiple_parameters() {
         let raw_args = vec![String::from("test"), String::from("command")];
-        assert_eq!(Args::parse(raw_args), Err(String::from("Mainframer supports only 1 argument which is a command that need to be executed.")));
+        assert_eq!(Args::parse(raw_args), Ok(Args { command: String::from("test command") }));
     }
 }

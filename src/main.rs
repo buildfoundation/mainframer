@@ -37,8 +37,13 @@ fn main() {
     let ignore = Ignore::from_working_dir(&working_dir);
 
     sync_before_remote_command(&working_dir, &config, &ignore);
-    execute_remote_command(&working_dir, &args, &config);
+    let remote_command_result = execute_remote_command(&working_dir, &args, &config);
     sync_after_remote_command(&working_dir, &config, &ignore);
+
+    match remote_command_result {
+        Err(_) => exit_with_error(&"Failure: took TODO", 1),
+        _ => ()
+    }
 }
 
 fn print_header() {
@@ -54,12 +59,12 @@ fn sync_before_remote_command(working_dir: &PathBuf, config: &Config, ignore: &I
     sync_local_to_remote(&working_dir.file_name().unwrap().to_string_lossy().clone(), config, ignore);
 }
 
-fn execute_remote_command(working_dir: &PathBuf, args: &Args, config: &Config) {
+fn execute_remote_command(working_dir: &PathBuf, args: &Args, config: &Config) -> Result<(), ()> {
     execute_remote_command_impl(
         &args.command.clone(),
         config,
         &format!("~/mainframer/{}", working_dir.file_name().unwrap().to_string_lossy().clone())
-    );
+    )
 }
 
 fn sync_after_remote_command(working_dir: &PathBuf, config: &Config, ignore: &Ignore) {

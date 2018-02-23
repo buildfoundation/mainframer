@@ -32,8 +32,8 @@ impl Config {
 fn find_value(config_content: &str, key: &str) -> Option<String> {
     match config_content.find(&format!("{}=", key)) {
         None => None,
-        Some(startIndex) => {
-            let content_starting_with_key = &config_content[startIndex..config_content.len()];
+        Some(start_index) => {
+            let content_starting_with_key = &config_content[start_index..config_content.len()];
             let value_start_index = match content_starting_with_key.find("=") {
                 None => return None,
                 Some(index) => index

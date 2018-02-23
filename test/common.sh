@@ -25,6 +25,16 @@ REMOTE_IGNORE_FILE="$BUILD_DIR/.mainframer/remoteignore"
 REMOTE_MACHINE_PROPERTY="remote_machine"
 COMMON_IGNORE_FILE="$BUILD_DIR/.mainframer/ignore"
 
+# TODO test both debug and release builds.
+MAINFRAMER_EXECUTABLE="$DIR/../target/debug/mainframer"
+
+function buildMainframer {
+    echo "Building Mainframer..."
+    pushd "$DIR/.." > /dev/null
+    cargo build
+    popd > /dev/null
+}
+
 function printTestStarted {
 	echo ""
 	test_name=`basename "$0"`
@@ -99,6 +109,8 @@ function setTestRemoteMachineInConfig {
 if [ ! "$CLEAN_BUILD_DIRS_AFTER_RUN" == "false" ]; then
 	trap "cleanBuildDirOnLocalMachine ; cleanMainfamerDirOnRemoteMachine" EXIT
 fi
+
+buildMainframer
 
 # Clean build directories.
 cleanBuildDirOnLocalMachine

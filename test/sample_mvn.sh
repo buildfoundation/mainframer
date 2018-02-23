@@ -16,7 +16,7 @@ cp -a "$DIR/../samples/mvn/." "$BUILD_DIR"
 setTestRemoteMachineInConfig
 
 # Run mainframer that builds Maven project.
-"$REPO_DIR"/mainframer './mvnw clean package'
+"$MAINFRAMER_EXECUTABLE" './mvnw clean package'
 
 # Run jar to ensure that it was built fine.
 java -jar "$BUILD_DIR/target/sample-1.0.jar"
