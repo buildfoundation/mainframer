@@ -1,8 +1,9 @@
 mod args;
 mod config;
 mod ignore;
-mod sync;
 mod remote_command;
+mod sync;
+mod time;
 
 use args::Args;
 use config::Config;
@@ -11,7 +12,9 @@ use remote_command::execute_remote_command as execute_remote_command_impl;
 use std::env;
 use std::path::PathBuf;
 use std::process;
+use std::time::Instant;
 use sync::*;
+use time::*;
 
 fn main() {
     print_header();
@@ -36,13 +39,25 @@ fn main() {
 
     let ignore = Ignore::from_working_dir(&working_dir);
 
-    sync_before_remote_command(&working_dir, &config, &ignore);
+    let start = Instant::now();
+
+    match sync_before_remote_command(&working_dir, &config, &ignore) {
+        Err(error) => exit_with_error(&format!("Sync local → remote machine failed: {}", error), 1),
+        Ok(_) => ()
+    }
+
     let remote_command_result = execute_remote_command(&working_dir, &args, &config);
-    sync_after_remote_command(&working_dir, &config, &ignore);
+
+    match sync_after_remote_command(&working_dir, &config, &ignore) {
+        Err(error) => exit_with_error(&format!("Sync remote → local machine failed: {}", error), 1),
+        Ok(_) => ()
+    }
+
+    let duration = start.elapsed();
 
     match remote_command_result {
-        Err(_) => exit_with_error(&"Failure: took TODO", 1),
-        _ => ()
+        Err(_) => exit_with_error(&format!("\nFailure: took {}", format_duration(&duration)), 1),
+        _ => println!("\nSuccess: took {}", format_duration(&duration))
     }
 }
 
@@ -51,22 +66,73 @@ fn print_header() {
 }
 
 fn exit_with_error(message: &str, code: i32) -> ! {
-    eprintln!("Error: {}", message);
+    if !message.is_empty() {
+        eprintln!("{}", message);
+    }
     process::exit(code);
 }
 
-fn sync_before_remote_command(working_dir: &PathBuf, config: &Config, ignore: &Ignore) {
-    sync_local_to_remote(&working_dir.file_name().unwrap().to_string_lossy().clone(), config, ignore);
+fn sync_before_remote_command(working_dir: &PathBuf, config: &Config, ignore: &Ignore) -> Result<(), String> {
+    println!("Sync local → remote machine...");
+
+    let start = Instant::now();
+
+    let result = sync_local_to_remote(
+        &working_dir.file_name().unwrap().to_string_lossy().clone(),
+        config,
+        ignore
+    );
+
+    let duration = start.elapsed();
+
+    match result {
+        Err(error) => Err(error),
+        Ok(_) => {
+            println!("Sync done: took {}\n", format_duration(&duration));
+            Ok(())
+        }
+    }
 }
 
 fn execute_remote_command(working_dir: &PathBuf, args: &Args, config: &Config) -> Result<(), ()> {
-    execute_remote_command_impl(
+    println!("Executing command on remote machine...\n");
+
+    let start = Instant::now();
+
+    let result = execute_remote_command_impl(
         &args.command.clone(),
         config,
         &format!("~/mainframer/{}", working_dir.file_name().unwrap().to_string_lossy().clone())
-    )
+    );
+
+    let duration = start.elapsed();
+
+    match result {
+        Err(_) => eprintln!("\nExecution failed: took {}\n", format_duration(&duration)),
+        Ok(_) => println!("\nExecution done: took {}\n", format_duration(&duration))
+    }
+
+    result
 }
 
-fn sync_after_remote_command(working_dir: &PathBuf, config: &Config, ignore: &Ignore) {
-    sync_remote_to_local(&working_dir.file_name().unwrap().to_string_lossy().clone(), config, ignore);
+fn sync_after_remote_command(working_dir: &PathBuf, config: &Config, ignore: &Ignore) -> Result<(), String> {
+    println!("Sync remote → local machine...");
+
+    let start = Instant::now();
+
+    let result = sync_remote_to_local(
+        &working_dir.file_name().unwrap().to_string_lossy().clone(),
+        config,
+        ignore
+    );
+
+    let duration = start.elapsed();
+
+    match result {
+        Err(error) => Err(error),
+        Ok(_) => {
+            println!("Sync done: took {}", format_duration(&duration));
+            Ok(())
+        }
+    }
 }

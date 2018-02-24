@@ -22,6 +22,7 @@ ENV ANDROID_HOME /opt/android-sdk-linux
 ENV PATH ${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools
 ENV ANDROID_SDK_INSTALL_COMPONENT "echo \"y\" | \"$ANDROID_HOME\"/tools/bin/sdkmanager --verbose"
 
+# Give all users access to Android SDK (otherwise build_user won't be able to access it).
 RUN mkdir -p $ANDROID_HOME && \
     curl https://dl.google.com/android/repository/$ANDROID_SDK_FILE_NAME --progress-bar --location --output $ANDROID_SDK_FILE_NAME && \
     unzip $ANDROID_SDK_FILE_NAME -d $ANDROID_HOME && \
@@ -29,7 +30,8 @@ RUN mkdir -p $ANDROID_HOME && \
     eval $ANDROID_SDK_INSTALL_COMPONENT '"tools"' && \
     eval $ANDROID_SDK_INSTALL_COMPONENT '"platform-tools"' && \
     eval $ANDROID_SDK_INSTALL_COMPONENT '"build-tools;25.0.2"' && \
-    eval $ANDROID_SDK_INSTALL_COMPONENT '"platforms;android-25"'
+    eval $ANDROID_SDK_INSTALL_COMPONENT '"platforms;android-25"' && \
+    chmod -R 777 "$ANDROID_HOME"
 
 # Entrypoint script will allow us run as non-root in the container.
 COPY ci/docker/entrypoint.sh /usr/local/bin/entrypoint.sh

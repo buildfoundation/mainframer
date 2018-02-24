@@ -17,8 +17,10 @@ pub fn sync_local_to_remote(local_project_dir_name: &str, config: &Config, ignor
     apply_exclude_from(&mut command, &ignore.common_ignore_file);
     apply_exclude_from(&mut command, &ignore.local_ignore_file);
 
+    command.arg("--rsh ssh");
+
     command.arg(format!(
-        "--rsh ssh ./ {remote_machine_name}:'{project_dir_on_remote_machine}'",
+        "./ {remote_machine_name}:'{project_dir_on_remote_machine}'",
         remote_machine_name = config.remote_machine_name,
         project_dir_on_remote_machine = project_dir_on_remote_machine(local_project_dir_name))
     );
@@ -26,12 +28,18 @@ pub fn sync_local_to_remote(local_project_dir_name: &str, config: &Config, ignor
     let result = command.output();
 
     match result {
-        Err(_) => Err(String::from("Failed to sync files from local machine to remote.")),
+        Err(_) => Err(String::from("Generic sync error.")),  // Rust doc doesn't really say when can it occur.
         Ok(output) => match output.status.code() {
-            None => Err(String::from("Sync of files from local machine to remote was terminated.")),
+            None => Err(String::from("Sync was terminated.")),
             Some(status_code) => match status_code {
                 0 => Ok(()),
-                _ => Err(format!("Failed to sync files from local machine to remote, rsync exit code '{}'.", status_code)) // TODO append rsync output for more info.
+                _ => Err(
+                    format!(
+                        "rsync exit code '{exit_code}',\nrsync error output '{error_output}'.",
+                        exit_code = status_code,
+                        error_output = String::from_utf8_lossy(&output.stderr)
+                    )
+                )
             }
         }
     }
@@ -59,12 +67,18 @@ pub fn sync_remote_to_local(local_project_dir_name: &str, config: &Config, ignor
     let result = command.output();
 
     match result {
-        Err(_) => Err(String::from("Failed to sync files from remote machine to local.")),
+        Err(_) => Err(String::from("Generic sync error.")), // Rust doc doesn't really say when can it occur.
         Ok(output) => match output.status.code() {
-            None => Err(String::from("Sync of files from remote machine to local was terminated.")),
+            None => Err(String::from("Sync was terminated.")),
             Some(status_code) => match status_code {
                 0 => Ok(()),
-                _ => Err(format!("Failed to sync files from remote machine to local, rsync exit code '{}'.", status_code)) // TODO append rsync output for more info.
+                _ => Err(
+                    format!(
+                        "rsync exit code '{exit_code}',\nrsync error output '{error_output}'.",
+                        exit_code = status_code,
+                        error_output = String::from_utf8_lossy(&output.stderr)
+                    )
+                )
             }
         }
     }
