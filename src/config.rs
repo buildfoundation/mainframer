@@ -6,7 +6,7 @@ use std::path::Path;
 pub struct Config {
     pub remote_machine_name: String,
     pub local_compression_level: u8,
-    pub remote_compression_level: u8
+    pub remote_compression_level: u8,
 }
 
 impl Config {
@@ -73,13 +73,12 @@ fn parse_config_from_str(config_content: &str) -> Result<Config, String> {
                 Err(_) => return Err(format!("'remote_compression_level' must be a positive number, found '{}'.", value)),
                 Ok(value) => value
             }
-        }
+        },
     })
 }
 
 #[cfg(test)]
 mod tests {
-
     use super::*;
 
     #[test]
@@ -118,7 +117,7 @@ mod tests {
         assert_eq!(parse_config_from_str(content), Ok(Config {
             remote_machine_name: String::from("test@machine"),
             local_compression_level: 2,
-            remote_compression_level: 3
+            remote_compression_level: 3,
         }));
     }
 
@@ -128,7 +127,7 @@ mod tests {
         assert_eq!(parse_config_from_str(content), Ok(Config {
             remote_machine_name: String::from("test@machine"),
             local_compression_level: 2,
-            remote_compression_level: 3
+            remote_compression_level: 3,
         }));
     }
 

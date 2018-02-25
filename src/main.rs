@@ -80,7 +80,7 @@ fn sync_before_remote_command(working_dir: &PathBuf, config: &Config, ignore: &I
     let result = sync_local_to_remote(
         &working_dir.file_name().unwrap().to_string_lossy().clone(),
         config,
-        ignore
+        ignore,
     );
 
     let duration = start.elapsed();
@@ -102,7 +102,7 @@ fn execute_remote_command(working_dir: &PathBuf, args: &Args, config: &Config) -
     let result = execute_remote_command_impl(
         &args.command.clone(),
         config,
-        &format!("~/mainframer/{}", working_dir.file_name().unwrap().to_string_lossy().clone())
+        &format!("~/mainframer/{}", working_dir.file_name().unwrap().to_string_lossy().clone()),
     );
 
     let duration = start.elapsed();
@@ -123,7 +123,7 @@ fn sync_after_remote_command(working_dir: &PathBuf, config: &Config, ignore: &Ig
     let result = sync_remote_to_local(
         &working_dir.file_name().unwrap().to_string_lossy().clone(),
         config,
-        ignore
+        ignore,
     );
 
     let duration = start.elapsed();

@@ -4,7 +4,7 @@ use std::path::PathBuf;
 pub struct Ignore {
     pub common_ignore_file: Option<PathBuf>,
     pub local_ignore_file: Option<PathBuf>,
-    pub remote_ignore_file: Option<PathBuf>
+    pub remote_ignore_file: Option<PathBuf>,
 }
 
 impl Ignore {
@@ -30,7 +30,7 @@ impl Ignore {
             remote_ignore_file: match remote_ignore_file.exists() {
                 true => Some(remote_ignore_file.to_path_buf()),
                 false => None
-            }
+            },
         }
     }
 }
