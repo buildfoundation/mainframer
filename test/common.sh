@@ -12,13 +12,19 @@ DIR_NAME="$( basename "$DIR")"
 # This is how we test, localhost should have sshd running on port 22 and ssh key of current user allowed.
 TEST_REMOTE_MACHINE="localhost"
 
-PRIVATE_BUILD_DIR_NAME=$(printf '%q' "run")
+if [ -z "$OVERRIDDEN_BUILD_DIR_NAME" ]; then
+    PRIVATE_BUILD_DIR_NAME=`printf '%q' "run"`
+else
+    echo "Overriding folder name for the test to '$OVERRIDDEN_BUILD_DIR_NAME'"
+    PRIVATE_BUILD_DIR_NAME=`printf '%q' "$OVERRIDDEN_BUILD_DIR_NAME"`
+fi
+
 PRIVATE_REMOTE_BUILD_ROOT_DIR="~/mainframer"
 PRIVATE_REMOTE_BUILD_DIR="$PRIVATE_REMOTE_BUILD_ROOT_DIR/$PRIVATE_BUILD_DIR_NAME"
 
 # Should be used by tests.
 REPO_DIR="$DIR/.."
-BUILD_DIR=$(printf '%q' "$DIR/$PRIVATE_BUILD_DIR_NAME")
+BUILD_DIR="$DIR/$PRIVATE_BUILD_DIR_NAME"
 CONFIG_FILE="$BUILD_DIR/.mainframer/config"
 LOCAL_IGNORE_FILE="$BUILD_DIR/.mainframer/localignore"
 REMOTE_IGNORE_FILE="$BUILD_DIR/.mainframer/remoteignore"
