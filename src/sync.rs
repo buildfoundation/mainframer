@@ -11,16 +11,18 @@ pub fn sync_local_to_remote(local_project_dir_name: &str, config: &Config, ignor
         .arg("--archive")
         .arg("--delete")
         // Create (if not exists) project dir on remote machine.
-        .arg(format!("--rsync-path=\"mkdir -p \"{}\" && rsync", project_dir_on_remote_machine(local_project_dir_name)))
+        .arg(format!("--rsync-path=mkdir -p {} && rsync", project_dir_on_remote_machine(local_project_dir_name)))
         .arg(format!("--compress-level={}", config.local_compression_level));
 
     apply_exclude_from(&mut command, &ignore.common_ignore_file);
     apply_exclude_from(&mut command, &ignore.local_ignore_file);
 
-    command.arg("--rsh ssh");
+    command
+        .arg("--rsh=ssh")
+        .arg("./");
 
     command.arg(format!(
-        "./ {remote_machine_name}:'{project_dir_on_remote_machine}'",
+        "{remote_machine_name}:{project_dir_on_remote_machine}",
         remote_machine_name = config.remote_machine_name,
         project_dir_on_remote_machine = project_dir_on_remote_machine(local_project_dir_name))
     );
@@ -35,9 +37,10 @@ pub fn sync_local_to_remote(local_project_dir_name: &str, config: &Config, ignor
                 0 => Ok(()),
                 _ => Err(
                     format!(
-                        "rsync exit code '{exit_code}',\nrsync error output '{error_output}'.",
+                        "rsync exit code '{exit_code}',\nrsync stdout '{stdout}',\nrsync stderr '{stderr}'.",
                         exit_code = status_code,
-                        error_output = String::from_utf8_lossy(&output.stderr)
+                        stdout = String::from_utf8_lossy(&output.stdout),
+                        stderr = String::from_utf8_lossy(&output.stderr)
                     )
                 )
             }
@@ -56,13 +59,14 @@ pub fn sync_remote_to_local(local_project_dir_name: &str, config: &Config, ignor
     apply_exclude_from(&mut command, &ignore.common_ignore_file);
     apply_exclude_from(&mut command, &ignore.remote_ignore_file);
 
-    // 	COMMAND+="--rsh ssh $REMOTE_MACHINE:'$PROJECT_DIR_ON_REMOTE_MACHINE'/ ./"
-
-    command.arg(format!(
-        "--rsh ssh {remote_machine_name}:'{project_dir_on_remote_machine}'/ ./",
-        remote_machine_name = config.remote_machine_name,
-        project_dir_on_remote_machine = project_dir_on_remote_machine(local_project_dir_name))
-    );
+    command
+        .arg("--rsh=ssh")
+        .arg(format!(
+            "{remote_machine_name}:{project_dir_on_remote_machine}/",
+            remote_machine_name = config.remote_machine_name,
+            project_dir_on_remote_machine = project_dir_on_remote_machine(local_project_dir_name))
+        )
+        .arg("./");
 
     let result = command.output();
 
@@ -74,9 +78,10 @@ pub fn sync_remote_to_local(local_project_dir_name: &str, config: &Config, ignor
                 0 => Ok(()),
                 _ => Err(
                     format!(
-                        "rsync exit code '{exit_code}',\nrsync error output '{error_output}'.",
+                        "rsync exit code '{exit_code}',\nrsync stdout '{stdout}',\nrsync stderr '{stderr}'.",
                         exit_code = status_code,
-                        error_output = String::from_utf8_lossy(&output.stderr)
+                        stdout = String::from_utf8_lossy(&output.stdout),
+                        stderr = String::from_utf8_lossy(&output.stderr)
                     )
                 )
             }

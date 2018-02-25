@@ -19,7 +19,7 @@ use time::*;
 fn main() {
     print_header();
 
-    let args = match Args::parse(env::args().collect()) {
+    let args = match Args::parse(env::args().skip(1).collect()) {
         Err(message) => exit_with_error(&message, 1),
         Ok(value) => value,
     };
@@ -42,22 +42,22 @@ fn main() {
     let start = Instant::now();
 
     match sync_before_remote_command(&working_dir, &config, &ignore) {
-        Err(error) => exit_with_error(&format!("Sync local → remote machine failed: {}", error), 1),
+        Err(error) => exit_with_error(&format!("Sync local → remote machine failed: {}.", error), 1),
         Ok(_) => ()
     }
 
     let remote_command_result = execute_remote_command(&working_dir, &args, &config);
 
     match sync_after_remote_command(&working_dir, &config, &ignore) {
-        Err(error) => exit_with_error(&format!("Sync remote → local machine failed: {}", error), 1),
+        Err(error) => exit_with_error(&format!("Sync remote → local machine failed: {}.", error), 1),
         Ok(_) => ()
     }
 
     let duration = start.elapsed();
 
     match remote_command_result {
-        Err(_) => exit_with_error(&format!("\nFailure: took {}", format_duration(&duration)), 1),
-        _ => println!("\nSuccess: took {}", format_duration(&duration))
+        Err(_) => exit_with_error(&format!("\nFailure: took {}.", format_duration(&duration)), 1),
+        _ => println!("\nSuccess: took {}.", format_duration(&duration))
     }
 }
 
@@ -88,7 +88,7 @@ fn sync_before_remote_command(working_dir: &PathBuf, config: &Config, ignore: &I
     match result {
         Err(error) => Err(error),
         Ok(_) => {
-            println!("Sync done: took {}\n", format_duration(&duration));
+            println!("Sync done: took {}.\n", format_duration(&duration));
             Ok(())
         }
     }
@@ -108,8 +108,8 @@ fn execute_remote_command(working_dir: &PathBuf, args: &Args, config: &Config) -
     let duration = start.elapsed();
 
     match result {
-        Err(_) => eprintln!("\nExecution failed: took {}\n", format_duration(&duration)),
-        Ok(_) => println!("\nExecution done: took {}\n", format_duration(&duration))
+        Err(_) => eprintln!("\nExecution failed: took {}.\n", format_duration(&duration)),
+        Ok(_) => println!("\nExecution done: took {}.\n", format_duration(&duration))
     }
 
     result
@@ -131,7 +131,7 @@ fn sync_after_remote_command(working_dir: &PathBuf, config: &Config, ignore: &Ig
     match result {
         Err(error) => Err(error),
         Ok(_) => {
-            println!("Sync done: took {}", format_duration(&duration));
+            println!("Sync done: took {}.", format_duration(&duration));
             Ok(())
         }
     }
