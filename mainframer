@@ -26,13 +26,37 @@ PROJECT_DIR_NAME="$( basename "$PROJECT_DIR" )"
 PROJECT_DIR_ON_REMOTE_MACHINE="~/mainframer/$PROJECT_DIR_NAME"
 
 CONFIG_DIR="$PROJECT_DIR/.mainframer"
+GLOBAL_CONFIG_DIR="$HOME/.mainframer"
+
 CONFIG_FILE="$CONFIG_DIR/config"
 COMMON_IGNORE_FILE="$CONFIG_DIR/ignore"
 LOCAL_IGNORE_FILE="$CONFIG_DIR/localignore"
 REMOTE_IGNORE_FILE="$CONFIG_DIR/remoteignore"
 
+GLOBAL_CONFIG_FILE="$GLOBAL_CONFIG_DIR/config"
+
+if [ ! -f "$COMMON_IGNORE_FILE" ]; then
+	COMMON_IGNORE_FILE="$GLOBAL_CONFIG_DIR/ignore"
+fi
+
+if [ ! -f "$LOCAL_IGNORE_FILE" ]; then
+        LOCAL_IGNORE_FILE="$GLOBAL_CONFIG_DIR/localignore"
+fi
+
+if [ ! -f "$REMOTE_IGNORE_FILE" ]; then
+        REMOTE_IGNORE_FILE="$GLOBAL_CONFIG_DIR/remoteignore"
+fi
+
+function readConfigPropertyFromNamedFile {
+	grep "^${1}=" "$2" | cut -d'=' -f2
+}
+
 function readConfigProperty {
-	grep "^${1}=" "$CONFIG_FILE" | cut -d'=' -f2
+	local config=$(readConfigPropertyFromNamedFile $1 $CONFIG_FILE)
+	if [[ ( -z "$config" ) && ( -f "$GLOBAL_CONFIG_FILE" ) ]]; then
+		config=$(readConfigPropertyFromNamedFile $1 $GLOBAL_CONFIG_FILE)
+	fi
+	echo $config
 }
 
 REMOTE_MACHINE_CONFIG_PROPERTY="remote_machine"
@@ -60,7 +84,6 @@ fi
 if [ -z "$REMOTE_COMPRESS_LEVEL" ]; then
 	REMOTE_COMPRESS_LEVEL=1
 fi
-
 
 REMOTE_COMMAND="$*"
 REMOTE_COMMAND_SUCCESSFUL="false"
