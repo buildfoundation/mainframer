@@ -17,7 +17,7 @@ use sync::*;
 use time::*;
 
 fn main() {
-    print_header();
+    println!(":: Mainframer v2.1.0\n");
 
     let args = match Args::parse(env::args().skip(1).collect()) {
         Err(message) => exit_with_error(&message, 1),
@@ -59,10 +59,6 @@ fn main() {
         Err(_) => exit_with_error(&format!("\nFailure: took {}.", format_duration(&duration)), 1),
         _ => println!("\nSuccess: took {}.", format_duration(&duration))
     }
-}
-
-fn print_header() {
-    println!(":: Mainframer v2.1.0\n");
 }
 
 fn exit_with_error(message: &str, code: i32) -> ! {
