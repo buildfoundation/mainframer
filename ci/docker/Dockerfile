@@ -11,7 +11,7 @@ MAINTAINER Mainframer Team
 # "build-essential": build sample GCC project.
 # "lib32stdc++6 lib32z1 unzip": build sample Android project.
 # "ant python git": build sample Buck project.
-RUN apt-get update --quiet && \
+RUN apt-get update --quiet > /dev/null && \
     apt-get --assume-yes --quiet install sudo openssh-server openjdk-8-jdk \
     golang clang build-essential lib32stdc++6 lib32z1 unzip ant python git curl && \
     curl -sf -L https://static.rust-lang.org/rustup.sh | sh
@@ -25,12 +25,14 @@ ENV ANDROID_SDK_INSTALL_COMPONENT "echo \"y\" | \"$ANDROID_HOME\"/tools/bin/sdkm
 # Give all users access to Android SDK (otherwise build_user won't be able to access it).
 RUN mkdir -p $ANDROID_HOME && \
     curl https://dl.google.com/android/repository/$ANDROID_SDK_FILE_NAME --progress-bar --location --output $ANDROID_SDK_FILE_NAME && \
-    unzip $ANDROID_SDK_FILE_NAME -d $ANDROID_HOME && \
+    echo "Unzipping Android SDK" && \
+    unzip -qq $ANDROID_SDK_FILE_NAME -d $ANDROID_HOME && \
     rm $ANDROID_SDK_FILE_NAME && \
-    eval $ANDROID_SDK_INSTALL_COMPONENT '"tools"' && \
-    eval $ANDROID_SDK_INSTALL_COMPONENT '"platform-tools"' && \
-    eval $ANDROID_SDK_INSTALL_COMPONENT '"build-tools;25.0.2"' && \
-    eval $ANDROID_SDK_INSTALL_COMPONENT '"platforms;android-25"' && \
+    echo "Installing Android SDK components" && \
+    eval $ANDROID_SDK_INSTALL_COMPONENT '"tools"' > /dev/null && \
+    eval $ANDROID_SDK_INSTALL_COMPONENT '"platform-tools"' > /dev/null && \
+    eval $ANDROID_SDK_INSTALL_COMPONENT '"build-tools;25.0.2"' > /dev/null && \
+    eval $ANDROID_SDK_INSTALL_COMPONENT '"platforms;android-25"' > /dev/null && \
     chmod -R 777 "$ANDROID_HOME"
 
 # Entrypoint script will allow us run as non-root in the container.

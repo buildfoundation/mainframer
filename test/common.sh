@@ -125,9 +125,6 @@ cleanMainfamerDirOnRemoteMachine
 # Create build directory.
 mkdir -p "$BUILD_DIR/.mainframer"
 
-# Copy mainframer into build directory.
-cp "$DIR/../mainframer" "$BUILD_DIR/"
-
 # Create config that sets remote build machine for the test.
 setTestRemoteMachineInConfig
 
