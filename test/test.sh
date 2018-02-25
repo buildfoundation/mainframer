@@ -20,11 +20,22 @@ function printTestResults {
 # Hook to exit happened either because of success or error.
 trap printTestResults EXIT
 
-echo "Checking for syntax errors…"
-bash -n "$DIR/../mainframer"
+pushd "$DIR/../" > /dev/null
+
+echo "Building debug version of Mainframer..."
+cargo build
+
+echo "Building release version of Mainframer..."
+cargo build --release
+
+echo "Running unit tests..."
+cargo test
+
+popd > /dev/null
+
 TEST_COUNTER=$((TEST_COUNTER+1))
 
-echo "Done, running tests…"
+echo "Running integration tests…"
 
 # Run all tests.
 for test_ in "$DIR"/test_*; do
