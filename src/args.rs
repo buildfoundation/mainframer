@@ -8,16 +8,7 @@ impl Args {
         match raw_args.len() {
             0 => Err(String::from("Please pass remote command.")), // TODO more user friendly message, for now it's consistent with Bash version.
             _ => Ok(Args {
-                command: {
-                    let str: String = raw_args
-                        .iter()
-                        .cloned()
-                        // Add space between parameters.
-                        .map(|arg| format!("{} ", arg))
-                        .collect();
-
-                    String::from(str.trim())
-                }
+                command: raw_args.join(" ").trim().into()
             })
         }
     }

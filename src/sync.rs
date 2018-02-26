@@ -27,25 +27,7 @@ pub fn sync_local_to_remote(local_project_dir_name: &str, config: &Config, ignor
         project_dir_on_remote_machine = project_dir_on_remote_machine(local_project_dir_name))
     );
 
-    let result = command.output();
-
-    match result {
-        Err(_) => Err(String::from("Generic sync error.")),  // Rust doc doesn't really say when can it occur.
-        Ok(output) => match output.status.code() {
-            None => Err(String::from("Sync was terminated.")),
-            Some(status_code) => match status_code {
-                0 => Ok(()),
-                _ => Err(
-                    format!(
-                        "rsync exit code '{exit_code}',\nrsync stdout '{stdout}',\nrsync stderr '{stderr}'.",
-                        exit_code = status_code,
-                        stdout = String::from_utf8_lossy(&output.stdout),
-                        stderr = String::from_utf8_lossy(&output.stderr)
-                    )
-                )
-            }
-        }
-    }
+    execute_rsync(&mut command)
 }
 
 pub fn sync_remote_to_local(local_project_dir_name: &str, config: &Config, ignore: &Ignore) -> Result<(), String> {
@@ -68,10 +50,27 @@ pub fn sync_remote_to_local(local_project_dir_name: &str, config: &Config, ignor
         )
         .arg("./");
 
-    let result = command.output();
+    execute_rsync(&mut command)
+}
+
+fn project_dir_on_remote_machine(local_project_dir_name: &str) -> String {
+    format!("~/mainframer/{}", local_project_dir_name)
+}
+
+fn apply_exclude_from(rsync_command: &mut Command, exclude_file: &Option<PathBuf>) {
+    match exclude_file {
+        &Some(ref value) => {
+            rsync_command.arg(format!("--exclude-from={}", value.to_string_lossy()));
+        }
+        &None => ()
+    };
+}
+
+fn execute_rsync(rsync: &mut Command) -> Result<(), String> {
+    let result = rsync.output();
 
     match result {
-        Err(_) => Err(String::from("Generic sync error.")), // Rust doc doesn't really say when can it occur.
+        Err(_) => Err(String::from("Generic sync error.")), // Rust doc doesn't really say when can an error occur.
         Ok(output) => match output.status.code() {
             None => Err(String::from("Sync was terminated.")),
             Some(status_code) => match status_code {
@@ -87,17 +86,4 @@ pub fn sync_remote_to_local(local_project_dir_name: &str, config: &Config, ignor
             }
         }
     }
-}
-
-fn project_dir_on_remote_machine(local_project_dir_name: &str) -> String {
-    format!("~/mainframer/{}", local_project_dir_name)
-}
-
-fn apply_exclude_from(rsync_command: &mut Command, exclude_file: &Option<PathBuf>) {
-    match exclude_file.clone() {
-        Some(value) => {
-            rsync_command.arg(format!("--exclude-from={}", value.to_string_lossy()));
-        }
-        None => ()
-    };
 }

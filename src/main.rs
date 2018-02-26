@@ -10,7 +10,6 @@ use config::Config;
 use ignore::*;
 use remote_command::execute_remote_command as execute_remote_command_impl;
 use std::env;
-use std::path::PathBuf;
 use std::process;
 use std::time::Instant;
 use sync::*;
@@ -29,6 +28,8 @@ fn main() {
         Ok(value) => value
     };
 
+    let working_dir_name = working_dir.file_name().unwrap().to_string_lossy().clone();
+
     let mut config_file = working_dir.clone();
     config_file.push(".mainframer/config");
 
@@ -41,14 +42,14 @@ fn main() {
 
     let start = Instant::now();
 
-    match sync_before_remote_command(&working_dir, &config, &ignore) {
+    match sync_before_remote_command(&working_dir_name, &config, &ignore) {
         Err(error) => exit_with_error(&format!("Sync local → remote machine failed: {}.", error), 1),
         Ok(_) => ()
     }
 
-    let remote_command_result = execute_remote_command(&working_dir, &args, &config);
+    let remote_command_result = execute_remote_command(&working_dir_name, &args, &config);
 
-    match sync_after_remote_command(&working_dir, &config, &ignore) {
+    match sync_after_remote_command(&working_dir_name, &config, &ignore) {
         Err(error) => exit_with_error(&format!("Sync remote → local machine failed: {}.", error), 1),
         Ok(_) => ()
     }
@@ -68,13 +69,13 @@ fn exit_with_error(message: &str, code: i32) -> ! {
     process::exit(code);
 }
 
-fn sync_before_remote_command(working_dir: &PathBuf, config: &Config, ignore: &Ignore) -> Result<(), String> {
+fn sync_before_remote_command(working_dir_name: &str, config: &Config, ignore: &Ignore) -> Result<(), String> {
     println!("Sync local → remote machine...");
 
     let start = Instant::now();
 
     let result = sync_local_to_remote(
-        &working_dir.file_name().unwrap().to_string_lossy().clone(),
+        &working_dir_name,
         config,
         ignore,
     );
@@ -90,7 +91,7 @@ fn sync_before_remote_command(working_dir: &PathBuf, config: &Config, ignore: &I
     }
 }
 
-fn execute_remote_command(working_dir: &PathBuf, args: &Args, config: &Config) -> Result<(), ()> {
+fn execute_remote_command(working_dir_name: &str, args: &Args, config: &Config) -> Result<(), ()> {
     println!("Executing command on remote machine...\n");
 
     let start = Instant::now();
@@ -98,7 +99,7 @@ fn execute_remote_command(working_dir: &PathBuf, args: &Args, config: &Config) -
     let result = execute_remote_command_impl(
         &args.command.clone(),
         config,
-        &format!("~/mainframer/{}", working_dir.file_name().unwrap().to_string_lossy().clone()),
+        &format!("~/mainframer/{}", working_dir_name),
     );
 
     let duration = start.elapsed();
@@ -111,13 +112,13 @@ fn execute_remote_command(working_dir: &PathBuf, args: &Args, config: &Config) -
     result
 }
 
-fn sync_after_remote_command(working_dir: &PathBuf, config: &Config, ignore: &Ignore) -> Result<(), String> {
+fn sync_after_remote_command(working_dir_name: &str, config: &Config, ignore: &Ignore) -> Result<(), String> {
     println!("Sync remote → local machine...");
 
     let start = Instant::now();
 
     let result = sync_remote_to_local(
-        &working_dir.file_name().unwrap().to_string_lossy().clone(),
+        &working_dir_name,
         config,
         ignore,
     );
