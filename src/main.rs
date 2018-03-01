@@ -14,7 +14,7 @@ use std::time::Instant;
 use time::*;
 
 fn main() {
-    println!(":: Mainframer v2.1.0\n");
+    println!(":: Mainframer v{}\n", env!("CARGO_PKG_VERSION"));
 
     let args = match Args::parse(env::args().skip(1).collect()) {
         Err(message) => exit_with_error(&message, 1),
