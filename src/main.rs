@@ -57,8 +57,8 @@ fn main() {
     let duration = start.elapsed();
 
     match remote_command_result {
-        Err(_) => exit_with_error(&format!("\nFailure: took {}.", format_duration(&duration)), 1),
-        _ => println!("\nSuccess: took {}.", format_duration(&duration))
+        Err(_) => exit_with_error(&format!("\nFailure: took {}.", format_duration(duration)), 1),
+        _ => println!("\nSuccess: took {}.", format_duration(duration))
     }
 }
 
@@ -85,7 +85,7 @@ fn sync_before_remote_command(working_dir_name: &str, config: &Config, ignore: &
     match result {
         Err(error) => Err(error),
         Ok(_) => {
-            println!("Sync done: took {}.\n", format_duration(&duration));
+            println!("Sync done: took {}.\n", format_duration(duration));
             Ok(())
         }
     }
@@ -105,8 +105,8 @@ fn execute_remote_command(working_dir_name: &str, args: &Args, config: &Config) 
     let duration = start.elapsed();
 
     match result {
-        Err(_) => eprintln!("\nExecution failed: took {}.\n", format_duration(&duration)),
-        Ok(_) => println!("\nExecution done: took {}.\n", format_duration(&duration))
+        Err(_) => eprintln!("\nExecution failed: took {}.\n", format_duration(duration)),
+        Ok(_) => println!("\nExecution done: took {}.\n", format_duration(duration))
     }
 
     result
@@ -128,7 +128,7 @@ fn sync_after_remote_command(working_dir_name: &str, config: &Config, ignore: &I
     match result {
         Err(error) => Err(error),
         Ok(_) => {
-            println!("Sync done: took {}.", format_duration(&duration));
+            println!("Sync done: took {}.", format_duration(duration));
             Ok(())
         }
     }
