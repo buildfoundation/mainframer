@@ -71,39 +71,48 @@ mod tests {
 
     #[test]
     fn format_duration_1_minute() {
-        assert_eq!(format_duration(Duration::from_secs(60)), "1 minute 0 seconds");    }
+        assert_eq!(format_duration(Duration::from_secs(60)), "1 minute 0 seconds");
+    }
 
     #[test]
     fn format_duration_1_minute_1_second() {
-        assert_eq!(format_duration(Duration::from_secs(61)), "1 minute 1 second");    }
+        assert_eq!(format_duration(Duration::from_secs(61)), "1 minute 1 second");
+    }
 
     #[test]
     fn format_duration_1_minute_2_seconds() {
-        assert_eq!(format_duration(Duration::from_secs(62)), "1 minute 2 seconds");    }
+        assert_eq!(format_duration(Duration::from_secs(62)), "1 minute 2 seconds");
+    }
 
     #[test]
     fn format_duration_2_minutes() {
-        assert_eq!(format_duration(Duration::from_secs(120)), "2 minutes 0 seconds");    }
+        assert_eq!(format_duration(Duration::from_secs(120)), "2 minutes 0 seconds");
+    }
 
     #[test]
     fn format_duration_2_minutes_1_second() {
-        assert_eq!(format_duration(Duration::from_secs(121)), "2 minutes 1 second");    }
+        assert_eq!(format_duration(Duration::from_secs(121)), "2 minutes 1 second");
+    }
 
     #[test]
     fn format_duration_2_minutes_2_seconds() {
-        assert_eq!(format_duration(Duration::from_secs(122)), "2 minutes 2 seconds");    }
+        assert_eq!(format_duration(Duration::from_secs(122)), "2 minutes 2 seconds");
+    }
 
     #[test]
     fn format_duration_1_hour() {
-        assert_eq!(format_duration(Duration::from_secs(3600)), "1 hour 0 seconds");    }
+        assert_eq!(format_duration(Duration::from_secs(3600)), "1 hour 0 seconds");
+    }
 
     #[test]
     fn format_duration_1_hour_1_second() {
-        assert_eq!(format_duration(Duration::from_secs(3601)), "1 hour 1 second");    }
+        assert_eq!(format_duration(Duration::from_secs(3601)), "1 hour 1 second");
+    }
 
     #[test]
     fn format_duration_1_hour_2_seconds() {
-        assert_eq!(format_duration(Duration::from_secs(3602)), "1 hour 2 seconds");    }
+        assert_eq!(format_duration(Duration::from_secs(3602)), "1 hour 2 seconds");
+    }
 
     #[test]
     fn format_duration_1_hour_1_minute() {

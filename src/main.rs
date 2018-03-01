@@ -8,11 +8,9 @@ mod time;
 use args::Args;
 use config::Config;
 use ignore::*;
-use remote_command::execute_remote_command as execute_remote_command_impl;
 use std::env;
 use std::process;
 use std::time::Instant;
-use sync::*;
 use time::*;
 
 fn main() {
@@ -74,7 +72,7 @@ fn sync_before_remote_command(working_dir_name: &str, config: &Config, ignore: &
 
     let start = Instant::now();
 
-    let result = sync_local_to_remote(
+    let result = sync::sync_local_to_remote(
         &working_dir_name,
         config,
         ignore,
@@ -96,7 +94,7 @@ fn execute_remote_command(working_dir_name: &str, args: &Args, config: &Config) 
 
     let start = Instant::now();
 
-    let result = execute_remote_command_impl(
+    let result = remote_command::execute_remote_command(
         &args.command.clone(),
         config,
         &format!("~/mainframer/{}", working_dir_name),
@@ -117,7 +115,7 @@ fn sync_after_remote_command(working_dir_name: &str, config: &Config, ignore: &I
 
     let start = Instant::now();
 
-    let result = sync_remote_to_local(
+    let result = sync::sync_remote_to_local(
         &working_dir_name,
         config,
         ignore,

@@ -33,7 +33,7 @@ RUN mkdir -p $ANDROID_HOME && \
     eval $ANDROID_SDK_INSTALL_COMPONENT '"platform-tools"' > /dev/null && \
     eval $ANDROID_SDK_INSTALL_COMPONENT '"build-tools;25.0.2"' > /dev/null && \
     eval $ANDROID_SDK_INSTALL_COMPONENT '"platforms;android-25"' > /dev/null && \
-    chmod -R 777 "$ANDROID_HOME"
+    chmod -R a+rwx "$ANDROID_HOME"
 
 # Entrypoint script will allow us run as non-root in the container.
 COPY ci/docker/entrypoint.sh /usr/local/bin/entrypoint.sh
