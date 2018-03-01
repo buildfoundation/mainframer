@@ -20,9 +20,6 @@ if [ "$USER_ID" == "0" ]; then
     echo "Warning: running as r00t."
 fi
 
-# Run shellcheck.
-docker run --rm --env SHELLCHECK_OPTS="--exclude SC2088" --volume `"pwd"`:/scripts:ro koalaman/shellcheck:v0.4.6 /scripts/mainframer
-
 docker build -t mainframer:latest .
 
 # Command will run inside a container.

@@ -13,6 +13,6 @@ printTestStarted
 rm -f "$REMOTE_IGNORE_FILE"
 
 # Run mainframer that noops to make sure that it does not exit with error.
-"$REPO_DIR"/mainframer 'echo noop'
+"$MAINFRAMER_EXECUTABLE" 'echo noop'
 
 printTestEnded

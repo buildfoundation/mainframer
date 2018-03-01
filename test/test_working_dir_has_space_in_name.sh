@@ -5,6 +5,7 @@ set -e
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Execute common pre-setup, include test functions.
+OVERRIDDEN_BUILD_DIR_NAME="folder name"
 source "$DIR/common.sh"
 
 printTestStarted
@@ -13,14 +14,16 @@ printTestStarted
 mkdir "$BUILD_DIR/src"
 touch "$BUILD_DIR/src/file1.txt"
 touch "$BUILD_DIR/src/file2.txt"
-touch "$BUILD_DIR/src/file3.txt"
 
-# Run mainframer that basically noop except syncing.
-"$MAINFRAMER_EXECUTABLE" 'echo noop'
+# Run mainframer that creates 3 build files.
+"$MAINFRAMER_EXECUTABLE" 'mkdir build && touch build/buildfile1.txt && touch build/buildfile2.txt'
 
-# Make sure files exist on remote machine after sync.
+# Make sure all src files exist on remote machine.
 fileMustExistOnRemoteMachine "src/file1.txt" "(sync problem)"
 fileMustExistOnRemoteMachine "src/file2.txt" "(sync problem)"
-fileMustExistOnRemoteMachine "src/file3.txt" "(sync problem)"
+
+# Make sure all build files except ignored exist on local machine.
+fileMustExistOnLocalMachine "build/buildfile1.txt" "(sync problem)"
+fileMustExistOnLocalMachine "build/buildfile2.txt" "(sync problem)"
 
 printTestEnded

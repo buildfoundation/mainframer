@@ -12,7 +12,13 @@ DIR_NAME="$( basename "$DIR")"
 # This is how we test, localhost should have sshd running on port 22 and ssh key of current user allowed.
 TEST_REMOTE_MACHINE="localhost"
 
-PRIVATE_BUILD_DIR_NAME="run"
+if [ -z "$OVERRIDDEN_BUILD_DIR_NAME" ]; then
+    PRIVATE_BUILD_DIR_NAME=`printf '%q' "run"`
+else
+    echo "Overriding folder name for the test to '$OVERRIDDEN_BUILD_DIR_NAME'"
+    PRIVATE_BUILD_DIR_NAME=`printf '%q' "$OVERRIDDEN_BUILD_DIR_NAME"`
+fi
+
 PRIVATE_REMOTE_BUILD_ROOT_DIR="~/mainframer"
 PRIVATE_REMOTE_BUILD_DIR="$PRIVATE_REMOTE_BUILD_ROOT_DIR/$PRIVATE_BUILD_DIR_NAME"
 
@@ -24,6 +30,16 @@ LOCAL_IGNORE_FILE="$BUILD_DIR/.mainframer/localignore"
 REMOTE_IGNORE_FILE="$BUILD_DIR/.mainframer/remoteignore"
 REMOTE_MACHINE_PROPERTY="remote_machine"
 COMMON_IGNORE_FILE="$BUILD_DIR/.mainframer/ignore"
+
+# TODO test both debug and release builds.
+MAINFRAMER_EXECUTABLE="$DIR/../target/debug/mainframer"
+
+function buildMainframer {
+    echo "Building Mainframer..."
+    pushd "$DIR/.." > /dev/null
+    cargo build
+    popd > /dev/null
+}
 
 function printTestStarted {
 	echo ""
@@ -100,15 +116,14 @@ if [ ! "$CLEAN_BUILD_DIRS_AFTER_RUN" == "false" ]; then
 	trap "cleanBuildDirOnLocalMachine ; cleanMainfamerDirOnRemoteMachine" EXIT
 fi
 
+buildMainframer
+
 # Clean build directories.
 cleanBuildDirOnLocalMachine
 cleanMainfamerDirOnRemoteMachine
 
 # Create build directory.
 mkdir -p "$BUILD_DIR/.mainframer"
-
-# Copy mainframer into build directory.
-cp "$DIR/../mainframer" "$BUILD_DIR/"
 
 # Create config that sets remote build machine for the test.
 setTestRemoteMachineInConfig

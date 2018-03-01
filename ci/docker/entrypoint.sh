@@ -11,9 +11,6 @@ echo "Starting with UID : $USER_ID"
 groupadd --gid $USER_ID build_user
 useradd --shell /bin/bash --uid $USER_ID --gid $USER_ID --comment "User for container" --create-home build_user
 
-# Grant build_user access to Android SDK.
-chown -R build_user:build_user $ANDROID_HOME
-
 # Start ssh server for tests.
 service ssh start
 

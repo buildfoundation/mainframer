@@ -16,7 +16,7 @@ cp -a "$DIR/../samples/gradle-android/." "$BUILD_DIR"
 setTestRemoteMachineInConfig
 
 # Run mainframer that builds Gradle Android project.
-"$REPO_DIR"/mainframer './gradlew clean build'
+"$MAINFRAMER_EXECUTABLE" './gradlew clean build'
 
 # Check that apk exists to ensure that it build was fine.
 fileMustExistOnLocalMachine 'app/build/outputs/apk/app-debug.apk'

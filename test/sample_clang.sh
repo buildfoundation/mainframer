@@ -16,7 +16,7 @@ cp -a "$DIR/../samples/clang/." "$BUILD_DIR"
 setTestRemoteMachineInConfig
 
 # Run mainframer that builds Clang project.
-"$REPO_DIR"/mainframer 'clang sample.c -o sample'
+"$MAINFRAMER_EXECUTABLE" 'clang sample.c -o sample'
 
 # Run binary to ensure that it was built fine.
 eval "$BUILD_DIR/sample"

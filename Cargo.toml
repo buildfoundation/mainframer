@@ -1,0 +1,6 @@
+[package]
+name = "mainframer"
+version = "2.1.0"
+authors = ["Artem Zinnatullin <artem.zinnatullin@gmail.com>", "Artur Dryomov <artur.dryomov@gmail.com>", "Mainframer Developers and Contributors"]
+
+[dependencies]

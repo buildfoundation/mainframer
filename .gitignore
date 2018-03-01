@@ -5,5 +5,8 @@
 .DS_Store
 build/
 
+# Rust
+target
+
 # Share code style.
 !.idea/codeStyleSettings.xml
