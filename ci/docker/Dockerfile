@@ -14,7 +14,8 @@ MAINTAINER Mainframer Team
 RUN apt-get update --quiet > /dev/null && \
     apt-get --assume-yes --quiet install sudo openssh-server openjdk-8-jdk \
     golang clang build-essential lib32stdc++6 lib32z1 unzip ant python git curl && \
-    curl --silent --fail --location https://static.rust-lang.org/rustup.sh | sh -s -- --revision=1.24.0
+    curl --silent --fail --location https://static.rust-lang.org/rustup.sh | sh -s -- --revision=1.24.0 && \
+    rustc --version && cargo --version
 
 # Install Android SDK.
 ENV ANDROID_SDK_FILE_NAME tools_r25.2.3-linux.zip
