@@ -5,6 +5,7 @@ set -e
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Execute common pre-setup, include test functions.
+# shellcheck disable=SC1090
 source "$DIR/common.sh"
 
 printTestStarted

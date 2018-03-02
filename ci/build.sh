@@ -13,8 +13,20 @@ trap 'rm "$PROJECT_DIR/Dockerfile" && rm "$PROJECT_DIR/.dockerignore"' EXIT
 
 pushd "$PROJECT_DIR"
 
+echo "Running shellcheck against all .sh files in the project..."
+
+# shellcheck disable=SC2016
+docker run \
+--rm \
+--volume "$(pwd)":/project:ro \
+--entrypoint sh \
+koalaman/shellcheck-alpine:v0.4.7 \
+-c 'for file in $(find /project/ -type f -name "*.sh"); do shellcheck --format=gcc $file; done;'
+
+echo "Finished shellcheck."
+
 # Files created in mounted volume by container should have same owner as host machine user to prevent chmod problems.
-USER_ID=`id -u $USER`
+USER_ID=$(id -u "$USER")
 
 if [ "$USER_ID" == "0" ]; then
     echo "Warning: running as r00t."
@@ -36,13 +48,13 @@ BUILD_COMMAND+="cat ~/.ssh/known_hosts && "
 BUILD_COMMAND+="chmod u+rw,go= ~/.ssh/known_hosts && "
 
 # Add ANDROID_HOME to bashrc for ssh sessions.
-BUILD_COMMAND+="mv ~/.bashrc ~/.bashrc_original && echo -e 'export ANDROID_HOME=/opt/android-sdk-linux\n' > ~/.bashrc && cat ~/.bashrc_original >> ~/.bashrc && rm ~/.bashrc_original && "
+BUILD_COMMAND+="mv ~/.bashrc ~/.bashrc_original && echo -e 'export ANDROID_HOME=/opt/android-sdk-linux\\n' > ~/.bashrc && cat ~/.bashrc_original >> ~/.bashrc && rm ~/.bashrc_original && "
 
 BUILD_COMMAND+="/opt/project/test/test.sh --run-samples"
 
 docker run \
 --rm \
---volume `"pwd"`:/opt/project \
+--volume "$(pwd)":/opt/project \
 --env LOCAL_USER_ID="$USER_ID" \
 mainframer:latest \
 bash -c "$BUILD_COMMAND"
