@@ -18,24 +18,31 @@ else
     PRIVATE_BUILD_DIR_NAME=$(printf '%q' "$OVERRIDDEN_BUILD_DIR_NAME")
 fi
 
-# shellcheck disable=SC2088, tilde will expand during ssh.
+# Tilde expands on remote machine during ssh.
+# shellcheck disable=SC2088
 PRIVATE_REMOTE_BUILD_ROOT_DIR="~/mainframer"
 PRIVATE_REMOTE_BUILD_DIR="$PRIVATE_REMOTE_BUILD_ROOT_DIR/$PRIVATE_BUILD_DIR_NAME"
 
-# Should be used by tests.
+### Used by tests (shellcheck raises SC2034)
 BUILD_DIR="$DIR/$PRIVATE_BUILD_DIR_NAME"
+
 CONFIG_FILE="$BUILD_DIR/.mainframer/config"
-# shellcheck disable=SC2034, used by tests.
+
+# shellcheck disable=SC2034
 LOCAL_IGNORE_FILE="$BUILD_DIR/.mainframer/localignore"
-# shellcheck disable=SC2034, used by tests.
+
+# shellcheck disable=SC2034
 REMOTE_IGNORE_FILE="$BUILD_DIR/.mainframer/remoteignore"
-# shellcheck disable=SC2034, used by tests.
+
+# shellcheck disable=SC2034
 COMMON_IGNORE_FILE="$BUILD_DIR/.mainframer/ignore"
+
 REMOTE_MACHINE_PROPERTY="remote_machine"
 
 # TODO test both debug and release builds.
-# shellcheck disable=SC2034, used by tests.
+# shellcheck disable=SC2034
 MAINFRAMER_EXECUTABLE="$DIR/../target/debug/mainframer"
+###
 
 function buildMainframer {
     echo "Building Mainframer..."
@@ -61,7 +68,8 @@ function cleanBuildDirOnLocalMachine {
 }
 
 function cleanMainfamerDirOnRemoteMachine {
-        # shellcheck disable=SC2029, $PRIVATE_REMOTE_BUILD_ROOT_DIR should expand locally.
+    # $PRIVATE_REMOTE_BUILD_ROOT_DIR should expand locally.
+    # shellcheck disable=SC2029
 	ssh "$TEST_REMOTE_MACHINE" "rm -rf $PRIVATE_REMOTE_BUILD_ROOT_DIR"
 }
 
@@ -82,15 +90,17 @@ function fileMustNotExistOnLocalMachine {
 }
 
 function fileMustExistOnRemoteMachine {
-        # shellcheck disable=SC2029, $PRIVATE_REMOTE_BUILD_ROOT_DIR should expand locally.
-	if ssh "$TEST_REMOTE_MACHINE" "test -f $PRIVATE_REMOTE_BUILD_DIR/$1"; then
+    # $PRIVATE_REMOTE_BUILD_ROOT_DIR should expand locally.
+    # shellcheck disable=SC2029
+	if ! ssh "$TEST_REMOTE_MACHINE" "test -f $PRIVATE_REMOTE_BUILD_DIR/$1"; then
 		echo "$PRIVATE_REMOTE_BUILD_DIR/$1 does not exist on remote machine $2"
 		exit 1
 	fi
 }
 
 function fileMustNotExistOnRemoteMachine {
-	# shellcheck disable=SC2029, $PRIVATE_REMOTE_BUILD_ROOT_DIR should expand locally.
+    # $PRIVATE_REMOTE_BUILD_ROOT_DIR should expand locally.
+	# shellcheck disable=SC2029
 	if ssh "$TEST_REMOTE_MACHINE" "test -f $PRIVATE_REMOTE_BUILD_DIR/$1"; then
 		echo "$PRIVATE_REMOTE_BUILD_DIR/$1 exists on remote machine $2"
 		exit 1

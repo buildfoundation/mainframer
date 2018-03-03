@@ -21,7 +21,9 @@ docker run \
 --volume "$(pwd)":/project:ro \
 --entrypoint sh \
 koalaman/shellcheck-alpine:v0.4.7 \
--c 'for file in $(find /project/ -type f -name "*.sh"); do shellcheck --format=gcc $file; done;'
+-c 'for file in $(find /project/ -type f -name "*.sh"); do
+if ! shellcheck --format=gcc $file; then export FAILED=true; fi; done;
+if [ "$FAILED" != "" ]; then exit 1; fi'
 
 echo "Finished shellcheck."
 
