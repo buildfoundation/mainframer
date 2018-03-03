@@ -5,13 +5,22 @@ set -e
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROJECT_DIR="$DIR/.."
 
-cp "$PROJECT_DIR/ci/docker/Dockerfile" "$PROJECT_DIR"
-cp "$PROJECT_DIR/ci/docker/.dockerignore" "$PROJECT_DIR"
+# Create separate build dir and copy project to it.
+# That allows us safely modify project files during the build which is helpful for local development.
+BUILD_DIR="$PROJECT_DIR/build"
 
-# Remove Dockerfile from root directory when build exits either successfully or with error code.
-trap 'rm "$PROJECT_DIR/Dockerfile" && rm "$PROJECT_DIR/.dockerignore"' EXIT
+# Clean previous build state.
+rm -rf "$BUILD_DIR"
+mkdir -p "$BUILD_DIR"
 
-pushd "$PROJECT_DIR"
+# Copy project to the build dir.
+rsync --archive --exclude "/.idea" --exclude "/build" "$PROJECT_DIR/" "$BUILD_DIR/"
+
+# Put Docker files to root of build dir to use build dir as working dir for Docker.
+cp "$BUILD_DIR/ci/docker/Dockerfile" "$BUILD_DIR"
+cp "$BUILD_DIR/ci/docker/.dockerignore" "$BUILD_DIR"
+
+pushd "$BUILD_DIR" > /dev/null
 
 # Files created in mounted volume by container should have same owner as host machine user to prevent chmod problems.
 USER_ID=`id -u $USER`
@@ -47,4 +56,4 @@ docker run \
 mainframer:latest \
 bash -c "$BUILD_COMMAND"
 
-popd
+popd > /dev/null
