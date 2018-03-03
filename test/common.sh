@@ -70,7 +70,7 @@ function cleanBuildDirOnLocalMachine {
 function cleanMainfamerDirOnRemoteMachine {
     # $PRIVATE_REMOTE_BUILD_ROOT_DIR should expand locally.
     # shellcheck disable=SC2029
-	ssh "$TEST_REMOTE_MACHINE" "rm -rf $PRIVATE_REMOTE_BUILD_ROOT_DIR"
+    ssh "$TEST_REMOTE_MACHINE" "rm -rf $PRIVATE_REMOTE_BUILD_ROOT_DIR"
 }
 
 function fileMustExistOnLocalMachine {
@@ -92,19 +92,19 @@ function fileMustNotExistOnLocalMachine {
 function fileMustExistOnRemoteMachine {
     # $PRIVATE_REMOTE_BUILD_ROOT_DIR should expand locally.
     # shellcheck disable=SC2029
-	if ! ssh "$TEST_REMOTE_MACHINE" "test -f $PRIVATE_REMOTE_BUILD_DIR/$1"; then
-		echo "$PRIVATE_REMOTE_BUILD_DIR/$1 does not exist on remote machine $2"
-		exit 1
-	fi
+    if ! ssh "$TEST_REMOTE_MACHINE" "test -f $PRIVATE_REMOTE_BUILD_DIR/$1"; then
+        echo "$PRIVATE_REMOTE_BUILD_DIR/$1 does not exist on remote machine $2"
+        exit 1
+    fi
 }
 
 function fileMustNotExistOnRemoteMachine {
     # $PRIVATE_REMOTE_BUILD_ROOT_DIR should expand locally.
-	# shellcheck disable=SC2029
-	if ssh "$TEST_REMOTE_MACHINE" "test -f $PRIVATE_REMOTE_BUILD_DIR/$1"; then
-		echo "$PRIVATE_REMOTE_BUILD_DIR/$1 exists on remote machine $2"
-		exit 1
-	fi
+    # shellcheck disable=SC2029
+    if ssh "$TEST_REMOTE_MACHINE" "test -f $PRIVATE_REMOTE_BUILD_DIR/$1"; then
+        echo "$PRIVATE_REMOTE_BUILD_DIR/$1 exists on remote machine $2"
+        exit 1
+    fi
 }
 
 function setTestRemoteMachineInConfig {
