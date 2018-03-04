@@ -7,4 +7,4 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # Execute common pre-setup, include test functions.
 source "$DIR/common.sh"
 
-bash "$DIR/common_test_ignore.sh" "$COMMON_IGNORE_FILE"
+bash "$DIR/common_test_ignore.sh" "$GLOBAL_IGNORE_FILE"
