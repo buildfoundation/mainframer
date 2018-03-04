@@ -8,8 +8,8 @@ set -xe
 USER_ID=${LOCAL_USER_ID:-9001}
 
 echo "Starting with UID : $USER_ID"
-groupadd --gid $USER_ID build_user
-useradd --shell /bin/bash --uid $USER_ID --gid $USER_ID --comment "User for container" --create-home build_user
+groupadd --gid "$USER_ID" build_user
+useradd --shell /bin/bash --uid "$USER_ID" --gid "$USER_ID" --comment "User for container" --create-home build_user
 
 # Start ssh server for tests.
 service ssh start

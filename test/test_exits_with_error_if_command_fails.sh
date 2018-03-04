@@ -5,20 +5,15 @@ set -e
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Execute common pre-setup, include test functions.
+# shellcheck disable=SC1090
 source "$DIR/common.sh"
 
 printTestStarted
 
-# Run mainframer that exits with error code on remote machine.
-set +e
-"$MAINFRAMER_EXECUTABLE" 'exit 1'
-
 # Make sure mainframer also exits with error code.
-if [ "$?" == "0" ]; then
+if "$MAINFRAMER_EXECUTABLE" 'exit 1'; then
 	echo "Should have exited with error code."
-	set -e
 	exit 1
 fi
-set -e
 
 printTestEnded

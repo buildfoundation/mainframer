@@ -5,6 +5,7 @@ set -e
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Execute common pre-setup, include test functions.
+# shellcheck disable=SC1090
 source "$DIR/common.sh"
 
 printTestStarted
@@ -12,17 +13,10 @@ printTestStarted
 # Make sure config is empty. 
 echo "" > "$CONFIG_FILE"
 
-set +e
-
-# Run mainframer that noops to make sure that it exits with error.
-"$MAINFRAMER_EXECUTABLE" 'echo noop'
-
-if [ "$?" == "0" ]; then
-	set -e
+# Run mainframer to make sure that it exits with error.
+if "$MAINFRAMER_EXECUTABLE" 'echo noop'; then	set -e
 	echo "Should have failed because config does not contain remote machine property."
 	exit 1
 fi
-
-set -e
 
 printTestEnded
