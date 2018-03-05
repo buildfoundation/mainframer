@@ -12,7 +12,7 @@ matrix:
         - ci/build.sh
     - os: osx
       script:
-        - uname -a
+        - ci/macOS.sh
 
 notifications:
   email: false
