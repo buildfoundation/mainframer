@@ -1,11 +1,18 @@
-# We use Docker → we need sudo.
-sudo: required
+install:
+  - echo "Just override default Travis CI install step to avoid automatic dependency resolution."
 
-services:
-  - docker
-
-script:
-  - ci/build.sh
+matrix:
+  include:
+    - os: linux
+      # We use Docker → we need sudo.
+      sudo: required
+      services:
+        - docker
+      script:
+        - ci/build.sh
+    - os: osx
+      script:
+        - ci/macOS.sh
 
 notifications:
   email: false

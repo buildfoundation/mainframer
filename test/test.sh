@@ -22,14 +22,7 @@ trap printTestResults EXIT
 
 pushd "$DIR/../" > /dev/null
 
-echo "Building debug version of Mainframer..."
-cargo build
-
-echo "Building release version of Mainframer..."
-cargo build --release
-
-echo "Running unit tests..."
-cargo test
+"$DIR/build_and_unit_tests.sh"
 
 popd > /dev/null
 
