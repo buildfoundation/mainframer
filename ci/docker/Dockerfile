@@ -2,6 +2,8 @@ FROM ubuntu:16.04
 
 MAINTAINER Mainframer Team
 
+COPY ci/rust.version /var/rust.version
+
 # "sudo": switch user in entrypoint.
 # "curl rustup": build Mainframer and sample Rust project.
 # "openssh-server": testing.
@@ -14,7 +16,8 @@ MAINTAINER Mainframer Team
 RUN apt-get update --quiet > /dev/null && \
     apt-get --assume-yes --quiet install sudo openssh-server openjdk-8-jdk \
     golang clang build-essential lib32stdc++6 lib32z1 unzip ant python git curl && \
-    curl --silent --fail --location https://static.rust-lang.org/rustup.sh | sh -s -- --revision=1.24.0 && \
+    export MAINFRAMER_RUST_VERSION="$(cat /var/rust.version)" && \
+    curl --silent --fail --location https://static.rust-lang.org/rustup.sh | sh -s -- --revision="$MAINFRAMER_RUST_VERSION" && \
     rustc --version && cargo --version
 
 # Install Android SDK.

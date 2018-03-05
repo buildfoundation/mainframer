@@ -10,20 +10,15 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # shellcheck disable=SC1090
 source "$DIR/prepare_build_dir.sh"
 
-# Install Rust. TODO: use common declaration for Rust version (duplicated in ci/docker/Dockerfile).
-curl --silent --fail --location https://static.rust-lang.org/rustup.sh | sh -s -- --revision=1.24.0
+# Install Rust.
+# shellcheck disable=SC1090
+MAINFRAMER_RUST_VERSION="$(cat "$DIR"/rust.version)"
+curl --silent --fail --location https://static.rust-lang.org/rustup.sh | sh -s -- --revision="$MAINFRAMER_RUST_VERSION"
 rustc --version
 cargo --version
 
 pushd "$BUILD_DIR" > /dev/null
 
-echo "Building debug version of Mainframer..."
-cargo build
-
-echo "Building release version of Mainframer..."
-cargo build --release
-
-echo "Running unit tests..."
-cargo test
+"$DIR/../test/build_and_unit_tests.sh"
 
 popd > /dev/null
