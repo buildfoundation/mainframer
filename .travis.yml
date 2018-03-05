@@ -1,3 +1,6 @@
+install:
+  - echo "Just override default Travis CI install step to avoid automatic dependency resolution."
+
 matrix:
   include:
     - os: linux
@@ -7,9 +10,9 @@ matrix:
         - docker
       script:
         - ci/build.sh
-
-install:
-  - echo "Just override default Travis CI install step to avoid automatic dependency resolution."
+    - os: osx
+      script:
+        - uname -a
 
 notifications:
   email: false
