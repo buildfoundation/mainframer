@@ -17,7 +17,7 @@ else
     NEW_VERSION=${TRAVIS_TAG#"v"}
     OLD_VERSION="3.0.0-dev"
 
-    sed --in-place "s/$OLD_VERSION/$NEW_VERSION/g" Cargo.toml
+    sed -i "s/$OLD_VERSION/$NEW_VERSION/g" Cargo.toml
 
     if ! grep --quiet "$NEW_VERSION" Cargo.toml; then
         echo "Couldn't override version, make sure Cargo.toml and ci/mainframer_version.sh are in sync."
