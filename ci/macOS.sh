@@ -19,6 +19,9 @@ cargo --version
 
 pushd "$BUILD_DIR" > /dev/null
 
+# Override Mainframer version if needed.
+TRAVIS_TAG=v4.0.0 "$DIR/mainframer_version.sh"
+
 "$DIR/../test/build_and_unit_tests.sh"
 
 popd > /dev/null
