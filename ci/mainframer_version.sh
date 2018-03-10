@@ -5,7 +5,7 @@ set -e
 # Script detects if build is triggered by git tag and sets it as Mainframer version, otherwise no-op.
 
 if [ -z "$TRAVIS_TAG" ]; then
-    echo "non-tag build, using version from Cargo.toml."
+    echo "Non-tag build, using version from Cargo.toml."
 else
     echo "Tag detected, overriding version in Cargo.toml."
 
