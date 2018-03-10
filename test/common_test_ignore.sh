@@ -7,8 +7,6 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # Execute common pre-setup, include test functions.
 source "$DIR/common.sh"
 
-printTestStarted
-
 # Create several files that should be synced to remote machine.
 mkdir "$BUILD_DIR/src"
 touch "$BUILD_DIR/src/file1.txt"
@@ -36,5 +34,3 @@ fileMustExistOnLocalMachine "build/buildfile3.txt" "(sync problem)"
 
 # Make sure ignored build file does not exist on local machine.
 fileMustNotExistOnLocalMachine "build/buildfile2.txt" "(common ignore problem)"
-
-printTestEnded
