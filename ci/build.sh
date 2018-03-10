@@ -27,6 +27,9 @@ if [ "$FAILED" != "" ]; then exit 1; fi'
 
 echo "Finished shellcheck."
 
+# Override Mainframer version if needed.
+"$DIR/mainframer_version.sh"
+
 # Files created in mounted volume by container should have same owner as host machine user to prevent chmod problems.
 USER_ID=$(id -u "$USER")
 
