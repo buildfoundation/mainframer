@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 set -e
 
 # You can run it from any directory.
@@ -9,6 +9,10 @@ source "$DIR/common.sh"
 
 printTestStarted
 
-bash "$DIR/common_test_local_ignore.sh" "$LOCAL_IGNORE_FILE"
+# This configs should be overwriten by the folder ignore
+echo "src/file1.txt" > "$GLOBAL_LOCAL_IGNORE_FILE"
+echo "build/buildfile1.txt" >> "$GLOBAL_LOCAL_IGNORE_FILE"
+
+bash "$DIR/test_local_ignore.sh"
 
 printTestEnded

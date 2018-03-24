@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 set -e
 
 # You can run it from any directory.
@@ -9,6 +9,6 @@ source "$DIR/common.sh"
 
 printTestStarted
 
-bash "$DIR/common_test_local_ignore.sh" "$LOCAL_IGNORE_FILE"
+bash "$DIR/common_test_local_ignore.sh" "$GLOBAL_LOCAL_IGNORE_FILE"
 
 printTestEnded

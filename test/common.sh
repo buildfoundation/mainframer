@@ -19,11 +19,17 @@ PRIVATE_REMOTE_BUILD_DIR="$PRIVATE_REMOTE_BUILD_ROOT_DIR/$PRIVATE_BUILD_DIR_NAME
 # Should be used by tests.
 REPO_DIR="$DIR/.."
 BUILD_DIR="$DIR/$PRIVATE_BUILD_DIR_NAME"
-CONFIG_FILE="$BUILD_DIR/.mainframer/config"
+CONFIG_DIR="$BUILD_DIR/.mainframer"
+GLOBAL_CONFIG_DIR="$HOME/.mainframer"
+CONFIG_FILE="$CONFIG_DIR/config"
+GLOBAL_CONFIG_FILE="$GLOBAL_CONFIG_DIR/config"
 LOCAL_IGNORE_FILE="$BUILD_DIR/.mainframer/localignore"
 REMOTE_IGNORE_FILE="$BUILD_DIR/.mainframer/remoteignore"
 REMOTE_MACHINE_PROPERTY="remote_machine"
 COMMON_IGNORE_FILE="$BUILD_DIR/.mainframer/ignore"
+GLOBAL_LOCAL_IGNORE_FILE="$GLOBAL_CONFIG_DIR/localignore"
+GLOBAL_REMOTE_IGNORE_FILE="$GLOBAL_CONFIG_DIR/remoteignore"
+GLOBAL_IGNORE_FILE="$GLOBAL_CONFIG_DIR/ignore"
 
 function printTestStarted {
 	echo ""
@@ -43,6 +49,10 @@ function cleanBuildDirOnLocalMachine {
 
 function cleanMainfamerDirOnRemoteMachine {
 	ssh "$TEST_REMOTE_MACHINE" "rm -rf $PRIVATE_REMOTE_BUILD_ROOT_DIR"
+}
+
+function cleanGlobalConfig {
+	ssh "$TEST_REMOTE_MACHINE" "rm -rf $GLOBAL_CONFIG_DIR"
 }
 
 function fileMustExistOnLocalMachine {
@@ -103,9 +113,11 @@ fi
 # Clean build directories.
 cleanBuildDirOnLocalMachine
 cleanMainfamerDirOnRemoteMachine
+cleanGlobalConfig
 
 # Create build directory.
 mkdir -p "$BUILD_DIR/.mainframer"
+mkdir -p "$GLOBAL_CONFIG_DIR"
 
 # Copy mainframer into build directory.
 cp "$DIR/../mainframer" "$BUILD_DIR/"

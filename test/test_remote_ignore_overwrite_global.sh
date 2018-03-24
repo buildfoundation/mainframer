@@ -9,6 +9,10 @@ source "$DIR/common.sh"
 
 printTestStarted
 
-bash "$DIR/common_test_remote_ignore.sh" "$REMOTE_IGNORE_FILE"
+# This configs should be overwriten by the folder ignore
+echo "src/file1.txt" > "$GLOBAL_REMOTE_IGNORE_FILE"
+echo "build/buildfile1.txt" >> "$GLOBAL_REMOTE_IGNORE_FILE"
+
+bash "$DIR/test_remote_ignore.sh"
 
 printTestEnded

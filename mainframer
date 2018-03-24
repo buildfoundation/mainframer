@@ -52,11 +52,12 @@ function readConfigPropertyFromNamedFile {
 }
 
 function readConfigProperty {
-	local config=$(readConfigPropertyFromNamedFile $1 $CONFIG_FILE)
+	local config 
+	config=$(readConfigPropertyFromNamedFile "$1" "$CONFIG_FILE")
 	if [[ ( -z "$config" ) && ( -f "$GLOBAL_CONFIG_FILE" ) ]]; then
-		config=$(readConfigPropertyFromNamedFile $1 $GLOBAL_CONFIG_FILE)
+		config=$(readConfigPropertyFromNamedFile "$1" "$GLOBAL_CONFIG_FILE")
 	fi
-	echo $config
+	echo "$config"
 }
 
 REMOTE_MACHINE_CONFIG_PROPERTY="remote_machine"
