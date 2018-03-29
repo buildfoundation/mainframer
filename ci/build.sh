@@ -55,7 +55,11 @@ BUILD_COMMAND+="chmod u+rw,go= ~/.ssh/known_hosts && "
 # Add ANDROID_HOME to bashrc for ssh sessions.
 BUILD_COMMAND+="mv ~/.bashrc ~/.bashrc_original && echo -e 'export ANDROID_HOME=/opt/android-sdk-linux\\n' > ~/.bashrc && cat ~/.bashrc_original >> ~/.bashrc && rm ~/.bashrc_original && "
 
-BUILD_COMMAND+="/opt/project/test/test.sh --run-samples"
+# Run unit and integration tests.
+BUILD_COMMAND+="/opt/project/test/test.sh --run-samples &&"
+
+# Build release version and move binary to build/artifacts.
+BUILD_COMMAND+="cd /opt/project && mkdir -p build/artifacts && cargo build --release && mv target/release/mainframer build/artifacts/mainframer-$(uname -s)"
 
 docker run \
 --rm \
