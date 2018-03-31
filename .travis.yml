@@ -21,7 +21,7 @@ deploy:
   file_glob: true
   file: build/build/artifacts
   on:
-    repo: gojuno/mainframer
+    # repo: gojuno/mainframer
     tags: true
 
 notifications:
