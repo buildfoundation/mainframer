@@ -24,4 +24,7 @@ pushd "$BUILD_DIR" > /dev/null
 
 "$DIR/../test/build_and_unit_tests.sh"
 
+mkdir -p artifacts
+mv target/release/mainframer "artifacts/mainframer-$(uname -s)"
+
 popd > /dev/null
