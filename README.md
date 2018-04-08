@@ -9,14 +9,14 @@ freezes, being able to actually _use_ your computer when the build is happening.
 
 ## Table of contents
 
-- [Supported Actions](#supported-actions)
+- [Supported Workflows](#supported-workflows)
 - [Setup](#setup)
 - [Demo](#demo)
 - [3rd-party IntelliJ Mainframer Plugin](#3rd-party-intellij-mainframer-plugin)
 - [How to Run Tests (for contributors)](#how-to-run-tests-for-contributors)
 - [License](#license)
 
-## Supported Actions
+## Supported Workflows
 
 `mainframer` supports basically anything you can execute as a command.
 It will sync files to remote machine, execute a command and sync files back.
