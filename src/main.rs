@@ -85,7 +85,7 @@ fn main() {
                 match stop_signal {
                     Err(e) => match e {
                         Disconnected => should_run = false,
-                        Empty => thread::sleep(Duration::from_millis(2000)),
+                        Empty => thread::sleep(Duration::from_millis(500)),
                     },
                     Ok(_) => received_stop_signal = true
                 }
