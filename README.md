@@ -9,7 +9,7 @@ freezes, being able to actually _use_ your computer when the build is happening.
 
 ## Table of contents
 
-- [State of Project Development](#state-of-project-development0)
+- [State of Project Development](#state-of-project-development)
 - [Supported Actions](#supported-actions)
 - [Setup](#setup)
 - [Demo](#demo)
