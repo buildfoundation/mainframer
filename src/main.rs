@@ -14,6 +14,7 @@ use std::time::Instant;
 use std::thread;
 use std::sync::mpsc;
 use std::sync::mpsc::TryRecvError::*;
+use std::time::Duration;
 use time::*;
 
 fn main() {
@@ -78,16 +79,16 @@ fn main() {
             if received_stop_signal {
                 // Do one final sync after stop signal.
                 should_run = false
-            }
+            } else {
+                let stop_signal = sync_remote_to_local_rx.try_recv();
 
-            let stop_signal = sync_remote_to_local_rx.try_recv();
-
-            match stop_signal {
-                Err(e) => match e {
-                    Disconnected => should_run = false,
-                    Empty => should_run = true,
-                },
-                Ok(_) => received_stop_signal = true
+                match stop_signal {
+                    Err(e) => match e {
+                        Disconnected => should_run = false,
+                        Empty => thread::sleep(Duration::from_millis(2000)),
+                    },
+                    Ok(_) => received_stop_signal = true
+                }
             }
         }
     });
