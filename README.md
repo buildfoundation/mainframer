@@ -19,9 +19,9 @@ freezes, being able to actually _use_ your computer when the build is happening.
 
 ## State of Project Development
 
-Version `3.x` is in active development, current stable version is `2.x` and recommended for production use.
+Version `3.x` is in active development, the stable version is `2.x` and recommended for production use.
 
-Since we store everything on GitHub, we recommend viewing documentation for specific version using git tags (see [releases page](https://github.com/gojuno/mainframer/releases)).
+You can view `2.x` version sources and docs using [this Git tag](https://github.com/gojuno/mainframer/tree/v2.1.0).
 
 There are lots of changes between `2.x` and `3.x`, but key subset is the following:
 
@@ -29,7 +29,7 @@ There are lots of changes between `2.x` and `3.x`, but key subset is the followi
 - Mainframer is now written in Rust #191
 - Mainframer will speed up most of existing workflows by syncing during remote command execution #188
 
-You can track `3.x` development progress by looking at [3.0.0 milestone](https://github.com/gojuno/mainframer/milestone/6).
+You can track `3.x` development progress using the [3.0.0 milestone](https://github.com/gojuno/mainframer/milestone/6).
 
 ## Supported Actions
 
