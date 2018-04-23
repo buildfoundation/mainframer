@@ -10,7 +10,7 @@ freezes, being able to actually _use_ your computer when the build is happening.
 ## Table of contents
 
 - [State of Project Development](#state-of-project-development)
-- [Supported Actions](#supported-actions)
+- [Supported Workflows](#supported-workflows)
 - [Setup](#setup)
 - [Demo](#demo)
 - [3rd-party IntelliJ Mainframer Plugin](#3rd-party-intellij-mainframer-plugin)
@@ -31,7 +31,7 @@ There are lots of changes between `2.x` and `3.x`, but key subset is the followi
 
 You can track `3.x` development progress using the [3.0.0 milestone](https://github.com/gojuno/mainframer/milestone/6).
 
-## Supported Actions
+## Supported Workflows
 
 `mainframer` supports basically anything you can execute as a command.
 It will sync files to remote machine, execute a command and sync files back.
