@@ -25,9 +25,9 @@ You can view `2.x` version sources and docs using [this Git tag](https://github.
 
 There are lots of changes between `2.x` and `3.x`, but key subset is the following:
 
-- Mainframer will work as system-wide CLI tool #185
-- Mainframer is now written in Rust #191
-- Mainframer will speed up most of existing workflows by syncing during remote command execution #188
+- Mainframer will work as system-wide CLI tool #[185](https://github.com/gojuno/mainframer/issues/185)
+- Mainframer is now written in Rust #[191](https://github.com/gojuno/mainframer/issues/191)
+- Mainframer will speed up most of existing workflows by syncing during remote command execution #[188](https://github.com/gojuno/mainframer/issues/188)
 
 You can track `3.x` development progress using the [3.0.0 milestone](https://github.com/gojuno/mainframer/milestone/6).
 
