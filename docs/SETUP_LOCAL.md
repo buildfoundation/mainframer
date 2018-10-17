@@ -60,5 +60,5 @@
 3. Finally you can test the build.
 
   ```
-  $ ./mainframer echo "It works!" > success.txt
+  $ mainframer echo "It works!" > success.txt
   ```
