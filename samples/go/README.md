@@ -7,7 +7,7 @@ This is a very common setup for Go project, but of course you might need to tune
 ### How to build
 
 ```bash
-$ ./mainframer eval "export GOPATH=\`pwd\` && go install gojuno.com/mainframer/sample"
+$ mainframer eval "export GOPATH=\`pwd\` && go install gojuno.com/mainframer/sample"
 ```
 
 Or any other Go build command you want.
