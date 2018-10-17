@@ -17,8 +17,12 @@ RUN apt-get update --quiet > /dev/null && \
     apt-get --assume-yes --quiet install sudo openssh-server openjdk-8-jdk \
     golang clang build-essential lib32stdc++6 lib32z1 unzip ant python git curl && \
     export MAINFRAMER_RUST_VERSION="$(cat /var/rust.version)" && \
-    curl --silent --fail --location https://static.rust-lang.org/rustup.sh | sh -s -- --revision="$MAINFRAMER_RUST_VERSION" && \
+    curl --silent --fail --location curl https://sh.rustup.rs | sh -s -- -y --default-toolchain="$MAINFRAMER_RUST_VERSION" && \
+    export PATH=${PATH}:${HOME}/.cargo/bin && \
+    ls -la ${HOME}/.cargo/bin && \
     rustc --version && cargo --version
+
+ENV PATH ${PATH}:${HOME}/.cargo/bin
 
 # Install Android SDK.
 ENV ANDROID_SDK_FILE_NAME tools_r25.2.3-linux.zip

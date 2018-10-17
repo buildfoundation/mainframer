@@ -58,6 +58,9 @@ BUILD_COMMAND+="mv ~/.bashrc ~/.bashrc_original && echo -e 'export ANDROID_HOME=
 # Run unit and integration tests.
 BUILD_COMMAND+="/opt/project/test/test.sh --run-samples &&"
 
+# Lint the code.
+BUILD_COMMAND+="cd /opt/project && cargo clippy -- -D warnings &&"
+
 # Build release version and move binary to build/artifacts.
 BUILD_COMMAND+="cd /opt/project && cargo build --release && mkdir -p artifacts && mv target/release/mainframer artifacts/mainframer-$TRAVIS_TAG-$(uname -s)"
 

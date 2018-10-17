@@ -15,8 +15,9 @@ use time::*;
 
 fn main() {
     println!(":: Mainframer v{}\n", env!("CARGO_PKG_VERSION"));
+    let raw_args: Vec<String> = env::args().skip(1).collect();
 
-    let args = match Args::parse(env::args().skip(1).collect()) {
+    let args = match Args::parse(raw_args.as_ref()) {
         Err(message) => exit_with_error(&message, 1),
         Ok(value) => value,
     };
