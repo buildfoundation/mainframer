@@ -15,14 +15,20 @@ COPY ci/rust.version /var/rust.version
 # "ant python git": build sample Buck project.
 RUN apt-get update --quiet > /dev/null && \
     apt-get --assume-yes --quiet install sudo openssh-server openjdk-8-jdk \
-    golang clang build-essential lib32stdc++6 lib32z1 unzip ant python git curl && \
-    export MAINFRAMER_RUST_VERSION="$(cat /var/rust.version)" && \
-    curl --silent --fail --location curl https://sh.rustup.rs | sh -s -- -y --default-toolchain="$MAINFRAMER_RUST_VERSION" && \
-    export PATH=${PATH}:${HOME}/.cargo/bin && \
-    ls -la ${HOME}/.cargo/bin && \
-    rustc --version && cargo --version
+    golang clang build-essential lib32stdc++6 lib32z1 unzip ant python git curl
 
-ENV PATH ${PATH}:${HOME}/.cargo/bin
+RUN groupadd build_user && \
+    useradd --shell /bin/bash --comment "User for container" --create-home -g build_user build_user && \
+    usermod -a -G sudo build_user && \
+    su build_user && \
+    whoami
+
+RUN curl --silent --fail --location curl https://sh.rustup.rs | sh -s -- -y --default-toolchain="$(cat /var/rust.version)" && \
+    export PATH="$PATH:$HOME/.cargo/bin" && \
+    echo "$PATH" && \
+    rustc --version && cargo --version && \
+    rustup component add clippy-preview && \
+    echo "clippy version " && cargo clippy --version
 
 # Install Android SDK.
 ENV ANDROID_SDK_FILE_NAME tools_r25.2.3-linux.zip

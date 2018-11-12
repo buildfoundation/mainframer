@@ -41,16 +41,14 @@ fn main() {
 
     let start = Instant::now();
 
-    match sync_before_remote_command(&working_dir_name, &config, &ignore) {
-        Err(error) => exit_with_error(&format!("Sync local → remote machine failed: {}.", error), 1),
-        Ok(_) => ()
+    if let Err(error) = sync_before_remote_command(&working_dir_name, &config, &ignore) {
+        exit_with_error(&format!("Sync local → remote machine failed: {}.", error), 1)
     }
 
     let remote_command_result = execute_remote_command(&working_dir_name, &args, &config);
 
-    match sync_after_remote_command(&working_dir_name, &config, &ignore) {
-        Err(error) => exit_with_error(&format!("Sync remote → local machine failed: {}.", error), 1),
-        Ok(_) => ()
+    if let Err(error) = sync_after_remote_command(&working_dir_name, &config, &ignore) {
+        exit_with_error(&format!("Sync remote → local machine failed: {}.", error), 1)
     }
 
     let duration = start.elapsed();
