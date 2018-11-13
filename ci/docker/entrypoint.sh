@@ -1,6 +1,9 @@
 #!/bin/bash
 set -xe
 
+# Start ssh server for tests.
+service ssh start
+
 # See https://denibertovic.com/posts/handling-permissions-with-docker-volumes/
 
 if [ "$LOCAL_USER_ID" == "" ]; then
@@ -14,8 +17,5 @@ fi
 
 echo "Starting with UID : $uid"
 
-# Start ssh server for tests.
-sudo service ssh start
-
 # Run original docker run command as build_user.
-exec "$@"
+su build_user -c "export PATH=\"\$PATH:\$HOME/.cargo/bin\" && $*"

@@ -20,10 +20,6 @@ function printTestResults {
 # Hook to exit happened either because of success or error.
 trap printTestResults EXIT
 
-export PATH="$PATH:/root/.cargo/bin"
-echo "$PATH"
-ls -la /root/.cargo/bin
-
 pushd "$DIR/../" > /dev/null
 
 "$DIR/build_and_unit_tests.sh"
@@ -45,7 +41,7 @@ if [ "$1" == "--run-samples" ]; then
 	for sample_ in "$DIR"/sample_*; do
 		TEST_COUNTER=$((TEST_COUNTER+1))
 		"$sample_"
-	done	
+	done
 fi
 
 TEST_RUN_SUCCESS="true"

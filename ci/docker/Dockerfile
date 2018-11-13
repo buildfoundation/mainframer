@@ -19,16 +19,14 @@ RUN apt-get update --quiet > /dev/null && \
 
 RUN groupadd build_user && \
     useradd --shell /bin/bash --comment "User for container" --create-home -g build_user build_user && \
-    usermod -a -G sudo build_user && \
-    su build_user && \
-    whoami
+    usermod -a -G sudo build_user
 
-RUN curl --silent --fail --location curl https://sh.rustup.rs | sh -s -- -y --default-toolchain="$(cat /var/rust.version)" && \
+RUN su build_user -c 'curl --silent --fail --location curl https://sh.rustup.rs | sh -s -- -y --default-toolchain="$(cat /var/rust.version)" && \
     export PATH="$PATH:$HOME/.cargo/bin" && \
     echo "$PATH" && \
     rustc --version && cargo --version && \
     rustup component add clippy-preview && \
-    echo "clippy version " && cargo clippy --version
+    echo "clippy version " && cargo clippy --version'
 
 # Install Android SDK.
 ENV ANDROID_SDK_FILE_NAME tools_r25.2.3-linux.zip
