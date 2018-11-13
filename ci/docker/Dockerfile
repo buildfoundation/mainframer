@@ -22,7 +22,7 @@ RUN groupadd build_user && \
     usermod -a -G sudo build_user
 
 RUN su build_user -c 'curl --silent --fail --location curl https://sh.rustup.rs | sh -s -- -y --default-toolchain="$(cat /var/rust.version)" && \
-    export PATH="$PATH:$HOME/.cargo/bin" && \
+    source "$HOME/.cargo/env" && \
     echo "$PATH" && \
     rustc --version && cargo --version && \
     rustup component add clippy-preview && \
