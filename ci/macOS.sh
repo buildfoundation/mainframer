@@ -14,6 +14,7 @@ source "$DIR/prepare_build_dir.sh"
 # shellcheck disable=SC1090
 MAINFRAMER_RUST_VERSION="$(cat "$DIR"/rust.version)"
 curl --silent --fail --location curl https://sh.rustup.rs | sh -s -- -y --default-toolchain="$MAINFRAMER_RUST_VERSION"
+# shellcheck disable=SC1090
 source "$HOME/.cargo/env"
 rustc --version
 cargo --version
