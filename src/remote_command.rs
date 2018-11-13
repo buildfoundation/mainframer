@@ -23,9 +23,9 @@ pub fn execute_remote_command(remote_command: &str, config: &Config, project_dir
     match process.wait() {
         Err(_) => Err(()), // No need to get error description as we've already piped command output to Mainframer output.
         Ok(exit_status) => if exit_status.success() {
-            Err(())
-        } else {
             Ok(())
+        } else {
+            Err(())
         }
     }
 }

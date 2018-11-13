@@ -18,4 +18,4 @@ fi
 echo "Starting with UID : $uid"
 
 # Run original docker run command as build_user.
-su build_user -c "export PATH=\"\$PATH:\$HOME/.cargo/bin\" && $*"
+su build_user -c "$@"
