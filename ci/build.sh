@@ -43,7 +43,7 @@ docker build -t mainframer:latest .
 BUILD_COMMAND="set -xe && "
 
 # Setup ssh for tests.
-BUILD_COMMAND+="whoami && mkdir -p ~/.ssh/ && "
+BUILD_COMMAND+="mkdir -p ~/.ssh/ && "
 BUILD_COMMAND+="chmod u+rwx,go= ~/.ssh/ && "
 BUILD_COMMAND+="ssh-keygen -b 2048 -t rsa -f ~/.ssh/id_rsa -q -N '' && "
 BUILD_COMMAND+="cp ~/.ssh/id_rsa.pub ~/.ssh/authorized_keys && "
