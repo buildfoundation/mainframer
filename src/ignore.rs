@@ -19,17 +19,20 @@ impl Ignore {
         remote_ignore_file.push(".mainframer/remoteignore");
 
         Ignore {
-            common_ignore_file: match common_ignore_file.exists() {
-                true => Some(common_ignore_file.to_path_buf()),
-                false => None
+            common_ignore_file: if common_ignore_file.exists() {
+                Some(common_ignore_file.to_path_buf())
+            } else {
+                None
             },
-            local_ignore_file: match local_ignore_file.exists() {
-                true => Some(local_ignore_file.to_path_buf()),
-                false => None
+            local_ignore_file: if local_ignore_file.exists() {
+                Some(local_ignore_file.to_path_buf())
+            } else {
+                None
             },
-            remote_ignore_file: match remote_ignore_file.exists() {
-                true => Some(remote_ignore_file.to_path_buf()),
-                false => None
+            remote_ignore_file: if remote_ignore_file.exists() {
+                Some(remote_ignore_file.to_path_buf())
+            } else {
+                None
             },
         }
     }

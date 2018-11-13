@@ -15,8 +15,9 @@ use time::*;
 
 fn main() {
     println!(":: Mainframer v{}\n", env!("CARGO_PKG_VERSION"));
+    let raw_args: Vec<String> = env::args().skip(1).collect();
 
-    let args = match Args::parse(env::args().skip(1).collect()) {
+    let args = match Args::parse(raw_args.as_ref()) {
         Err(message) => exit_with_error(&message, 1),
         Ok(value) => value,
     };
@@ -40,16 +41,14 @@ fn main() {
 
     let start = Instant::now();
 
-    match sync_before_remote_command(&working_dir_name, &config, &ignore) {
-        Err(error) => exit_with_error(&format!("Sync local → remote machine failed: {}.", error), 1),
-        Ok(_) => ()
+    if let Err(error) = sync_before_remote_command(&working_dir_name, &config, &ignore) {
+        exit_with_error(&format!("Sync local → remote machine failed: {}.", error), 1)
     }
 
     let remote_command_result = execute_remote_command(&working_dir_name, &args, &config);
 
-    match sync_after_remote_command(&working_dir_name, &config, &ignore) {
-        Err(error) => exit_with_error(&format!("Sync remote → local machine failed: {}.", error), 1),
-        Ok(_) => ()
+    if let Err(error) = sync_after_remote_command(&working_dir_name, &config, &ignore) {
+        exit_with_error(&format!("Sync remote → local machine failed: {}.", error), 1)
     }
 
     let duration = start.elapsed();

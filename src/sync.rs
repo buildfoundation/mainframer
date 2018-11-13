@@ -59,10 +59,10 @@ fn project_dir_on_remote_machine(local_project_dir_name: &str) -> String {
 
 fn apply_exclude_from(rsync_command: &mut Command, exclude_file: &Option<PathBuf>) {
     match exclude_file {
-        &Some(ref value) => {
+        Some(ref value) => {
             rsync_command.arg(format!("--exclude-from={}", value.to_string_lossy()));
         }
-        &None => ()
+        None => ()
     };
 }
 

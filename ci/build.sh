@@ -52,8 +52,13 @@ BUILD_COMMAND+="ssh-keyscan -t rsa localhost > ~/.ssh/known_hosts && "
 BUILD_COMMAND+="cat ~/.ssh/known_hosts && "
 BUILD_COMMAND+="chmod u+rw,go= ~/.ssh/known_hosts && "
 
-# Add ANDROID_HOME to bashrc for ssh sessions.
-BUILD_COMMAND+="mv ~/.bashrc ~/.bashrc_original && echo -e 'export ANDROID_HOME=/opt/android-sdk-linux\\n' > ~/.bashrc && cat ~/.bashrc_original >> ~/.bashrc && rm ~/.bashrc_original && "
+# Configure environment variables in ~/.bashrc for current and ssh sessions.
+BUILD_COMMAND+="mv ~/.bashrc ~/.bashrc_original && "
+BUILD_COMMAND+="echo -e 'export ANDROID_HOME=/opt/android-sdk-linux\\n' >> ~/.bashrc && "
+BUILD_COMMAND+="echo -e 'source \"\$HOME/.cargo/env\"\\n' >> ~/.bashrc && "
+BUILD_COMMAND+="cat ~/.bashrc_original >> ~/.bashrc && "
+BUILD_COMMAND+="rm ~/.bashrc_original && "
+BUILD_COMMAND+="source ~/.bashrc && "
 
 # Run unit and integration tests.
 BUILD_COMMAND+="/opt/project/test/test.sh --run-samples &&"
