@@ -55,7 +55,7 @@ pub fn sync_remote_to_local(local_dir_absolute_path: &Path, config: &Config, ign
 }
 
 pub fn project_dir_on_remote_machine(local_dir_absolute_path: &Path) -> String {
-    format!("~/mainframer/{}", local_dir_absolute_path.to_string_lossy())
+    format!("~/mainframer{}", local_dir_absolute_path.to_string_lossy())
 }
 
 fn apply_exclude_from(rsync_command: &mut Command, exclude_file: &Option<PathBuf>) {
