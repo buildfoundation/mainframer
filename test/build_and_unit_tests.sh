@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+export RUSTFLAGS="--deny warnings"
+
 echo "Building debug version of Mainframer..."
 cargo build
 
