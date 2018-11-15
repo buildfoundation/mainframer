@@ -43,8 +43,8 @@ RUN mkdir -p $ANDROID_HOME && \
     echo "Installing Android SDK components" && \
     eval $ANDROID_SDK_INSTALL_COMPONENT '"tools"' > /dev/null && \
     eval $ANDROID_SDK_INSTALL_COMPONENT '"platform-tools"' > /dev/null && \
-    eval $ANDROID_SDK_INSTALL_COMPONENT '"build-tools;25.0.2"' > /dev/null && \
-    eval $ANDROID_SDK_INSTALL_COMPONENT '"platforms;android-25"' > /dev/null && \
+    eval $ANDROID_SDK_INSTALL_COMPONENT '"build-tools;28.0.3"' > /dev/null && \
+    eval $ANDROID_SDK_INSTALL_COMPONENT '"platforms;android-28"' > /dev/null && \
     chmod -R a+rwx "$ANDROID_HOME"
 
 # Entrypoint script will allow us run as non-root in the container.
