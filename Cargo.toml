@@ -9,3 +9,4 @@ version = "3.0.0-dev"
 authors = ["Artem Zinnatullin <artem.zinnatullin@gmail.com>", "Artur Dryomov <artur.dryomov@gmail.com>", "Mainframer Developers and Contributors"]
 
 [dependencies]
+yaml-rust = "0.4.2"

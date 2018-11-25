@@ -1,12 +1,14 @@
 mod args;
 mod config;
+mod intermediate_config;
 mod ignore;
 mod remote_command;
 mod sync;
 mod time;
 
 use args::Args;
-use config::Config;
+use config::*;
+use intermediate_config::IntermediateConfig;
 use ignore::*;
 use std::env;
 use std::fs;
@@ -30,10 +32,10 @@ fn main() {
     };
 
     let mut config_file = local_dir_absolute_path.to_owned();
-    config_file.push(".mainframer/config");
+    config_file.push(".mainframer/config.yml");
 
-    let config = match Config::from_file(config_file.as_path()) {
-        Err(message) => exit_with_error(&message, 1),
+    let config = match merge_configs(&config_file) {
+        Err(error) => exit_with_error(&error, 1),
         Ok(value) => value
     };
 
@@ -64,6 +66,41 @@ fn exit_with_error(message: &str, code: i32) -> ! {
         eprintln!("{}", message);
     }
     process::exit(code);
+}
+
+fn merge_configs(project_config_file: &Path) -> Result<Config, String> {
+    let default_local_compression = 3;
+    let default_remote_compression = 1;
+
+    Ok(match IntermediateConfig::from_file(project_config_file) {
+        Err(message) => return Err(message),
+        Ok(intermediate_config) => {
+            let remote_machine = match intermediate_config.remote_machine {
+                None => return Err(String::from("Configuration must specify remoteMachine")),
+                Some(value) => value
+            };
+
+            Config {
+                remote_machine: RemoteMachine {
+                    host: match remote_machine.host {
+                        None => return Err(String::from("Configuration must specify remoteMachine.host")),
+                        Some(value) => value
+                    },
+                    user: remote_machine.user,
+                },
+                compression: match intermediate_config.compression {
+                    None => Compression {
+                        local: default_local_compression,
+                        remote: default_remote_compression,
+                    },
+                    Some(compression) => Compression {
+                        local: compression.local.unwrap_or(default_local_compression),
+                        remote: compression.remote.unwrap_or(default_remote_compression),
+                    },
+                },
+            }
+        }
+    })
 }
 
 fn sync_before_remote_command(local_dir_absolute_path: &Path, config: &Config, ignore: &Ignore) -> Result<(), String> {

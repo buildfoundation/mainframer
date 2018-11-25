@@ -13,7 +13,7 @@ pub fn sync_local_to_remote(local_dir_absolute_path: &Path, config: &Config, ign
         .arg("--delete")
         // Create (if not exists) project dir on remote machine.
         .arg(format!("--rsync-path=mkdir -p {} && rsync", project_dir_on_remote_machine(local_dir_absolute_path)))
-        .arg(format!("--compress-level={}", config.local_compression_level));
+        .arg(format!("--compress-level={}", config.compression.local));
 
     apply_exclude_from(&mut command, &ignore.common_ignore_file);
     apply_exclude_from(&mut command, &ignore.local_ignore_file);
@@ -24,7 +24,7 @@ pub fn sync_local_to_remote(local_dir_absolute_path: &Path, config: &Config, ign
 
     command.arg(format!(
         "{remote_machine_name}:{project_dir_on_remote_machine}",
-        remote_machine_name = config.remote_machine_name,
+        remote_machine_name = config.remote_machine.host,
         project_dir_on_remote_machine = project_dir_on_remote_machine(local_dir_absolute_path))
     );
 
@@ -37,7 +37,7 @@ pub fn sync_remote_to_local(local_dir_absolute_path: &Path, config: &Config, ign
     command
         .arg("--archive")
         .arg("--delete")
-        .arg(format!("--compress-level={}", config.remote_compression_level));
+        .arg(format!("--compress-level={}", config.compression.remote));
 
     apply_exclude_from(&mut command, &ignore.common_ignore_file);
     apply_exclude_from(&mut command, &ignore.remote_ignore_file);
@@ -46,7 +46,7 @@ pub fn sync_remote_to_local(local_dir_absolute_path: &Path, config: &Config, ign
         .arg("--rsh=ssh")
         .arg(format!(
             "{remote_machine_name}:{project_dir_on_remote_machine}/",
-            remote_machine_name = config.remote_machine_name,
+            remote_machine_name = config.remote_machine.host,
             project_dir_on_remote_machine = project_dir_on_remote_machine(local_dir_absolute_path))
         )
         .arg("./");

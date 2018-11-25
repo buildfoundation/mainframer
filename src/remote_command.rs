@@ -6,7 +6,7 @@ pub fn execute_remote_command(remote_command: &str, config: &Config, project_dir
     let mut command = Command::new("ssh");
 
     command
-        .arg(config.remote_machine_name.clone())
+        .arg(config.remote_machine.host.clone())
         .arg(format!(
             "echo 'set -e && cd {project_dir_on_remote_machine} && echo \"{remote_command}\" && echo \"\" && {remote_command}' | bash",
             project_dir_on_remote_machine = project_dir_on_remote_machine,
