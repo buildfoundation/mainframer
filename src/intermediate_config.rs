@@ -15,7 +15,6 @@ pub struct IntermediateConfig {
 #[derive(Debug, Eq, PartialEq)]
 pub struct IntermediateRemoteMachine {
     pub host: Option<String>,
-    pub user: Option<String>,
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -60,18 +59,8 @@ fn parse_config_from_str(config_content: &str) -> Result<IntermediateConfig, Str
                 None => None
             };
 
-            let user = match &remote_machine.get(&Yaml::String(String::from("user"))) {
-                Some(user) => match user {
-                    Yaml::String(user) => Some(user.to_string()),
-                    Yaml::Null => None,
-                    _ => return Err(String::from("remoteMachine.user must be a string"))
-                },
-                None => None
-            };
-
             Some(IntermediateRemoteMachine {
                 host,
-                user,
             })
         }
         Yaml::Null | Yaml::BadValue => None,
@@ -130,7 +119,6 @@ mod tests {
         let content = "
 remoteMachine:
   host: computer1
-  user: user1
 compression:
   local: 5
   remote: 2"
@@ -138,7 +126,6 @@ compression:
         assert_eq!(parse_config_from_str(content), Ok(IntermediateConfig {
             remote_machine: Some(IntermediateRemoteMachine {
                 host: Some(String::from("computer1")),
-                user: Some(String::from("user1")),
             }),
             compression: Some(IntermediateCompression {
                 local: Some(5),
@@ -152,7 +139,6 @@ compression:
         let content = "
 remoteMachine:
     host: computer1
-    user: user1
 compression:
     local: 5
     remote: 2"
@@ -160,7 +146,6 @@ compression:
         assert_eq!(parse_config_from_str(content), Ok(IntermediateConfig {
             remote_machine: Some(IntermediateRemoteMachine {
                 host: Some(String::from("computer1")),
-                user: Some(String::from("user1")),
             }),
             compression: Some(IntermediateCompression {
                 local: Some(5),
@@ -178,7 +163,6 @@ remoteMachine:
         assert_eq!(parse_config_from_str(content), Ok(IntermediateConfig {
             remote_machine: Some(IntermediateRemoteMachine {
                 host: Some(String::from("computer1")),
-                user: None,
             }),
             compression: None,
         }));
@@ -193,7 +177,6 @@ remoteMachine:
         assert_eq!(parse_config_from_str(content), Ok(IntermediateConfig {
             remote_machine: Some(IntermediateRemoteMachine {
                 host: None,
-                user: Some(String::from("user1")),
             }),
             compression: None,
         }));

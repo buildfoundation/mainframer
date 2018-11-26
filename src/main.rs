@@ -86,7 +86,6 @@ fn merge_configs(project_config_file: &Path) -> Result<Config, String> {
                         None => return Err(String::from("Configuration must specify remoteMachine.host")),
                         Some(value) => value
                     },
-                    user: remote_machine.user,
                 },
                 compression: match intermediate_config.compression {
                     None => Compression {

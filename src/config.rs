@@ -7,7 +7,6 @@ pub struct Config {
 #[derive(Debug, Eq, PartialEq)]
 pub struct RemoteMachine {
     pub host: String,
-    pub user: Option<String>,
 }
 
 #[derive(Debug, Eq, PartialEq)]
