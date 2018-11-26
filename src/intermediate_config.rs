@@ -135,6 +135,26 @@ compression:
     }
 
     #[test]
+    fn parse_config_from_str_all_fields_strings_in_quotes() {
+        let content = "
+remoteMachine:
+  host: \"computer1\"
+compression:
+  local: 5
+  remote: 2"
+        ;
+        assert_eq!(parse_config_from_str(content), Ok(IntermediateConfig {
+            remote_machine: Some(IntermediateRemoteMachine {
+                host: Some(String::from("computer1")),
+            }),
+            compression: Some(IntermediateCompression {
+                local: Some(5),
+                remote: Some(2),
+            }),
+        }));
+    }
+
+    #[test]
     fn parse_config_from_str_all_fields_4_spaces_indent() {
         let content = "
 remoteMachine:
