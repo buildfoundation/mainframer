@@ -20,6 +20,6 @@ setTestRemoteMachineInConfig
 "$MAINFRAMER_EXECUTABLE" './gradlew clean build'
 
 # Check that apk exists to ensure that it build was fine.
-fileMustExistOnLocalMachine 'app/build/outputs/apk/app-debug.apk'
+fileMustExistOnLocalMachine 'app/build/outputs/apk/debug/app-debug.apk'
 
 printTestEnded

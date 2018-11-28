@@ -15,10 +15,18 @@ COPY ci/rust.version /var/rust.version
 # "ant python git": build sample Buck project.
 RUN apt-get update --quiet > /dev/null && \
     apt-get --assume-yes --quiet install sudo openssh-server openjdk-8-jdk \
-    golang clang build-essential lib32stdc++6 lib32z1 unzip ant python git curl && \
-    export MAINFRAMER_RUST_VERSION="$(cat /var/rust.version)" && \
-    curl --silent --fail --location https://static.rust-lang.org/rustup.sh | sh -s -- --revision="$MAINFRAMER_RUST_VERSION" && \
-    rustc --version && cargo --version
+    golang clang build-essential lib32stdc++6 lib32z1 unzip ant python git curl
+
+RUN groupadd build_user && \
+    useradd --shell /bin/bash --comment "User for container" --create-home -g build_user build_user && \
+    usermod -a -G sudo build_user
+
+RUN su build_user -c 'curl --silent --fail --location curl https://sh.rustup.rs | sh -s -- -y --default-toolchain="$(cat /var/rust.version)" && \
+    source "$HOME/.cargo/env" && \
+    echo "$PATH" && \
+    rustc --version && cargo --version && \
+    rustup component add clippy-preview && \
+    echo "clippy version " && cargo clippy --version'
 
 # Install Android SDK.
 ENV ANDROID_SDK_FILE_NAME tools_r25.2.3-linux.zip
@@ -35,8 +43,8 @@ RUN mkdir -p $ANDROID_HOME && \
     echo "Installing Android SDK components" && \
     eval $ANDROID_SDK_INSTALL_COMPONENT '"tools"' > /dev/null && \
     eval $ANDROID_SDK_INSTALL_COMPONENT '"platform-tools"' > /dev/null && \
-    eval $ANDROID_SDK_INSTALL_COMPONENT '"build-tools;25.0.2"' > /dev/null && \
-    eval $ANDROID_SDK_INSTALL_COMPONENT '"platforms;android-25"' > /dev/null && \
+    eval $ANDROID_SDK_INSTALL_COMPONENT '"build-tools;28.0.3"' > /dev/null && \
+    eval $ANDROID_SDK_INSTALL_COMPONENT '"platforms;android-28"' > /dev/null && \
     chmod -R a+rwx "$ANDROID_HOME"
 
 # Entrypoint script will allow us run as non-root in the container.

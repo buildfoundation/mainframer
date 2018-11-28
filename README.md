@@ -15,6 +15,7 @@ freezes, being able to actually _use_ your computer when the build is happening.
 - [Demo](#demo)
 - [3rd-party IntelliJ Mainframer Plugin](#3rd-party-intellij-mainframer-plugin)
 - [How to Run Tests (for contributors)](#how-to-run-tests-for-contributors)
+- [Project Transfer Notice](#project-transfer-notice)
 - [License](#license)
 
 ## State of Project Development
@@ -71,10 +72,18 @@ Dependencies: Bash, Docker.
 $ ci/build.sh
 ```
 
+## Project Transfer Notice
+
+In October 2018, Mainframer was transferred from [github/gojuno](https://github.com/gojuno) to [github/buildfoundation](https://github.com/buildfoundation).
+
+It was a friendly agreement between Juno Inc. (thanks to [@ming13](https://github.com/ming13)) and core developer of the project [@artem-zinnatullin](https://github.com/artem-zinnatullin) who has left the company.
+
+The motivation for the transfer is to have a neutral space for the future work on the project.
+
 ## License
 
 ```
-Copyright 2017 Juno, Inc.
+Copyright 2018 Mainframer Maintainers.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

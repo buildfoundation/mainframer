@@ -19,7 +19,7 @@ impl Config {
         };
 
         file.read_to_string(&mut content)
-            .expect(&format!("Could not read config file '{}'.", file_path.to_string_lossy()));
+            .unwrap_or_else(|_| panic!("Could not read config file '{}'.", file_path.to_string_lossy()));
 
         match parse_config_from_str(&content) {
             Err(message) => Err(format!("Error during parsing config file '{}'\n{}", file_path.to_string_lossy(), message)),
@@ -34,12 +34,12 @@ fn find_value(config_content: &str, key: &str) -> Option<String> {
         None => None,
         Some(start_index) => {
             let content_starting_with_key = &config_content[start_index..config_content.len()];
-            let value_start_index = match content_starting_with_key.find("=") {
+            let value_start_index = match content_starting_with_key.find('=') {
                 None => return None,
                 Some(index) => index
             };
 
-            let line_end_index = match content_starting_with_key.find("\n") {
+            let line_end_index = match content_starting_with_key.find('\n') {
                 None => content_starting_with_key.len(),
                 Some(index) => index
             };
@@ -57,7 +57,7 @@ fn find_value(config_content: &str, key: &str) -> Option<String> {
 fn parse_config_from_str(config_content: &str) -> Result<Config, String> {
     Ok(Config {
         remote_machine_name: match find_value(&config_content, &"remote_machine") {
-            None => return Err(format!("please specify 'remote_machine'.")),
+            None => return Err("please specify 'remote_machine'.".to_string()),
             Some(value) => value
         },
         local_compression_level: match find_value(&config_content, &"local_compression_level") {

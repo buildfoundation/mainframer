@@ -23,10 +23,13 @@ trap printTestResults EXIT
 pushd "$DIR/../" > /dev/null
 
 "$DIR/build_and_unit_tests.sh"
+TEST_COUNTER=$((TEST_COUNTER+1))
+
+"$DIR/clippy.sh"
+TEST_COUNTER=$((TEST_COUNTER+1))
 
 popd > /dev/null
 
-TEST_COUNTER=$((TEST_COUNTER+1))
 
 echo "Running integration tests…"
 
@@ -41,7 +44,7 @@ if [ "$1" == "--run-samples" ]; then
 	for sample_ in "$DIR"/sample_*; do
 		TEST_COUNTER=$((TEST_COUNTER+1))
 		"$sample_"
-	done	
+	done
 fi
 
 TEST_RUN_SUCCESS="true"
