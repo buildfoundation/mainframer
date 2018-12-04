@@ -1,8 +1,21 @@
 use config::Config;
 use std::process::Command;
 use std::process::Stdio;
+use std::sync::mpsc;
+use std::sync::mpsc::Receiver;
+use std::thread;
 
-pub fn execute_remote_command(remote_command: &str, config: &Config, project_dir_on_remote_machine: &str) -> Result<(), ()> {
+pub fn execute_remote_command(remote_command: &str, config: &Config, project_dir_on_remote_machine: &str) -> Receiver<Result<(), ()>> {
+    let (remote_command_finished_tx, remote_command_finished_rx) = mpsc::channel();
+
+    thread::spawn(move || {
+        remote_command_finished_tx.send(Ok(_execute_remote_command(remote_command, config, project_dir_on_remote_machine)));
+    });
+
+    return remote_command_finished_rx;
+}
+
+fn _execute_remote_command(remote_command: &str, config: &Config, project_dir_on_remote_machine: &str) -> Result<(), ()> {
     let mut command = Command::new("ssh");
 
     command

@@ -13,10 +13,10 @@ use std::fs;
 use std::path::Path;
 use std::process;
 use std::time::Instant;
-use std::thread;
 use std::sync::mpsc;
 use std::sync::mpsc::TryRecvError::*;
 use std::time::Duration;
+use std::thread;
 use time::*;
 
 fn main() {
@@ -49,56 +49,19 @@ fn main() {
         exit_with_error(&format!("Sync local → remote machine failed: {}.", error), 1)
     }
 
-    let (remote_command_tx, remote_command_rx) = mpsc::channel();
+    println!("Executing command on remote machine...\n");
 
-    let rc_local_dir_absolute_path = local_dir_absolute_path.clone();
-    let rc_config = config.clone();
+    let remote_command_start_time = Instant::now();
 
-    if let Err(error) = sync_after_remote_command(&local_dir_absolute_path, &config, &ignore) {
-        exit_with_error(&format!("Sync remote → local machine failed: {}.", error), 1)
-    }
+    let remote_command_finished_rx = remote_command::execute_remote_command(
+        &args.command.clone(),
+        &config.clone(),
+        &sync::project_dir_on_remote_machine(&local_dir_absolute_path.clone()),
+    );
 
-    thread::spawn(move || {
-        let remote_command_result = execute_remote_command(&rc_local_dir_absolute_path, &args, &rc_config);
-        remote_command_tx.send(remote_command_result).unwrap();
-    });
+    let remote_to_local_sync_finished_rx = sync::sync_remote_to_local(&local_dir_absolute_path, &config, &ignore, &sync::SyncMode::Parallel(Duration::from_millis(500)), &remote_command_finished_rx);
 
-    // Signal to the channel means "stop sync".
-    let (sync_remote_to_local_tx, sync_remote_to_local_rx) = mpsc::channel();
 
-    let srtl_local_dir_absolute_path= local_dir_absolute_path.clone();
-
-    let sync_remote_to_local_handle = thread::spawn(move || {
-        let mut should_run = true;
-        let mut received_stop_signal = false;
-
-        while should_run {
-            if let Err(error) = sync_after_remote_command(&srtl_local_dir_absolute_path, &config, &ignore) {
-                exit_with_error(&format!("Sync remote → local machine failed: {}.", error), 1)
-            }
-
-            if received_stop_signal {
-                // Do one final sync after stop signal.
-                should_run = false
-            } else {
-                let stop_signal = sync_remote_to_local_rx.try_recv();
-
-                match stop_signal {
-                    Err(e) => match e {
-                        Disconnected => should_run = false,
-                        Empty => thread::sleep(Duration::from_millis(500)),
-                    },
-                    Ok(_) => received_stop_signal = true
-                }
-            }
-        }
-    });
-
-    // Block until remote command finishes.
-    let remote_command_result = remote_command_rx.recv().unwrap();
-
-    // Stop continuous sync.
-    sync_remote_to_local_tx.send(()).unwrap();
 
     // Wait for sync thread to finish.
     sync_remote_to_local_handle.join().unwrap();
