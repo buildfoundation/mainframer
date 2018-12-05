@@ -69,33 +69,49 @@ fn exit_with_error(message: &str, code: i32) -> ! {
 }
 
 fn merge_configs(project_config_file: &Path) -> Result<Config, String> {
-    let default_local_compression = 3;
-    let default_remote_compression = 1;
+    let default_push_compression = 3;
+    let default_pull_compression = 1;
 
     Ok(match IntermediateConfig::from_file(project_config_file) {
         Err(message) => return Err(message),
         Ok(intermediate_config) => {
-            let remote_machine = match intermediate_config.remote_machine {
-                None => return Err(String::from("Configuration must specify remoteMachine")),
+            let remote = match intermediate_config.remote {
+                None => return Err(String::from("Configuration must specify 'remote'")),
                 Some(value) => value
             };
 
             Config {
-                remote_machine: RemoteMachine {
-                    host: match remote_machine.host {
-                        None => return Err(String::from("Configuration must specify remoteMachine.host")),
+                remote: Remote {
+                    host: match remote.host {
+                        None => return Err(String::from("Configuration must specify 'remote.host'")),
                         Some(value) => value
                     },
                 },
-                compression: match intermediate_config.compression {
-                    None => Compression {
-                        local: default_local_compression,
-                        remote: default_remote_compression,
+                push: match intermediate_config.push {
+                    None => Push {
+                        compression: default_push_compression,
                     },
-                    Some(compression) => Compression {
-                        local: compression.local.unwrap_or(default_local_compression),
-                        remote: compression.remote.unwrap_or(default_remote_compression),
+                    Some(push) => match push.compression {
+                        None => Push {
+                            compression: default_push_compression
+                        },
+                        Some(compression) => Push {
+                            compression,
+                        }
+                    }
+                },
+                pull: match intermediate_config.pull {
+                    None => Pull {
+                        compression: default_pull_compression
                     },
+                    Some(pull) => match pull.compression {
+                        None => Pull {
+                            compression: default_pull_compression,
+                        },
+                        Some(compression) => Pull {
+                            compression,
+                        }
+                    }
                 },
             }
         }

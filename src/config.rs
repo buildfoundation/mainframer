@@ -1,16 +1,21 @@
 #[derive(Debug, PartialEq, Eq)]
 pub struct Config {
-    pub remote_machine: RemoteMachine,
-    pub compression: Compression,
+    pub remote: Remote,
+    pub push: Push,
+    pub pull: Pull,
 }
 
 #[derive(Debug, Eq, PartialEq)]
-pub struct RemoteMachine {
+pub struct Remote {
     pub host: String,
 }
 
 #[derive(Debug, Eq, PartialEq)]
-pub struct Compression {
-    pub local: i64,
-    pub remote: i64,
+pub struct Push {
+    pub compression: i64,
+}
+
+#[derive(Debug, Eq, PartialEq)]
+pub struct Pull {
+    pub compression: i64,
 }

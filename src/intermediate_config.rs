@@ -8,19 +8,24 @@ use self::yaml_rust::YamlLoader;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct IntermediateConfig {
-    pub remote_machine: Option<IntermediateRemoteMachine>,
-    pub compression: Option<IntermediateCompression>,
+    pub remote: Option<IntermediateRemote>,
+    pub push: Option<IntermediatePush>,
+    pub pull: Option<IntermediatePull>,
 }
 
 #[derive(Debug, Eq, PartialEq)]
-pub struct IntermediateRemoteMachine {
+pub struct IntermediateRemote {
     pub host: Option<String>,
 }
 
 #[derive(Debug, Eq, PartialEq)]
-pub struct IntermediateCompression {
-    pub local: Option<i64>,
-    pub remote: Option<i64>,
+pub struct IntermediatePush {
+    pub compression: Option<i64>
+}
+
+#[derive(Debug, Eq, PartialEq)]
+pub struct IntermediatePull {
+    pub compression: Option<i64>
 }
 
 impl IntermediateConfig {
@@ -48,65 +53,76 @@ fn parse_config_from_str(config_content: &str) -> Result<IntermediateConfig, Str
         Ok(content) => content[0].to_owned()
     };
 
-    let remote_machine = match &yaml["remoteMachine"] {
+    let remote = match &yaml["remote"] {
         Yaml::Hash(remote_machine) => {
             let host = match &remote_machine.get(&Yaml::String(String::from("host"))) {
                 Some(host) => match host {
                     Yaml::String(host) => Some(host.to_string()),
                     Yaml::Null => None,
-                    _ => return Err(String::from("remoteMachine.host must be a string"))
+                    _ => return Err(String::from("remote.host must be a string"))
                 },
                 None => None
             };
 
-            Some(IntermediateRemoteMachine {
+            Some(IntermediateRemote {
                 host,
             })
         }
         Yaml::Null | Yaml::BadValue => None,
-        ref something_else => return Err(format!("'remoteMachine' must be an object, but was {:#?}", something_else))
+        ref something_else => return Err(format!("'remote' must be an object, but was {:#?}", something_else))
     };
 
-    let compression = match &yaml["compression"] {
-        Yaml::Hash(compression) => {
-            let local = match compression.get(&Yaml::String(String::from("local"))).cloned() {
-                Some(local) => match local {
-                    Yaml::Integer(local) => if local >= 1 && local <= 9 {
-                        Some(local)
+    let push = match &yaml["push"] {
+        Yaml::Hash(push) => {
+            let compression = match push.get(&Yaml::String(String::from("compression"))).cloned() {
+                Some(compression) => match compression {
+                    Yaml::Integer(compression) => if compression >= 1 && compression <= 9 {
+                        Some(compression)
                     } else {
-                        return Err(format!("'compression.local' must be a positive integer from 1 to 9, but was {:#?}", local));
+                        return Err(format!("'pull.compression' must be a positive integer from 1 to 9, but was {:#?}", compression));
                     },
                     Yaml::Null | Yaml::BadValue => None,
-                    ref something_else => return Err(format!("'compression.local' must be a positive integer from 1 to 9, but was {:#?}", something_else))
+                    ref something_else => return Err(format!("'push.compression' must be a positive integer from 1 to 9, but was {:#?}", something_else))
                 },
                 None => None
             };
 
-            let remote = match compression.get(&Yaml::String(String::from("remote"))).cloned() {
-                Some(remote) => match remote {
-                    Yaml::Integer(remote) => if remote >= 1 && remote <= 9 {
-                        Some(remote)
-                    } else {
-                        return Err(format!("'compression.remote' must be a positive integer from 1 to 9, but was {:#?}", remote));
-                    },
-                    Yaml::Null | Yaml::BadValue => None,
-                    ref something_else => return Err(format!("'compression.remote' must be a positive integer from 1 to 9, but was {:#?}", something_else))
-                },
-                None => None
-            };
-
-            Some(IntermediateCompression {
-                local,
-                remote,
+            Some(IntermediatePush {
+                compression
             })
         }
         Yaml::Null | Yaml::BadValue => None,
-        _ => return Err(String::from("'compression' must be an object"))
+        _ => return Err(String::from("'push' must be an object"))
+    };
+
+    let pull = match &yaml["pull"] {
+        Yaml::Hash(pull) => {
+            let compression = match pull.get(&Yaml::String(String::from("compression"))).cloned() {
+                Some(compression) => match compression {
+                    Yaml::Integer(compression) => if compression >= 1 && compression <= 9 {
+                        Some(compression)
+                    } else {
+                        return Err(format!("'pull.compression' must be a positive integer from 1 to 9, but was {:#?}", compression));
+                    }
+                    ,
+                    Yaml::Null | Yaml::BadValue => None,
+                    ref something_else => return Err(format!("'pull.compression' must be a positive integer from 1 to 9, but was {:#?}", something_else))
+                },
+                None => None
+            };
+
+            Some(IntermediatePull {
+                compression
+            })
+        }
+        Yaml::Null | Yaml::BadValue => None,
+        _ => return Err(String::from("'pull' must be an object"))
     };
 
     Ok(IntermediateConfig {
-        remote_machine,
-        compression,
+        remote,
+        push,
+        pull,
     })
 }
 
@@ -117,19 +133,22 @@ mod tests {
     #[test]
     fn parse_config_from_str_all_fields_2_spaces_indent() {
         let content = "
-remoteMachine:
+remote:
   host: computer1
-compression:
-  local: 5
-  remote: 2"
+push:
+  compression: 5
+pull:
+  compression: 2"
         ;
         assert_eq!(parse_config_from_str(content), Ok(IntermediateConfig {
-            remote_machine: Some(IntermediateRemoteMachine {
+            remote: Some(IntermediateRemote {
                 host: Some(String::from("computer1")),
             }),
-            compression: Some(IntermediateCompression {
-                local: Some(5),
-                remote: Some(2),
+            push: Some(IntermediatePush {
+                compression: Some(5)
+            }),
+            pull: Some(IntermediatePull {
+                compression: Some(2)
             }),
         }));
     }
@@ -137,19 +156,22 @@ compression:
     #[test]
     fn parse_config_from_str_all_fields_strings_in_quotes() {
         let content = "
-remoteMachine:
+remote:
   host: \"computer1\"
-compression:
-  local: 5
-  remote: 2"
+push:
+  compression: 5
+pull:
+  compression: 2"
         ;
         assert_eq!(parse_config_from_str(content), Ok(IntermediateConfig {
-            remote_machine: Some(IntermediateRemoteMachine {
+            remote: Some(IntermediateRemote {
                 host: Some(String::from("computer1")),
             }),
-            compression: Some(IntermediateCompression {
-                local: Some(5),
-                remote: Some(2),
+            push: Some(IntermediatePush {
+                compression: Some(5)
+            }),
+            pull: Some(IntermediatePull {
+                compression: Some(2)
             }),
         }));
     }
@@ -157,19 +179,22 @@ compression:
     #[test]
     fn parse_config_from_str_all_fields_4_spaces_indent() {
         let content = "
-remoteMachine:
+remote:
     host: computer1
-compression:
-    local: 5
-    remote: 2"
+push:
+    compression: 5
+pull:
+    compression: 2"
         ;
         assert_eq!(parse_config_from_str(content), Ok(IntermediateConfig {
-            remote_machine: Some(IntermediateRemoteMachine {
+            remote: Some(IntermediateRemote {
                 host: Some(String::from("computer1")),
             }),
-            compression: Some(IntermediateCompression {
-                local: Some(5),
-                remote: Some(2),
+            push: Some(IntermediatePush {
+                compression: Some(5)
+            }),
+            pull: Some(IntermediatePull {
+                compression: Some(2)
             }),
         }));
     }
@@ -177,81 +202,78 @@ compression:
     #[test]
     fn parse_config_from_str_only_remote_machine_host() {
         let content = "
-remoteMachine:
+remote:
   host: computer1
 ";
         assert_eq!(parse_config_from_str(content), Ok(IntermediateConfig {
-            remote_machine: Some(IntermediateRemoteMachine {
+            remote: Some(IntermediateRemote {
                 host: Some(String::from("computer1")),
             }),
-            compression: None,
+            push: None,
+            pull: None,
         }));
     }
 
     #[test]
-    fn parse_config_from_str_only_remote_machine_user() {
+    fn parse_config_from_str_only_push_compression() {
         let content = "
-remoteMachine:
-  user: user1
+push:
+  compression: 5
 ";
         assert_eq!(parse_config_from_str(content), Ok(IntermediateConfig {
-            remote_machine: Some(IntermediateRemoteMachine {
-                host: None,
+            remote: None,
+            push: Some(IntermediatePush {
+                compression: Some(5)
             }),
-            compression: None,
+            pull: None,
         }));
     }
 
     #[test]
-    fn parse_config_from_str_only_compression_local() {
+    fn parse_config_from_str_only_pull_compression() {
         let content = "
-compression:
-  local: 5
+pull:
+  compression: 2
 ";
         assert_eq!(parse_config_from_str(content), Ok(IntermediateConfig {
-            remote_machine: None,
-            compression: Some(IntermediateCompression {
-                local: Some(5),
-                remote: None,
-            }),
-        }));
-    }
-
-    #[test]
-    fn parse_config_from_str_only_compression_remote() {
-        let content = "
-compression:
-  remote: 2
-";
-        assert_eq!(parse_config_from_str(content), Ok(IntermediateConfig {
-            remote_machine: None,
-            compression: Some(IntermediateCompression {
-                local: None,
-                remote: Some(2),
+            remote: None,
+            push: None,
+            pull: Some(IntermediatePull {
+                compression: Some(2)
             }),
         }));
     }
 
     #[test]
     fn parse_config_from_str_compression_valid_range() {
-        let mut compression_types: Vec<String> = Vec::new();
+        let mut destinations: Vec<String> = Vec::new();
 
-        compression_types.push(String::from("local"));
-        compression_types.push(String::from("remote"));
+        destinations.push(String::from("push"));
+        destinations.push(String::from("pull"));
 
-        for compression_type in compression_types {
+        for destination in destinations {
             for compression_level in 1..9 {
                 let content = format!("
-compression:
-  {:#?}: {:#?}
-", compression_type, compression_level);
+{:#?}:
+  compression: {:#?}
+", destination, compression_level);
 
                 assert_eq!(parse_config_from_str(&content), Ok(IntermediateConfig {
-                    remote_machine: None,
-                    compression: Some(IntermediateCompression {
-                        local: if compression_type == "local" { Some(compression_level) } else { None },
-                        remote: if compression_type == "remote" { Some(compression_level) } else { None },
-                    }),
+                    remote: None,
+                    push: if destination == "push" {
+                        Some(IntermediatePush {
+                            compression: compression_level,
+                        })
+                    } else {
+                        None
+                    },
+                    pull: if destination == "pull" {
+                        Some(IntermediatePull {
+                            compression: compression_level,
+                        })
+                    } else {
+                        None
+                    },
                 }));
             }
         }
@@ -259,10 +281,10 @@ compression:
 
     #[test]
     fn parse_config_from_str_compression_invalid_range() {
-        let mut compression_types: Vec<String> = Vec::new();
+        let mut destinations: Vec<String> = Vec::new();
 
-        compression_types.push(String::from("local"));
-        compression_types.push(String::from("remote"));
+        destinations.push(String::from("push"));
+        destinations.push(String::from("pull"));
 
         let mut invalid_compression_levels: Vec<i64> = Vec::new();
 
@@ -270,35 +292,35 @@ compression:
         invalid_compression_levels.push(10);
         invalid_compression_levels.push(-1);
 
-        for compression_type in compression_types {
+        for destination in destinations {
             for compression_level in &invalid_compression_levels {
                 let content = format!("
-compression:
-  {:#?}: {:#?}
-", compression_type, compression_level);
+{:#?}:
+  compression: {:#?}
+", destination, compression_level);
 
                 assert_eq!(
                     parse_config_from_str(&content),
-                    Err(format!("'compression.{}' must be a positive integer from 1 to 9, but was {}", compression_type, compression_level))
+                    Err(format!("'compression.{}' must be a positive integer from 1 to 9, but was {}", destination, compression_level))
                 );
             }
         }
     }
 
     #[test]
-    fn parse_config_from_str_compression_local_not_an_integer() {
+    fn parse_config_from_str_push_compression_not_an_integer() {
         let content = "
-compression:
-  local: yooo
+push:
+  compression: yooo
 ";
         assert_eq!(parse_config_from_str(content), Err(String::from("'compression.local\' must be a positive integer from 1 to 9, but was String(\n    \"yooo\"\n)")));
     }
 
     #[test]
-    fn parse_config_from_str_compression_remote_not_an_integer() {
+    fn parse_config_from_str_pull_compression_remote_not_an_integer() {
         let content = "
-compression:
-  remote: yooo
+pull:
+  compression: yooo
 ";
         assert_eq!(parse_config_from_str(content), Err(String::from("'compression.remote\' must be a positive integer from 1 to 9, but was String(\n    \"yooo\"\n)")));
     }

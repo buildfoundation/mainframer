@@ -107,7 +107,7 @@ function fileMustNotExistOnRemoteMachine {
 
 function setTestRemoteMachineInConfig {
     {
-        echo -e "remoteMachine:\\n"
+        echo -e "remote:\\n"
         echo -e "  host: \"$TEST_REMOTE_MACHINE\""
     } > "$CONFIG_FILE"
 }
