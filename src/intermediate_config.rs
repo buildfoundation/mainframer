@@ -79,7 +79,7 @@ fn parse_config_from_str(config_content: &str) -> Result<IntermediateConfig, Str
                     Yaml::Integer(compression) => if compression >= 1 && compression <= 9 {
                         Some(compression)
                     } else {
-                        return Err(format!("'pull.compression' must be a positive integer from 1 to 9, but was {:#?}", compression));
+                        return Err(format!("'push.compression' must be a positive integer from 1 to 9, but was {:#?}", compression));
                     },
                     Yaml::Null | Yaml::BadValue => None,
                     ref something_else => return Err(format!("'push.compression' must be a positive integer from 1 to 9, but was {:#?}", something_else))
@@ -262,14 +262,14 @@ pull:
                     remote: None,
                     push: if destination == "push" {
                         Some(IntermediatePush {
-                            compression: compression_level,
+                            compression: Some(compression_level),
                         })
                     } else {
                         None
                     },
                     pull: if destination == "pull" {
                         Some(IntermediatePull {
-                            compression: compression_level,
+                            compression: Some(compression_level),
                         })
                     } else {
                         None
@@ -301,7 +301,7 @@ pull:
 
                 assert_eq!(
                     parse_config_from_str(&content),
-                    Err(format!("'compression.{}' must be a positive integer from 1 to 9, but was {}", destination, compression_level))
+                    Err(format!("'{}.compression' must be a positive integer from 1 to 9, but was {}", destination, compression_level))
                 );
             }
         }
@@ -313,7 +313,7 @@ pull:
 push:
   compression: yooo
 ";
-        assert_eq!(parse_config_from_str(content), Err(String::from("'compression.local\' must be a positive integer from 1 to 9, but was String(\n    \"yooo\"\n)")));
+        assert_eq!(parse_config_from_str(content), Err(String::from("'push.compression\' must be a positive integer from 1 to 9, but was String(\n    \"yooo\"\n)")));
     }
 
     #[test]
@@ -322,6 +322,6 @@ push:
 pull:
   compression: yooo
 ";
-        assert_eq!(parse_config_from_str(content), Err(String::from("'compression.remote\' must be a positive integer from 1 to 9, but was String(\n    \"yooo\"\n)")));
+        assert_eq!(parse_config_from_str(content), Err(String::from("'pull.compression\' must be a positive integer from 1 to 9, but was String(\n    \"yooo\"\n)")));
     }
 }
