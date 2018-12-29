@@ -54,11 +54,11 @@ both:
   - "..."
 ```
 
-Name   | Description | Suggestions
--------|-------------|------------
+Name   | Description                                                   | Suggestions
+-------|---------------------------------------------------------------|------------
 `push` | Patterns used to copy files from local machine to remote one. | Build results.
 `pull` | Patterns used to copy files from remote machine to local one. | Source code.
-`both` | Patterns used to copy files both ways. | VCS, IDE-related directories.
+`both` | Patterns used to copy files both ways.                        | VCS, IDE-related directories.
 
 Ignore patterns are inherited from underlying `rsync`.
 Please refer to [`rsync` documentation](https://download.samba.org/pub/rsync/rsync.html) —
