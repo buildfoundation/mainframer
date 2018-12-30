@@ -1,20 +1,22 @@
 Files are placed in the `.mainframer` directory.
 The final configuration is the combination of files placed in:
 
-* `${HOME}/.mainframer` — the global configuration;
+* `${HOME}/.config/mainframer` or
+  [`${XDG_CONFIG_HOME}`](https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html)
+  if available — the global configuration;
 * `.mainframer` — the project configuration.
 
-It is posssible to share the configuration using the global one
+It is posssible to declare common configuration using the global one
 and fine-tune it using the project one.
 
 ## `.mainframer`
 
 The directory contains following files.
 
-Name         | Optional | Keep in VCS | Description
+Name         | Required | Keep in VCS | Description
 -------------|----------|-------------|------------
-`config.yml` | No       | No          | Configuration options.
-`ignore.yml` | Yes      | Yes         | Ignore rules for copying files.
+`config.yml` | Yes      | No          | Configuration options.
+`ignore.yml` | No       | Yes         | Ignore rules for copying files.
 
 ## `.mainframer/config.yml`
 
@@ -27,11 +29,11 @@ pull:
   compression: {level}
 ```
 
-Name               | Optional | Value   | Default | Description
+Name               | Required | Value   | Default | Description
 -------------------|----------|---------|---------|------------------
-`remote.name`      | No       | `string`| —       | Remote machine name from SSH config.
-`push.compression` | Yes      | `0..9`  | `0`     | Compression level used to copy files from local machine to remote one.
-`pull.compression` | Yes      | `0..9`  | `0`     | Compression level used to copy files from remote machine to local one.
+`remote.name`      | Yes      | `string`| —       | Remote machine name from SSH config or hostname / IP address.
+`push.compression` | No       | `0..9`  | `0`     | Compression level used to copy files from local machine to remote one.
+`pull.compression` | No       | `0..9`  | `0`     | Compression level used to copy files from remote machine to local one.
 
 Compression level is inherited from underlying `rsync`
 which uses [`zlib` values](https://www.zlib.net/manual.html):
