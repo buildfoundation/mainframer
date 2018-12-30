@@ -14,7 +14,7 @@ Think about an alias for the remote machine.
 
 ## Authentication
 
-1. Generate SSH key and remember the resulting file name as `{SSH_KEY_NAME}`.
+1. Generate SSH key and remember the resulting file name as `{SSH_KEY_FILE_NAME}`.
 
     ```
     $ ssh-keygen -t rsa -b 4096 -C "{REMOTE_MACHINE_USERNAME}"
@@ -27,7 +27,7 @@ Think about an alias for the remote machine.
       User {REMOTE_MACHINE_USERNAME}
       HostName {REMOTE_MACHINE_IP_OR_HOSTNAME}
       Port {REMOTE_MACHINE_PORT}
-      IdentityFile ~/.ssh/{SSH_KEY_NAME}
+      IdentityFile ~/.ssh/{SSH_KEY_FILE_NAME}
       PreferredAuthentications publickey
       ControlMaster auto
       ControlPath /tmp/%r@%h:%p
@@ -41,7 +41,7 @@ Think about an alias for the remote machine.
 
     ```shell
     # macOS-specific. Linux users — godspeed.
-    $ pbcopy < ~/.ssh/{SSH_KEY_NAME}.pub
+    $ pbcopy < ~/.ssh/{SSH_KEY_FILE_NAME}.pub
     ```
 
 4. Once you’ve received a confirmation that the remote machine is ready for you, try the connection.
