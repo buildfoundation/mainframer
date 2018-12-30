@@ -6,7 +6,7 @@ Find the person responsible for maintaining the remote machine and ask for the f
 
 * `REMOTE_MACHINE_IP_OR_HOSTNAME` — remote machine IP or hostname. Examples: `42.42.42.42`, `remote.domain.com`.
 * `REMOTE_MACHINE_PORT` — remote machine port. Example: `42`.
-* `REMOTE_MACHINE_USERNAME` — remote machine user, most likely a personalized, not shared one. Example: `john.doe`.
+* `REMOTE_MACHINE_USERNAME` — remote machine user, most likely a personalized, not shared one. Example: `john_doe`.
 
 Think about an alias for the remote machine.
 
