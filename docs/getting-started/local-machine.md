@@ -4,29 +4,29 @@
 
 Find the person responsible for maintaining the remote machine and ask for the following.
 
-* `REMOTE_MACHINE_IP_OR_HOSTNAME` — remote machine IP or hostname. Examples: `42.42.42.42`, `remote.domain.com`.
-* `REMOTE_MACHINE_PORT` — remote machine port. Example: `42`.
-* `REMOTE_MACHINE_USERNAME` — remote machine user, most likely a personalized, not shared one. Example: `john_doe`.
+* `REMOTE_MACHINE_IP_OR_HOSTNAME` — IP or hostname. Examples: `42.42.42.42`, `remote.domain.com`.
+* `REMOTE_MACHINE_SSH_PORT` — SSH port. Example: `42`.
+* `REMOTE_MACHINE_USERNAME` — username, most likely a personalized, not shared one. Example: `john_doe`.
 
 Think about an alias for the remote machine.
 
-* `REMOTE_MACHINE_ALIAS` — SSH alias for remote machine. Something like `mainframe` or `build-machine`.
+* `REMOTE_MACHINE_SSH_ALIAS` — SSH alias. Example: `mainframe`.
 
 ## Authentication
 
 1. Generate SSH key and remember the resulting file name as `{SSH_KEY_FILE_NAME}`.
 
-    ```
+    ```console
     $ ssh-keygen -t rsa -b 4096 -C "{REMOTE_MACHINE_USERNAME}"
     ```
 
 2. Append the following content to `~/.ssh/config`.
 
     ```sshconfig
-    Host {REMOTE_MACHINE_ALIAS}
+    Host {REMOTE_MACHINE_SSH_ALIAS}
       User {REMOTE_MACHINE_USERNAME}
       HostName {REMOTE_MACHINE_IP_OR_HOSTNAME}
-      Port {REMOTE_MACHINE_PORT}
+      Port {REMOTE_MACHINE_SSH_PORT}
       IdentityFile ~/.ssh/{SSH_KEY_FILE_NAME}
       PreferredAuthentications publickey
       ControlMaster auto
@@ -35,41 +35,35 @@ Think about an alias for the remote machine.
     ```
 
     * `ControlMaster` enables reusing SSH connection.
-    * `ControlPersist` specifies for how long SSH should keep connection open.
+    * `ControlPersist` specifies SSH connection timeout.
 
-3. Send SSH public key to a person responsible for remote machine maintenance.
-
-    ```shell
-    # macOS-specific. Linux users — godspeed.
-    $ pbcopy < ~/.ssh/{SSH_KEY_FILE_NAME}.pub
-    ```
-
+3. Send SSH public key to a person responsible for the remote machine maintenance.
 4. Once you’ve received a confirmation that the remote machine is ready for you, try the connection.
 
-    ```
-    $ ssh {REMOTE_MACHINE_ALIAS}
+    ```console
+    $ ssh {REMOTE_MACHINE_SSH_ALIAS}
     ```
 
 ## Installation
 
 ### macOS
 
-```
+```console
 $ brew tap buildfoundation/homebrew-tap
 $ brew install mainframer
 ```
 
 ## Configuration
 
-* Is the Mainframer already used on the project? You’ll need to create the config file.
-* Is the Mainframer not used on the project? You’ll need to create the config file and ignore rules.
+* Is the Mainframer already used in the project? You’ll need to create the config file.
+* Is the Mainframer not used in the project? You’ll need to create the config file and ignore rules.
 
-Please refer to the [documentation](../configuration.md).
+Please refer to [the documentation](../configuration.md).
 
 ## Running
 
-```
-$ mainframer echo "It works!" > success.txt
+```console
+$ mainframer 'echo "It works" > success.txt'
 $ cat success.txt
 ```
 
