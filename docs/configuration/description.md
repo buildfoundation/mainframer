@@ -1,5 +1,6 @@
-Files are placed in the `.mainframer` directory.
-The final configuration is the combination of files placed in:
+# Configuration
+
+Files can be put in two places.
 
 * `${HOME}/.config/mainframer` or
   [`${XDG_CONFIG_HOME}`](https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html)
