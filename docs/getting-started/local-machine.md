@@ -4,7 +4,7 @@
 
 Find the person responsible for maintaining the remote machine and ask for the following.
 
-* `REMOTE_MACHINE_IP_OR_HOSTNAME` — IP or hostname. Examples: `42.42.42.42`, `remote.domain.com`.
+* `REMOTE_MACHINE_IP_OR_HOSTNAME` — IP or hostname. Examples: `24.24.24.24`, `remote.domain.com`.
 * `REMOTE_MACHINE_SSH_PORT` — SSH port. Example: `42`.
 * `REMOTE_MACHINE_USERNAME` — username, most likely a personalized, not shared one. Example: `john_doe`.
 
