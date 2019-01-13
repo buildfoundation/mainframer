@@ -6,11 +6,11 @@
 
 ```yaml
 push:
-  # No need to sync build results to the remote machine.
+  # Build results are going to be invalidated on the remote machine.
   # Replace "out" with the directory where build results are placed.
   - "out"
 pull:
-  # No need to sync sources to the local machine.
+  # The source code on the local machine is more important than remote one. 
   # Replace "src" with the directory where the source code is placed.
   - "src"
 ```
@@ -21,8 +21,7 @@ pull:
 
 ```yaml
 push:
-  # Synching ".git" or other VCS directories is a bad idea.
-  # They are usually heavy and are not required for the build.
+  # VCS directories are usually heavy and not required for the build.
   - "/.git"
 ```
 
@@ -33,8 +32,20 @@ on the IntelliJ Platform.
 
 ```yaml
 push:
-  # Synching IDE-specific directories is not required for the build.
+  # IDE-specific directories are not required for the build.
   - "/.idea"
+  - "*.iml"
+```
+
+#### Android Studio
+
+```yaml
+push:
+  # Profiling files are not required for the build.
+  - "/captures"
+both:
+  # Contains machine-specific files.
+  - "/local.properties"
 ```
 
 ### Build Systems
@@ -43,10 +54,10 @@ push:
 
 ```yaml
 push:
-  # No need to sync build results to the remote machine.
+  # Build results are going to be invalidated on the remote machine.
   - "buck-out"
 both:
-  # ".buckd" contains machine-specific files, no need to sync it between machines.
+  # Contains machine-specific files.
   - "/.buckd"
 ```
 
@@ -54,7 +65,7 @@ both:
 
 ```yaml
 push:
-  # No need to sync build resuls to the remote machine.
+  # Build results are going to be invalidated on the remote machine.
   - "target"
 both:
   # Remove Cargo.lock if creating an executable, leave it for libraries.
@@ -66,7 +77,7 @@ both:
 
 ```yaml
 push:
-  # No need to sync build results to the remote machine.
+  # Build results are going to be invalidated on the remote machine.
   - "bin"
 ```
 
@@ -74,31 +85,17 @@ push:
 
 ```yaml
 push:
-  # No need to sync build results to the remote machine.
+  # Build results are going to be invalidated on the remote machine.
   - "build"
 both:
-  # ".gradle" contains machine-specific files, no need to sync it between machines.
+  # Contains machine-specific files.
   - ".gradle"
-```
-
-#### Gradle: Android
-
-Gradle rules apply as well.
-
-```yaml
-push:
-  # Syncing captures from Android Studio is usually not required.
-  - "/captures"
-both:
-  # Synching "local.properties" is a bad idea since it contains
-  # machine-specific values like paths to SDKs.
-  - "/local.properties"
 ```
 
 #### Maven
 
 ```yaml
 push:
-  # No need to sync build results to the remote machine.
+  # Build results are going to be invalidated on the remote machine.
   - "target"
 ```
