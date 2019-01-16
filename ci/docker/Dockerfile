@@ -5,11 +5,13 @@ MAINTAINER Mainframer Team
 COPY ci/rust.version /var/rust.version
 
 # "sudo": switch user in entrypoint.
-# "openssh-server": testing.
 # "curl", "build-essential": build Mainframer.
+# "openssh-server", "rsync": testing.
 RUN apt-get update --quiet > /dev/null && \
-    apt-get --assume-yes --quiet install sudo openssh-server curl build-essential \
-    rsync
+    apt-get --assume-yes --quiet install \
+    sudo \
+    curl build-essential \
+    openssh-server rsync
 
 RUN groupadd build_user && \
     useradd --shell /bin/bash --comment "User for container" --create-home -g build_user build_user && \
