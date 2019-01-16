@@ -8,7 +8,8 @@ COPY ci/rust.version /var/rust.version
 # "openssh-server": testing.
 # "curl", "build-essential": build Mainframer.
 RUN apt-get update --quiet > /dev/null && \
-    apt-get --assume-yes --quiet install sudo openssh-server curl build-essential
+    apt-get --assume-yes --quiet install sudo openssh-server curl build-essential \
+    lib32z1
 
 RUN groupadd build_user && \
     useradd --shell /bin/bash --comment "User for container" --create-home -g build_user build_user && \
