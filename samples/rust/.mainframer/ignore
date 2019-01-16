@@ -1,5 +1,0 @@
-# Apply same strategy for Cargo.lock as you do with it in .gitignore.
-/Cargo.lock
-
-# Synching .git or other VCS folders is very bad idea, they are usually very heavy and not required for the build.
-.git
