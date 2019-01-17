@@ -8,14 +8,13 @@ COPY ci/rust.version /var/rust.version
 # "curl", "build-essential": build Mainframer.
 # "openssh-server", "rsync": testing.
 RUN apt-get update --quiet > /dev/null && \
-    apt-get --assume-yes --no-install-recommends --quiet install \
+    apt-get --assume-yes --quiet install \
     sudo \
     curl \
     build-essential \
     openssh-server \
     rsync && \
-    apt-get --assume-yes clean && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get --assume-yes clean
 
 RUN groupadd build_user && \
     useradd --shell /bin/bash --comment "User for container" --create-home -g build_user build_user && \
