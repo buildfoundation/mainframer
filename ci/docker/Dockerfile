@@ -14,7 +14,6 @@ RUN apt-get update --quiet > /dev/null && \
     build-essential \
     openssh-server \
     rsync && \
-    apt-get --assume-yes autoremove && \
     apt-get --assume-yes clean && \
     rm -rf /var/lib/apt/lists/*
 
