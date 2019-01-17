@@ -6,6 +6,7 @@ install:
 
 before_script:
   - rustup self update
+  - rustup update
   - rustup component add clippy
 
 script:
