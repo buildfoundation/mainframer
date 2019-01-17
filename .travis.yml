@@ -15,7 +15,6 @@ script:
   - cargo build --release
   - cargo test
   - for file in $(find test -type f -name "*.sh"); do shellcheck --format=gcc $file; done
-  - bash test/test.sh
   
 cache: cargo
 
