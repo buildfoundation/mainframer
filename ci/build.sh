@@ -63,7 +63,7 @@ BUILD_COMMAND+="rm ~/.bashrc_original && "
 BUILD_COMMAND+="source ~/.bashrc && "
 
 # Run unit and integration tests.
-BUILD_COMMAND+="/opt/project/test/test.sh --run-samples &&"
+BUILD_COMMAND+="/opt/project/test/test.sh &&"
 
 # Build release version and move binary to build/artifacts.
 BUILD_COMMAND+="cd /opt/project && cargo build --release && mkdir -p artifacts && mv target/release/mainframer artifacts/mainframer-$TRAVIS_TAG-$(uname -s)"

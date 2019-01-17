@@ -1,8 +1,0 @@
-.gradle/
-build/
-
-# Idea IDE files
-*.idea/
-*.iml
-
-*.DS_STORE

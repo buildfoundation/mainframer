@@ -39,12 +39,4 @@ for test_ in "$DIR"/test_*; do
 	"$test_"
 done
 
-if [ "$1" == "--run-samples" ]; then
-	# Run all samples.
-	for sample_ in "$DIR"/sample_*; do
-		TEST_COUNTER=$((TEST_COUNTER+1))
-		"$sample_"
-	done
-fi
-
 TEST_RUN_SUCCESS="true"

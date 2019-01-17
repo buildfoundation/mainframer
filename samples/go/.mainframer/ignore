@@ -1,2 +1,0 @@
-# Synching .git or other VCS folders is very bad idea, they are usually very heavy and not required for the build.
-.git

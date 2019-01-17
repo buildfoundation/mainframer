@@ -1,8 +1,0 @@
-# .buckd folder contains machine specific loc and bin files, no need to sync it between machines. 
-/.buckd
-
-# Synching .git or other VCS folders is very bad idea, they are usually very heavy and not required for the build.
-/.git
-
-# Synching IDE specific folders is really not needed for remote build.
-/.idea
