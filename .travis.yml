@@ -1,27 +1,15 @@
+language: rust
+rust: 1.30.0
+
 install:
-  - echo "Just override default Travis CI install step to avoid automatic dependency resolution."
+  - echo "Overriding default Travis install step to avoid useless invocations."
 
-matrix:
-  include:
-  - os: linux
-    sudo: required
-    services:
-    - docker
-    script:
-    - ci/build.sh
-  - os: osx
-    script:
-    - ci/macOS.sh
-
-deploy:
-  provider: releases
-  api_key:
-      secure: GvzZK+5imIkyZn4lDwFiaM94iVh2r6DXHOqODIR1gG8WVRhZq7dfjJqcGFnXAIHshGYK/E0Ur8i1MPK5gtiOmxAUbu41/2JMBK3Y+AGKZXgSFT5/iat/Zu5tql5kk9Qft5pj53vfeuC20TXH972yzyFHhIPXGil4bs+gEa1FaruVqKug/mmW+Wkzj09R7/2eVswBRRBWPHDjoNgWYRW4tgwiEx+NoL0R/aRynwoBE5LM1X3E0I6S9p97WJtEik280Hg3zEgBBUtUQ2i18YwSBGh4/d9MC+sBJAaWyJDBtwPe3CjMP4rJ5CCiYSMhOJ2DUnDmJYH3BiUKAPaz/NtMEPdmCuMpwC2dNDIhoWlRtul0C00N62FxOuOfAM4ZlLAGqX+TUQdHbR4PVHQHqCQqMgL9dMJRZs7jCTZTMEJwUVEO62hfxT7afU4gquU+glHgSE3SCn9HuHl7LbaWo3nylsmj/H+g4yEnIkvMELYTRgAYRlJOKhR2UbUzNuD+v+3NcH+rpKbhUqA3n/TuMtJi2vTozlQESOuCvfXE6DYbsGwdGBlMjawIYny/6qF3TOzwN1k3KaWizIoQbyQF1lXPd5U7QcII+Pu14J1NruZQ9Pfsbinf4EKU5B40S7XxgPXATppbSxjLC8DS7xunP4udhYMDkk9v35r72OwvKPotpSk=
-  skip_cleanup: true
-  file_glob: true
-  file: build/artifacts/*
-  on:
-    tags: true
+script:
+  - cargo build
+  - cargo build --release
+  - cargo test
+  
+cache: cargo
 
 notifications:
   email: false
