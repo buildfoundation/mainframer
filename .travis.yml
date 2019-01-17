@@ -4,7 +4,12 @@ rust: 1.30.0
 install:
   - echo "Overriding default Travis install step to avoid useless invocations."
 
+before_script:
+  - rustup update
+  - rustup component add clippy
+
 script:
+  - cargo clippy -- -D warnings
   - cargo build
   - cargo build --release
   - cargo test
