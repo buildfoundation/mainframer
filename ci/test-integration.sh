@@ -1,7 +1,10 @@
 #!/bin/bash
 set -eu
 
-for file in $(find test -type f -name "*.sh"); do shellcheck --format=gcc $file; done
+# Travis macOS image does not have ShellCheck.
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+  for file in $(find test -type f -name "*.sh"); do shellcheck --format=gcc $file; done
+fi
 
 # NOTE: local machine and remote machine are fake
 # since we are using the same machine as both of them.
