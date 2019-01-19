@@ -1,6 +1,10 @@
 language: rust
 rust: 1.30.0
 
+os:
+  - linux
+  - osx
+
 install:
   - echo "Overriding default Travis install step to avoid useless invocations."
 

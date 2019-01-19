@@ -6,6 +6,11 @@ for file in $(find test -type f -name "*.sh"); do shellcheck --format=gcc $file;
 # NOTE: local machine and remote machine are fake
 # since we are using the same machine as both of them.
 
+# Travis Linux image already has SSH server started, macOS has not.
+if [[ "$OSTYPE" == "darwin" ]]; then
+  sudo systemsetup -setremotelogin on
+fi
+
 # Create a local machine SSH key with blank passphrase.
 ssh-keygen -b 2048 -t rsa -f ~/.ssh/id_rsa -N '' -q
 
