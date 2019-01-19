@@ -44,13 +44,6 @@ REMOTE_MACHINE_PROPERTY="remote_machine"
 MAINFRAMER_EXECUTABLE="$DIR/../target/debug/mainframer"
 ###
 
-function buildMainframer {
-    echo "Building Mainframer..."
-    pushd "$DIR/.." > /dev/null
-    cargo build
-    popd > /dev/null
-}
-
 function printTestStarted {
 	echo ""
 	test_name=$(basename "$0")

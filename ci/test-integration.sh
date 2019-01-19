@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eux
+set -eu
 
 for file in $(find test -type f -name "*.sh"); do shellcheck --format=gcc $file; done
 
