@@ -20,17 +20,6 @@ function printTestResults {
 # Hook to exit happened either because of success or error.
 trap printTestResults EXIT
 
-pushd "$DIR/../" > /dev/null
-
-"$DIR/build_and_unit_tests.sh"
-TEST_COUNTER=$((TEST_COUNTER+1))
-
-"$DIR/clippy.sh"
-TEST_COUNTER=$((TEST_COUNTER+1))
-
-popd > /dev/null
-
-
 echo "Running integration tests…"
 
 # Run all tests.

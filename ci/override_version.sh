@@ -1,5 +1,6 @@
 #!/bin/bash
-set -e
+set -eu
+
 # Runs against Cargo.toml in working directory.
 
 # Script detects if build is triggered by git tag and sets it as Mainframer version, otherwise no-op.

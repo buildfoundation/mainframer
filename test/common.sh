@@ -60,7 +60,7 @@ function printTestStarted {
 function printTestEnded {
 	echo ""
 	test_name=$(basename "$0")
-	echo "-------- TEST ENDED $test_name -------- "	
+	echo "-------- TEST ENDED $test_name -------- "
 }
 
 function cleanBuildDirOnLocalMachine {
@@ -115,8 +115,6 @@ function setTestRemoteMachineInConfig {
 if [ ! "$CLEAN_BUILD_DIRS_AFTER_RUN" == "false" ]; then
 	trap "cleanBuildDirOnLocalMachine ; cleanMainfamerDirOnRemoteMachine" EXIT
 fi
-
-buildMainframer
 
 # Clean build directories.
 cleanBuildDirOnLocalMachine

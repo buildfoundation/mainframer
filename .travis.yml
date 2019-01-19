@@ -5,8 +5,9 @@ install:
   - echo "Overriding default Travis install step to avoid useless invocations."
 
 script:
-  - bash ci/assemble.sh
-  - bash ci/test.sh
+  - bash ci/override_version.sh
+  - bash ci/build.sh
+  - bash ci/test-integration.sh
 
 cache: cargo
 
