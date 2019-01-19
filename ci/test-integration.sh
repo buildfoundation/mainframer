@@ -24,5 +24,4 @@ ssh-keyscan -t rsa localhost > ~/.ssh/known_hosts
 cp ~/.ssh/id_rsa.pub ~/.ssh/authorized_keys
 
 # Run!
-
 bash test/test.sh
