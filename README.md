@@ -1,82 +1,59 @@
 # Mainframer
 
-Tool that allows you to move build process from a local machine to a remote one.
+A tool that executes a command on a remote machine while syncing files back and forth.
+The process is known as remote execution (in general) and remote build (in particular cases).
 
-Remote machine ought to be much faster than a laptop. 
-With `mainframer` you can free up your local machine for better things —
-like editing source code in your IDE without lags and
-freezes, being able to actually _use_ your computer when the build is happening.
+Mainframer helps to move heavy operations (like compiling the source code)
+from a personal computer to a dedicated machine. This way you, as a developer,
+can use your machine for changing the source code or browsing the documentation
+without constant freezes and hearing jet engine-like sounds caused by the build process.
+The execution itself is not limited and can be applied to actions
+like encoding audio and video, batch processing and more.
 
-## Table of contents
-
-- [State of Project Development](#state-of-project-development)
-- [Supported Workflows](#supported-workflows)
-- [Setup](#setup)
-- [Demo](#demo)
-- [3rd-party IntelliJ Mainframer Plugin](#3rd-party-intellij-mainframer-plugin)
-- [How to Run Tests (for contributors)](#how-to-run-tests-for-contributors)
-- [Project Transfer Notice](#project-transfer-notice)
-- [License](#license)
-
-## State of Project Development
-
-Version `3.x` is in active development, the stable version is `2.x` and recommended for production use.
-
-You can view `2.x` version sources and docs using [this Git tag](https://github.com/gojuno/mainframer/tree/v2.1.0).
-
-There are lots of changes between `2.x` and `3.x`, but key subset is the following:
-
-- Mainframer will work as system-wide CLI tool #[185](https://github.com/gojuno/mainframer/issues/185)
-- Mainframer is now written in Rust #[191](https://github.com/gojuno/mainframer/issues/191)
-- Mainframer will speed up most of existing workflows by syncing during remote command execution #[188](https://github.com/gojuno/mainframer/issues/188)
-
-You can track `3.x` development progress using the [3.0.0 milestone](https://github.com/gojuno/mainframer/milestone/6).
-
-## Supported Workflows
-
-`mainframer` supports basically anything you can execute as a command.
-It will sync files to remote machine, execute a command and sync files back.
-
-We have quite a bunch of samples showing off some practical applications.
-
-* [Gradle](samples/gradle)
-* [Gradle Android](samples/gradle-android)
-* [Rust](samples/rust)
-* [Clang](samples/clang)
-* [GCC](samples/gcc)
-* [Maven](samples/mvn)
-* [Buck](samples/buck)
-* [Go](samples/go)
-
-## Setup
-
-* [Remote machine](docs/SETUP_REMOTE.md)
-* [Local machine](docs/SETUP_LOCAL.md)
-* [Configuration](docs/CONFIGURATION.md)
-
-## Demo
-
-[![asciicast demo](samples/demo.png)](https://asciinema.org/a/101327)
-
-## 3rd-party IntelliJ Mainframer Plugin
-
-Guys from [@elpassion](https://github.com/elpassion) maintain [IntelliJ Plugin for Mainframer](https://github.com/elpassion/mainframer-intellij-plugin) that makes integration of Mainframer with any IntelliJ project better. 
-
-We highly recommend the plugin if you use IntelliJ with Mainframer!
-
-### How to Run Tests (for contributors)
-
-Dependencies: Bash, Docker.
+It works via pushing files to the remote machine, executing the command there
+and pulling results to the local machine.
 
 ```console
-$ ci/build.sh
+$ mainframer ./gradlew build
+Sync local → remote machine...
+:build
+BUILD SUCCESSFUL
+Sync remote → local machine...
+
+$ java -jar build/libs/sample.jar
+This program was built on a remote machine!
 ```
 
-## Project Transfer Notice
+## State of the Project
 
-In October 2018, Mainframer was transferred from [github/gojuno](https://github.com/gojuno) to [github/buildfoundation](https://github.com/buildfoundation).
+* [`2.x`](https://github.com/gojuno/mainframer/tree/v2.1.0) — the stable version, recommended for production use.
+* `3.x` — the future version, in active development at this point.
+    * Mainframer is going to be [a system-wide tool](https://github.com/gojuno/mainframer/issues/185).
+    * Mainframer is [rewritten in Rust](https://github.com/gojuno/mainframer/issues/191).
+    * Mainframer will speed up most of existing workflows by [syncing during remote command execution](https://github.com/gojuno/mainframer/issues/188).
 
-It was a friendly agreement between Juno Inc. (thanks to [@ming13](https://github.com/ming13)) and core developer of the project [@artem-zinnatullin](https://github.com/artem-zinnatullin) who has left the company.
+## Documentation
+
+### Getting Started
+
+* [Remote Machine](docs/getting-started/remote-machine.md)
+* [Local Machine](docs/getting-started/local-machine.md)
+
+### Configuration
+
+* [Description](docs/configuration/description.md)
+* [Examples](docs/configuration/examples.md)
+
+### Integrations
+
+* [IntelliJ IDEA](docs/integration/intellij-idea.md)
+
+## Transfer Notice
+
+In October 2018, Mainframer was transferred from
+[github/gojuno](https://github.com/gojuno) to [github/buildfoundation](https://github.com/buildfoundation).
+It was a friendly agreement between Juno Inc. and Build Foundation after
+the core developer of the project [@artem-zinnatullin](https://github.com/artem-zinnatullin) left the company.
 
 The motivation for the transfer is to have a neutral space for the future work on the project.
 
