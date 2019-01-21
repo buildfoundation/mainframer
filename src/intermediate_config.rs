@@ -20,12 +20,12 @@ pub struct IntermediateRemote {
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct IntermediatePush {
-    pub compression: Option<i64>
+    pub compression: Option<u8>
 }
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct IntermediatePull {
-    pub compression: Option<i64>
+    pub compression: Option<u8>
 }
 
 impl IntermediateConfig {
@@ -77,7 +77,7 @@ fn parse_config_from_str(config_content: &str) -> Result<IntermediateConfig, Str
             let compression = match push.get(&Yaml::String(String::from("compression"))).cloned() {
                 Some(compression) => match compression {
                     Yaml::Integer(compression) => if compression >= 1 && compression <= 9 {
-                        Some(compression)
+                        Some(compression as u8)
                     } else {
                         return Err(format!("'push.compression' must be a positive integer from 1 to 9, but was {:#?}", compression));
                     },
@@ -100,7 +100,7 @@ fn parse_config_from_str(config_content: &str) -> Result<IntermediateConfig, Str
             let compression = match pull.get(&Yaml::String(String::from("compression"))).cloned() {
                 Some(compression) => match compression {
                     Yaml::Integer(compression) => if compression >= 1 && compression <= 9 {
-                        Some(compression)
+                        Some(compression as u8)
                     } else {
                         return Err(format!("'pull.compression' must be a positive integer from 1 to 9, but was {:#?}", compression));
                     }

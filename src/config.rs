@@ -12,10 +12,10 @@ pub struct Remote {
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct Push {
-    pub compression: i64,
+    pub compression: u8,
 }
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct Pull {
-    pub compression: i64,
+    pub compression: u8,
 }
