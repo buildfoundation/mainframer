@@ -1,21 +1,21 @@
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq)]
 pub struct Config {
     pub remote: Remote,
     pub push: Push,
     pub pull: Pull,
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, PartialEq)]
 pub struct Remote {
     pub host: String,
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, PartialEq)]
 pub struct Push {
     pub compression: u8,
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, PartialEq)]
 pub struct Pull {
     pub compression: u8,
 }
