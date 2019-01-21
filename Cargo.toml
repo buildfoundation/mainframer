@@ -10,3 +10,4 @@ authors = ["Artem Zinnatullin <artem.zinnatullin@gmail.com>", "Artur Dryomov <ar
 
 [dependencies]
 yaml-rust = "0.4.2"
+linked-hash-map = "0.5.1"

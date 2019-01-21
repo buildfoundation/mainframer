@@ -1,8 +1,10 @@
+extern crate linked_hash_map;
 extern crate yaml_rust;
 
 use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
+use self::linked_hash_map::LinkedHashMap;
 use self::yaml_rust::Yaml;
 use self::yaml_rust::YamlLoader;
 
@@ -74,22 +76,14 @@ fn parse_config_from_str(config_content: &str) -> Result<IntermediateConfig, Str
 
     let push = match &yaml["push"] {
         Yaml::Hash(push) => {
-            let compression = match push.get(&Yaml::String(String::from("compression"))).cloned() {
-                Some(compression) => match compression {
-                    Yaml::Integer(compression) => if compression >= 1 && compression <= 9 {
-                        Some(compression as u8)
-                    } else {
-                        return Err(format!("'push.compression' must be a positive integer from 1 to 9, but was {:#?}", compression));
-                    },
-                    Yaml::Null | Yaml::BadValue => None,
-                    ref something_else => return Err(format!("'push.compression' must be a positive integer from 1 to 9, but was {:#?}", something_else))
-                },
-                None => None
-            };
+            let compression = parse_compression(push, "compression", "push");
 
-            Some(IntermediatePush {
-                compression
-            })
+            match compression {
+                Ok(value) => Some(IntermediatePush {
+                    compression: value
+                }),
+                Err(error) => return Err(error)
+            }
         }
         Yaml::Null | Yaml::BadValue => None,
         _ => return Err(String::from("'push' must be an object"))
@@ -97,23 +91,14 @@ fn parse_config_from_str(config_content: &str) -> Result<IntermediateConfig, Str
 
     let pull = match &yaml["pull"] {
         Yaml::Hash(pull) => {
-            let compression = match pull.get(&Yaml::String(String::from("compression"))).cloned() {
-                Some(compression) => match compression {
-                    Yaml::Integer(compression) => if compression >= 1 && compression <= 9 {
-                        Some(compression as u8)
-                    } else {
-                        return Err(format!("'pull.compression' must be a positive integer from 1 to 9, but was {:#?}", compression));
-                    }
-                    ,
-                    Yaml::Null | Yaml::BadValue => None,
-                    ref something_else => return Err(format!("'pull.compression' must be a positive integer from 1 to 9, but was {:#?}", something_else))
-                },
-                None => None
-            };
+            let compression = parse_compression(pull, "compression", "pull");
 
-            Some(IntermediatePull {
-                compression
-            })
+            match compression {
+                Ok(value) => Some(IntermediatePull {
+                    compression: value,
+                }),
+                Err(error) => return Err(error)
+            }
         }
         Yaml::Null | Yaml::BadValue => None,
         _ => return Err(String::from("'pull' must be an object"))
@@ -124,6 +109,21 @@ fn parse_config_from_str(config_content: &str) -> Result<IntermediateConfig, Str
         push,
         pull,
     })
+}
+
+fn parse_compression(yaml: &LinkedHashMap<Yaml, Yaml>, field_name: &str, scope_name: &str) -> Result<Option<u8>, String> {
+    match yaml.get(&Yaml::String(field_name.to_string())).cloned() {
+        Some(compression) => match compression {
+            Yaml::Integer(compression) => if compression >= 1 && compression <= 9 {
+                Ok(Some(compression as u8))
+            } else {
+                Err(format!("'{}.{}' must be a positive integer from 1 to 9, but was {:#?}", scope_name, field_name, compression))
+            },
+            Yaml::Null | Yaml::BadValue => Ok(None),
+            ref something_else => Err(format!("'{}.{}' must be a positive integer from 1 to 9, but was {:#?}", scope_name, field_name, something_else))
+        },
+        None => Ok(None)
+    }
 }
 
 #[cfg(test)]
@@ -138,8 +138,9 @@ remote:
 push:
   compression: 5
 pull:
-  compression: 2"
-        ;
+  compression: 2
+";
+
         assert_eq!(parse_config_from_str(content), Ok(IntermediateConfig {
             remote: Some(IntermediateRemote {
                 host: Some(String::from("computer1")),
@@ -161,8 +162,9 @@ remote:
 push:
   compression: 5
 pull:
-  compression: 2"
-        ;
+  compression: 2
+";
+
         assert_eq!(parse_config_from_str(content), Ok(IntermediateConfig {
             remote: Some(IntermediateRemote {
                 host: Some(String::from("computer1")),
@@ -184,8 +186,9 @@ remote:
 push:
     compression: 5
 pull:
-    compression: 2"
-        ;
+    compression: 2
+";
+
         assert_eq!(parse_config_from_str(content), Ok(IntermediateConfig {
             remote: Some(IntermediateRemote {
                 host: Some(String::from("computer1")),

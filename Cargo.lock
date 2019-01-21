@@ -7,6 +7,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "mainframer"
 version = "3.0.0-dev"
 dependencies = [
+ "linked-hash-map 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "yaml-rust 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
