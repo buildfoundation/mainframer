@@ -26,7 +26,7 @@ PRIVATE_REMOTE_BUILD_DIR="${PRIVATE_REMOTE_BUILD_ROOT_DIR}${DIR}/$PRIVATE_BUILD_
 ### Used by tests (shellcheck raises SC2034)
 BUILD_DIR="$DIR/$PRIVATE_BUILD_DIR_NAME"
 
-CONFIG_FILE="$BUILD_DIR/.mainframer/config"
+CONFIG_FILE="$BUILD_DIR/.mainframer/config.yml"
 
 # shellcheck disable=SC2034
 LOCAL_IGNORE_FILE="$BUILD_DIR/.mainframer/localignore"
@@ -36,8 +36,6 @@ REMOTE_IGNORE_FILE="$BUILD_DIR/.mainframer/remoteignore"
 
 # shellcheck disable=SC2034
 COMMON_IGNORE_FILE="$BUILD_DIR/.mainframer/ignore"
-
-REMOTE_MACHINE_PROPERTY="remote_machine"
 
 # TODO test both debug and release builds.
 # shellcheck disable=SC2034
@@ -108,7 +106,10 @@ function fileMustNotExistOnRemoteMachine {
 }
 
 function setTestRemoteMachineInConfig {
-	echo "$REMOTE_MACHINE_PROPERTY=$TEST_REMOTE_MACHINE" > "$CONFIG_FILE"
+    {
+        echo -e "remote:\\n"
+        echo -e "  host: \"$TEST_REMOTE_MACHINE\""
+    } > "$CONFIG_FILE"
 }
 
 # Clean build directory after run.

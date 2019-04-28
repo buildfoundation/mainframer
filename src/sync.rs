@@ -1,6 +1,6 @@
 use config::Config;
 use ignore::Ignore;
-use std::any::Any;
+use std::error::Error;
 use std::path::Path;
 use std::path::PathBuf;
 use std::process::Command;
@@ -21,7 +21,7 @@ pub enum SyncMode {
 }
 
 // TODO add internal version of sync functions with closures as parameters to unit test properly.
-fn sync_local_to_remote(local_dir_absolute_path: &Path, config: &Config, ignore: &Ignore) -> Result<(), String> {
+pub fn sync_local_to_remote(local_dir_absolute_path: &Path, config: &Config, ignore: &Ignore) -> Result<(), String> {
     let mut command = Command::new("rsync");
 
     command
@@ -29,7 +29,7 @@ fn sync_local_to_remote(local_dir_absolute_path: &Path, config: &Config, ignore:
         .arg("--delete")
         // Create (if not exists) project dir on remote machine.
         .arg(format!("--rsync-path=mkdir -p {} && rsync", project_dir_on_remote_machine(local_dir_absolute_path)))
-        .arg(format!("--compress-level={}", config.local_compression_level));
+        .arg(format!("--compress-level={}", config.push.compression));
 
     apply_exclude_from(&mut command, &ignore.common_ignore_file);
     apply_exclude_from(&mut command, &ignore.local_ignore_file);
@@ -40,30 +40,32 @@ fn sync_local_to_remote(local_dir_absolute_path: &Path, config: &Config, ignore:
 
     command.arg(format!(
         "{remote_machine_name}:{project_dir_on_remote_machine}",
-        remote_machine_name = config.remote_machine_name,
+        remote_machine_name = config.remote.host,
         project_dir_on_remote_machine = project_dir_on_remote_machine(local_dir_absolute_path))
     );
 
     execute_rsync(&mut command)
 }
 
-pub fn sync_remote_to_local(local_dir_absolute_path: &Path, config: &Config, ignore: &Ignore, sync_mode: &SyncMode, remote_command_finished_signal: &Receiver<Any>) -> Receiver<Result<(), String>> {
+pub fn sync_remote_to_local(local_dir_absolute_path: &Path, config: Config, ignore: Ignore, sync_mode: SyncMode, remote_command_finished_signal: Receiver<Result<(), ()>>) -> Receiver<Result<(), String>> {
     match sync_mode {
-        SyncMode::Serial => sync_local_to_remote_serial(local_dir_absolute_path, config, ignore, remote_command_finished_signal),
-        SyncMode::Parallel(pause_between_sync) => sync_local_to_remote_parallel(local_dir_absolute_path, config, ignore, pause_between_sync, remote_command_finished_signal)
+        SyncMode::Serial => sync_remote_to_local_serial(local_dir_absolute_path.to_path_buf(), config, ignore, remote_command_finished_signal),
+        SyncMode::Parallel(pause_between_sync) => sync_remote_to_local_parallel(local_dir_absolute_path.to_path_buf(), config, ignore, pause_between_sync, remote_command_finished_signal)
     }
 }
 
-fn sync_remote_to_local_serial(local_dir_absolute_path: &Path, config: &Config, ignore: &Ignore, remote_command_finished_signal: &Receiver<Any>) -> Receiver<Result<(), String>> {
-    let (sync_finished_tx, sync_finished_rx) = mpsc::channel();
+fn sync_remote_to_local_serial(local_dir_absolute_path: PathBuf, config: Config, ignore: Ignore, remote_command_finished_signal: Receiver<Result<(), ()>>) -> Receiver<Result<(), String>> {
+    let (sync_finished_tx, sync_finished_rx): (Sender<Result<(), String>>, Receiver<Result<(), String>>) = mpsc::channel();
 
     thread::spawn(move || {
         match remote_command_finished_signal.recv() {
-            Err(error) => sync_finished_tx.send(Err(error)),
-            Ok(_) => {
-                match _sync_remote_to_local(local_dir_absolute_path, config, ignore) {
-                    Err(message) => sync_finished_tx.send(Ok(Err(message))),
-                    Ok(_) => sync_finished_tx.send(Ok(()))
+            Err(error) => sync_finished_tx.send(Err(error.description().to_string())),
+            Ok(remote_command_result) => match remote_command_result {
+                Ok(_) | Err(_) => {
+                    match _sync_remote_to_local(local_dir_absolute_path.as_path(), config, ignore) {
+                        Err(message) => sync_finished_tx.send(Err(message)),
+                        Ok(_) => sync_finished_tx.send(Ok(()))
+                    }
                 }
             }
         }
@@ -72,45 +74,50 @@ fn sync_remote_to_local_serial(local_dir_absolute_path: &Path, config: &Config, 
     return sync_finished_rx;
 }
 
-fn sync_remote_to_local_parallel(local_dir_absolute_path: &Path, config: &Config, ignore: &Ignore, pause_between_sync: &Duration, remote_command_finished_signal: &Receiver<Any>) -> Receiver<Result<(), String>> {
-    let (sync_finished_tx, sync_finished_rx) = mpsc::channel();
+fn sync_remote_to_local_parallel(local_dir_absolute_path: PathBuf, config: Config, ignore: Ignore, pause_between_sync: Duration, remote_command_finished_signal: Receiver<Result<(), ()>>) -> Receiver<Result<(), String>> {
+    let (sync_finished_tx, sync_finished_rx): (Sender<Result<(), String>>, Receiver<Result<(), String>>) = mpsc::channel();
 
     thread::spawn(move || {
         let mut should_run = true;
 
         while should_run {
-            match _sync_remote_to_local(local_dir_absolute_path, config, ignore) {
+            match _sync_remote_to_local(local_dir_absolute_path.as_path(), config, ignore) {
                 Err(reason) => {
                     should_run = false;
-                    sync_finished_tx.send(Ok(Err(reason))); // TODO handle code 24.
+                    sync_finished_tx.send(Err(reason)); // TODO handle code 24.
                 },
+                Ok(_) => {
+                    thread::sleep(pause_between_sync)
+                }
             }
 
             match remote_command_finished_signal.try_recv() {
                 Err(reason) => match reason {
                     Disconnected => should_run = false,
-                    Empty => thread::sleep(*pause_between_sync)
+                    Empty => thread::sleep(pause_between_sync)
                 },
-                Ok(_) => {
-                    should_run = false;
+                Ok(remote_command_result) => match remote_command_result {
+                    Ok(_) | Err(_) => {
+                        should_run = false;
 
-                    // Final sync after remote command to ensure consistency of the files.
-                    sync_finished_tx.send(Ok(_sync_remote_to_local(local_dir_absolute_path, config, ignore)));
-                },
+                        // Final sync after remote command to ensure consistency of the files.
+                        sync_finished_tx.send(_sync_remote_to_local(local_dir_absolute_path.as_path(), config, ignore));
+                    },
+                }
             }
         }
     });
 
-    return sync_finished_tx;
+    return sync_finished_rx;
 }
 
-fn _sync_remote_to_local(local_dir_absolute_path: &Path, config: &Config, ignore: &Ignore) -> Result<(), String> {
+fn _sync_remote_to_local(local_dir_absolute_path: &Path, config: Config, ignore: Ignore) -> Result<(), String> {
     let mut command = Command::new("rsync");
 
     command
         .arg("--archive")
         .arg("--delete")
-        .arg(format!("--compress-level={}", config.remote_compression_level));
+        .arg(format!("--compress-level={}", config.pull.compression));
 
     apply_exclude_from(&mut command, &ignore.common_ignore_file);
     apply_exclude_from(&mut command, &ignore.remote_ignore_file);
@@ -119,7 +126,7 @@ fn _sync_remote_to_local(local_dir_absolute_path: &Path, config: &Config, ignore
         .arg("--rsh=ssh")
         .arg(format!(
             "{remote_machine_name}:{project_dir_on_remote_machine}/",
-            remote_machine_name = config.remote_machine_name,
+            remote_machine_name = config.remote.host,
             project_dir_on_remote_machine = project_dir_on_remote_machine(local_dir_absolute_path))
         )
         .arg("./");

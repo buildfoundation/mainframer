@@ -1,9 +1,0 @@
-apply plugin: 'java'
-
-jar {
-	manifest {
-		attributes(
-			'Main-Class': 'com.gojuno.mainframer.Sample'
-		)
-	}
-}
