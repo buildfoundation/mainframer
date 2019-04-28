@@ -4,7 +4,6 @@ use std::env;
 use std::fs;
 use std::path::Path;
 use std::process;
-use std::time::Duration;
 use std::time::Instant;
 
 use args::Args;
@@ -64,7 +63,7 @@ fn main() {
         sync::project_dir_on_remote_machine(&local_dir_absolute_path.clone()),
     );
 
-    let remote_to_local_sync_finished_rx = sync::sync_remote_to_local(&local_dir_absolute_path, config.clone(), ignore, sync::PullMode::Parallel(Duration::from_millis(500)), remote_command_finished_rx.clone());
+    let remote_to_local_sync_finished_rx = sync::sync_remote_to_local(&local_dir_absolute_path, config.clone(), ignore, &config.pull.mode, remote_command_finished_rx.clone());
 
     let remote_command_result = remote_command_finished_rx.recv();
     let remote_command_duration = remote_command_start_time.elapsed(); // TODO: move duration to Result.

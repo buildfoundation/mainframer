@@ -48,10 +48,10 @@ pub fn sync_local_to_remote(local_dir_absolute_path: &Path, config: &Config, ign
     execute_rsync(&mut command)
 }
 
-pub fn sync_remote_to_local(local_dir_absolute_path: &Path, config: Config, ignore: Ignore, sync_mode: PullMode, remote_command_finished_signal: Receiver<Result<(), ()>>) -> Receiver<Result<(), String>> {
+pub fn sync_remote_to_local(local_dir_absolute_path: &Path, config: Config, ignore: Ignore, sync_mode: &PullMode, remote_command_finished_signal: Receiver<Result<(), ()>>) -> Receiver<Result<(), String>> {
     match sync_mode {
         PullMode::Serial => sync_remote_to_local_serial(local_dir_absolute_path.to_path_buf(), config, ignore, remote_command_finished_signal),
-        PullMode::Parallel(pause_between_sync) => sync_remote_to_local_parallel(local_dir_absolute_path.to_path_buf(), config, ignore, pause_between_sync, remote_command_finished_signal)
+        PullMode::Parallel(pause_between_sync) => sync_remote_to_local_parallel(local_dir_absolute_path.to_path_buf(), config, ignore, *pause_between_sync, remote_command_finished_signal)
     }
 }
 
@@ -63,7 +63,7 @@ fn sync_remote_to_local_serial(local_dir_absolute_path: PathBuf, config: Config,
             Err(error) => sync_finished_tx.send(Err(error.description().to_string())),
             Ok(remote_command_result) => match remote_command_result {
                 Ok(_) | Err(_) => {
-                    match _sync_remote_to_local(local_dir_absolute_path.as_path(), config, ignore) {
+                    match _sync_remote_to_local(local_dir_absolute_path.as_path(), &config, &ignore) {
                         Err(message) => sync_finished_tx.send(Err(message)),
                         Ok(_) => sync_finished_tx.send(Ok(()))
                     }
@@ -72,7 +72,7 @@ fn sync_remote_to_local_serial(local_dir_absolute_path: PathBuf, config: Config,
         }
     });
 
-    return sync_finished_rx;
+    sync_finished_rx
 }
 
 fn sync_remote_to_local_parallel(local_dir_absolute_path: PathBuf, config: Config, ignore: Ignore, pause_between_sync: Duration, remote_command_finished_signal: Receiver<Result<(), ()>>) -> Receiver<Result<(), String>> {
@@ -82,7 +82,7 @@ fn sync_remote_to_local_parallel(local_dir_absolute_path: PathBuf, config: Confi
         let mut should_run = true;
 
         while should_run {
-            match _sync_remote_to_local(local_dir_absolute_path.as_path(), config.clone(), ignore.clone()) {
+            match _sync_remote_to_local(local_dir_absolute_path.as_path(), &config, &ignore) {
                 Err(reason) => {
                     should_run = false;
                     sync_finished_tx
@@ -105,7 +105,7 @@ fn sync_remote_to_local_parallel(local_dir_absolute_path: PathBuf, config: Confi
 
                         // Final sync after remote command to ensure consistency of the files.
                         sync_finished_tx
-                            .send(_sync_remote_to_local(local_dir_absolute_path.as_path(), config.clone(), ignore.clone()))
+                            .send(_sync_remote_to_local(local_dir_absolute_path.as_path(), &config, &ignore))
                             .expect("Could not send sync finished signal (last iteration).");
                     },
                 }
@@ -113,10 +113,10 @@ fn sync_remote_to_local_parallel(local_dir_absolute_path: PathBuf, config: Confi
         }
     });
 
-    return sync_finished_rx;
+    sync_finished_rx
 }
 
-fn _sync_remote_to_local(local_dir_absolute_path: &Path, config: Config, ignore: Ignore) -> Result<(), String> {
+fn _sync_remote_to_local(local_dir_absolute_path: &Path, config: &Config, ignore: &Ignore) -> Result<(), String> {
     let mut command = Command::new("rsync");
 
     command

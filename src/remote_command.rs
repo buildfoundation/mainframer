@@ -11,14 +11,14 @@ pub fn execute_remote_command(remote_command: String, config: Config, project_di
 
     thread::spawn(move || {
         remote_command_finished_tx
-            .send(_execute_remote_command(remote_command, config, project_dir_on_remote_machine))
+            .send(_execute_remote_command(&remote_command, &config, &project_dir_on_remote_machine))
             .expect("Could not send remote_command_finished signal.");
     });
 
-    return remote_command_finished_rx;
+    remote_command_finished_rx
 }
 
-fn _execute_remote_command(remote_command: String, config: Config, project_dir_on_remote_machine: String) -> Result<(), ()> {
+fn _execute_remote_command(remote_command: &str, config: &Config, project_dir_on_remote_machine: &str) -> Result<(), ()> {
     let mut command = Command::new("ssh");
 
     command
