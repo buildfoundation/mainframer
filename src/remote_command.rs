@@ -1,13 +1,13 @@
 use config::Config;
+use crossbeam_channel::Receiver;
+use crossbeam_channel::Sender;
+use crossbeam_channel::unbounded;
 use std::process::Command;
 use std::process::Stdio;
-use std::sync::mpsc;
-use std::sync::mpsc::Receiver;
-use std::sync::mpsc::Sender;
 use std::thread;
 
 pub fn execute_remote_command(remote_command: String, config: Config, project_dir_on_remote_machine: String) -> Receiver<Result<(), ()>> {
-    let (remote_command_finished_tx, remote_command_finished_rx): (Sender<Result<(), ()>>, Receiver<Result<(), ()>>) = mpsc::channel();
+    let (remote_command_finished_tx, remote_command_finished_rx): (Sender<Result<(), ()>>, Receiver<Result<(), ()>>) = unbounded();
 
     thread::spawn(move || {
         remote_command_finished_tx.send(_execute_remote_command(remote_command, config, project_dir_on_remote_machine));

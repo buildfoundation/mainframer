@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate crossbeam_channel;
+
 mod args;
 mod config;
 mod intermediate_config;
@@ -15,10 +18,7 @@ use std::fs;
 use std::path::Path;
 use std::process;
 use std::time::Instant;
-use std::sync::mpsc;
-use std::sync::mpsc::TryRecvError::*;
 use std::time::Duration;
-use std::thread;
 use time::*;
 
 // TODO use Reactive Streams instead of Channels.
@@ -63,7 +63,7 @@ fn main() {
         sync::project_dir_on_remote_machine(&local_dir_absolute_path.clone()),
     );
 
-    let remote_to_local_sync_finished_rx = sync::sync_remote_to_local(&local_dir_absolute_path, config.clone(), ignore, sync::SyncMode::Parallel(Duration::from_millis(500)), remote_command_finished_rx);
+    let remote_to_local_sync_finished_rx = sync::sync_remote_to_local(&local_dir_absolute_path, config.clone(), ignore, sync::SyncMode::Parallel(Duration::from_millis(500)), remote_command_finished_rx.clone());
 
     let remote_command_result = remote_command_finished_rx.recv();
     let remote_command_duration = remote_command_start_time.elapsed();

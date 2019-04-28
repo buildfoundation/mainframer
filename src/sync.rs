@@ -4,10 +4,10 @@ use std::error::Error;
 use std::path::Path;
 use std::path::PathBuf;
 use std::process::Command;
-use std::sync::mpsc;
-use std::sync::mpsc::Receiver;
-use std::sync::mpsc::Sender;
-use std::sync::mpsc::TryRecvError::*;
+use crossbeam_channel::Receiver;
+use crossbeam_channel::Sender;
+use crossbeam_channel::TryRecvError::*;
+use crossbeam_channel::unbounded;
 use std::time::Duration;
 use std::thread;
 
@@ -55,7 +55,7 @@ pub fn sync_remote_to_local(local_dir_absolute_path: &Path, config: Config, igno
 }
 
 fn sync_remote_to_local_serial(local_dir_absolute_path: PathBuf, config: Config, ignore: Ignore, remote_command_finished_signal: Receiver<Result<(), ()>>) -> Receiver<Result<(), String>> {
-    let (sync_finished_tx, sync_finished_rx): (Sender<Result<(), String>>, Receiver<Result<(), String>>) = mpsc::channel();
+    let (sync_finished_tx, sync_finished_rx): (Sender<Result<(), String>>, Receiver<Result<(), String>>) = unbounded(); // TODO remove me mpsc::channel();
 
     thread::spawn(move || {
         match remote_command_finished_signal.recv() {
@@ -75,13 +75,13 @@ fn sync_remote_to_local_serial(local_dir_absolute_path: PathBuf, config: Config,
 }
 
 fn sync_remote_to_local_parallel(local_dir_absolute_path: PathBuf, config: Config, ignore: Ignore, pause_between_sync: Duration, remote_command_finished_signal: Receiver<Result<(), ()>>) -> Receiver<Result<(), String>> {
-    let (sync_finished_tx, sync_finished_rx): (Sender<Result<(), String>>, Receiver<Result<(), String>>) = mpsc::channel();
+    let (sync_finished_tx, sync_finished_rx): (Sender<Result<(), String>>, Receiver<Result<(), String>>) = unbounded(); // TODO remove me mpsc::channel();
 
     thread::spawn(move || {
         let mut should_run = true;
 
         while should_run {
-            match _sync_remote_to_local(local_dir_absolute_path.as_path(), config, ignore) {
+            match _sync_remote_to_local(local_dir_absolute_path.as_path(), config.clone(), ignore.clone()) {
                 Err(reason) => {
                     should_run = false;
                     sync_finished_tx.send(Err(reason)); // TODO handle code 24.
@@ -101,7 +101,7 @@ fn sync_remote_to_local_parallel(local_dir_absolute_path: PathBuf, config: Confi
                         should_run = false;
 
                         // Final sync after remote command to ensure consistency of the files.
-                        sync_finished_tx.send(_sync_remote_to_local(local_dir_absolute_path.as_path(), config, ignore));
+                        sync_finished_tx.send(_sync_remote_to_local(local_dir_absolute_path.as_path(), config.clone(), ignore.clone()));
                     },
                 }
             }
