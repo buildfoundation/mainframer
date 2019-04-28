@@ -85,7 +85,9 @@ fn sync_remote_to_local_parallel(local_dir_absolute_path: PathBuf, config: Confi
             match _sync_remote_to_local(local_dir_absolute_path.as_path(), config.clone(), ignore.clone()) {
                 Err(reason) => {
                     should_run = false;
-                    sync_finished_tx.send(Err(reason)); // TODO handle code 24.
+                    sync_finished_tx
+                        .send(Err(reason)) // TODO handle code 24.
+                        .expect("Could not send sync_finished signal.");
                 },
                 Ok(_) => {
                     thread::sleep(pause_between_sync)
@@ -102,7 +104,9 @@ fn sync_remote_to_local_parallel(local_dir_absolute_path: PathBuf, config: Confi
                         should_run = false;
 
                         // Final sync after remote command to ensure consistency of the files.
-                        sync_finished_tx.send(_sync_remote_to_local(local_dir_absolute_path.as_path(), config.clone(), ignore.clone()));
+                        sync_finished_tx
+                            .send(_sync_remote_to_local(local_dir_absolute_path.as_path(), config.clone(), ignore.clone()))
+                            .expect("Could not send sync finished signal (last iteration).");
                     },
                 }
             }

@@ -10,7 +10,9 @@ pub fn execute_remote_command(remote_command: String, config: Config, project_di
     let (remote_command_finished_tx, remote_command_finished_rx): (Sender<Result<(), ()>>, Receiver<Result<(), ()>>) = unbounded();
 
     thread::spawn(move || {
-        remote_command_finished_tx.send(_execute_remote_command(remote_command, config, project_dir_on_remote_machine));
+        remote_command_finished_tx
+            .send(_execute_remote_command(remote_command, config, project_dir_on_remote_machine))
+            .expect("Could not send remote_command_finished signal.");
     });
 
     return remote_command_finished_rx;
