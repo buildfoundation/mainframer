@@ -7,6 +7,8 @@ use std::path::Path;
 use self::linked_hash_map::LinkedHashMap;
 use self::yaml_rust::Yaml;
 use self::yaml_rust::YamlLoader;
+use sync::PullMode;
+use std::time::Duration;
 
 #[derive(Debug, PartialEq)]
 pub struct IntermediateConfig {
@@ -27,7 +29,8 @@ pub struct IntermediatePush {
 
 #[derive(Debug, PartialEq)]
 pub struct IntermediatePull {
-    pub compression: Option<u8>
+    pub compression: Option<u8>,
+    pub mode: Option<PullMode>
 }
 
 impl IntermediateConfig {
@@ -92,12 +95,17 @@ fn parse_config_from_str(config_content: &str) -> Result<IntermediateConfig, Str
     let pull = match &yaml["pull"] {
         Yaml::Hash(pull) => {
             let compression = parse_compression(pull, "compression", "pull");
+            let mode = parse_pull_mode(pull);
 
-            match compression {
-                Ok(value) => Some(IntermediatePull {
-                    compression: value,
-                }),
-                Err(error) => return Err(error)
+            if compression.is_err() {
+                return Err(compression.unwrap_err())
+            } else if mode.is_err() {
+                return Err(mode.unwrap_err())
+            } else {
+               Some(IntermediatePull {
+                   compression: compression.ok().unwrap(),
+                   mode: mode.ok().unwrap(),
+               })
             }
         }
         Yaml::Null | Yaml::BadValue => None,
@@ -126,6 +134,21 @@ fn parse_compression(yaml: &LinkedHashMap<Yaml, Yaml>, field_name: &str, scope_n
     }
 }
 
+fn parse_pull_mode(yaml: &LinkedHashMap<Yaml, Yaml>) -> Result<Option<PullMode>, String> {
+    match yaml.get(&Yaml::String("mode".to_string())) {
+        Some(mode) => match mode {
+            Yaml::String(mode) => match mode.as_ref() {
+                "serial" => Ok(Some(PullMode::Serial)),
+                "parallel" => Ok(Some(PullMode::Parallel(Duration::from_millis(500)))), // TODO: make duration configurable too.
+                ref unknown_value => Err(format!("Unsupported pull mode, valid values are 'serial' and 'parallel', but was '{:#?}'", unknown_value))
+            },
+            Yaml::Null | Yaml::BadValue => Ok(None),
+            ref something_else => Err(format!("Pull mode must be string, valid values are 'serial' and 'parallel', but was '{:#?}'", something_else))
+        },
+        None => Ok(None)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -139,6 +162,7 @@ push:
   compression: 5
 pull:
   compression: 2
+  mode: serial
 ";
 
         assert_eq!(parse_config_from_str(content), Ok(IntermediateConfig {
@@ -149,7 +173,8 @@ pull:
                 compression: Some(5)
             }),
             pull: Some(IntermediatePull {
-                compression: Some(2)
+                compression: Some(2),
+                mode: Some(PullMode::Serial),
             }),
         }));
     }
@@ -163,6 +188,7 @@ push:
   compression: 5
 pull:
   compression: 2
+  mode: \"serial\"
 ";
 
         assert_eq!(parse_config_from_str(content), Ok(IntermediateConfig {
@@ -173,7 +199,8 @@ pull:
                 compression: Some(5)
             }),
             pull: Some(IntermediatePull {
-                compression: Some(2)
+                compression: Some(2),
+                mode: Some(PullMode::Serial)
             }),
         }));
     }
@@ -187,6 +214,7 @@ push:
     compression: 5
 pull:
     compression: 2
+    mode: serial
 ";
 
         assert_eq!(parse_config_from_str(content), Ok(IntermediateConfig {
@@ -197,7 +225,8 @@ pull:
                 compression: Some(5)
             }),
             pull: Some(IntermediatePull {
-                compression: Some(2)
+                compression: Some(2),
+                mode: Some(PullMode::Serial),
             }),
         }));
     }
@@ -242,7 +271,8 @@ pull:
             remote: None,
             push: None,
             pull: Some(IntermediatePull {
-                compression: Some(2)
+                compression: Some(2),
+                mode: None,
             }),
         }));
     }
@@ -273,6 +303,7 @@ pull:
                     pull: if destination == "pull" {
                         Some(IntermediatePull {
                             compression: Some(compression_level),
+                            mode: None,
                         })
                     } else {
                         None
@@ -326,5 +357,46 @@ pull:
   compression: yooo
 ";
         assert_eq!(parse_config_from_str(content), Err(String::from("'pull.compression\' must be a positive integer from 1 to 9, but was String(\n    \"yooo\"\n)")));
+    }
+
+    #[test]
+    fn parse_config_from_str_only_pull_mode_serial() {
+        let content = "
+pull:
+  mode: serial
+";
+        assert_eq!(parse_config_from_str(content), Ok(IntermediateConfig {
+            remote: None,
+            push: None,
+            pull: Some(IntermediatePull {
+                compression: None,
+                mode: Some(PullMode::Serial)
+            }),
+        }));
+    }
+
+    #[test]
+    fn parse_config_from_str_only_pull_mode_parallel() {
+        let content = "
+pull:
+  mode: parallel
+";
+        assert_eq!(parse_config_from_str(content), Ok(IntermediateConfig {
+            remote: None,
+            push: None,
+            pull: Some(IntermediatePull {
+                compression: None,
+                mode: Some(PullMode::Parallel(Duration::from_millis(500)))
+            }),
+        }));
+    }
+
+    #[test]
+    fn parse_config_from_str_only_pull_mode_unsupported_value() {
+        let content = "
+pull:
+  mode: unsupported_value
+";
+        assert_eq!(parse_config_from_str(content), Err(String::from("Unsupported pull mode, valid values are \'serial\' and \'parallel\', but was \'\"unsupported_value\"\'")));
     }
 }

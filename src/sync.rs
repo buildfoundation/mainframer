@@ -11,7 +11,8 @@ use crossbeam_channel::unbounded;
 use std::time::Duration;
 use std::thread;
 
-pub enum SyncMode {
+#[derive(Debug, PartialEq, Clone)]
+pub enum PullMode {
     /// Serial, after remote command execution.
     Serial,
 
@@ -47,10 +48,10 @@ pub fn sync_local_to_remote(local_dir_absolute_path: &Path, config: &Config, ign
     execute_rsync(&mut command)
 }
 
-pub fn sync_remote_to_local(local_dir_absolute_path: &Path, config: Config, ignore: Ignore, sync_mode: SyncMode, remote_command_finished_signal: Receiver<Result<(), ()>>) -> Receiver<Result<(), String>> {
+pub fn sync_remote_to_local(local_dir_absolute_path: &Path, config: Config, ignore: Ignore, sync_mode: PullMode, remote_command_finished_signal: Receiver<Result<(), ()>>) -> Receiver<Result<(), String>> {
     match sync_mode {
-        SyncMode::Serial => sync_remote_to_local_serial(local_dir_absolute_path.to_path_buf(), config, ignore, remote_command_finished_signal),
-        SyncMode::Parallel(pause_between_sync) => sync_remote_to_local_parallel(local_dir_absolute_path.to_path_buf(), config, ignore, pause_between_sync, remote_command_finished_signal)
+        PullMode::Serial => sync_remote_to_local_serial(local_dir_absolute_path.to_path_buf(), config, ignore, remote_command_finished_signal),
+        PullMode::Parallel(pause_between_sync) => sync_remote_to_local_parallel(local_dir_absolute_path.to_path_buf(), config, ignore, pause_between_sync, remote_command_finished_signal)
     }
 }
 

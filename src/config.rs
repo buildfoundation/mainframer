@@ -1,3 +1,5 @@
+use sync::PullMode;
+
 #[derive(Debug, PartialEq, Clone)]
 pub struct Config {
     pub remote: Remote,
@@ -18,4 +20,5 @@ pub struct Push {
 #[derive(Debug, PartialEq, Clone)]
 pub struct Pull {
     pub compression: u8,
+    pub mode: PullMode,
 }

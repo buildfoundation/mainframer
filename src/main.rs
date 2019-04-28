@@ -1,5 +1,18 @@
-#[macro_use]
 extern crate crossbeam_channel;
+
+use std::env;
+use std::fs;
+use std::path::Path;
+use std::process;
+use std::time::Duration;
+use std::time::Instant;
+
+use args::Args;
+use config::*;
+use ignore::*;
+use intermediate_config::IntermediateConfig;
+use sync::PullMode;
+use time::*;
 
 mod args;
 mod config;
@@ -8,18 +21,6 @@ mod ignore;
 mod remote_command;
 mod sync;
 mod time;
-
-use args::Args;
-use config::*;
-use intermediate_config::IntermediateConfig;
-use ignore::*;
-use std::env;
-use std::fs;
-use std::path::Path;
-use std::process;
-use std::time::Instant;
-use std::time::Duration;
-use time::*;
 
 // TODO use Reactive Streams instead of Channels.
 
@@ -63,19 +64,18 @@ fn main() {
         sync::project_dir_on_remote_machine(&local_dir_absolute_path.clone()),
     );
 
-    let remote_to_local_sync_finished_rx = sync::sync_remote_to_local(&local_dir_absolute_path, config.clone(), ignore, sync::SyncMode::Parallel(Duration::from_millis(500)), remote_command_finished_rx.clone());
+    let remote_to_local_sync_finished_rx = sync::sync_remote_to_local(&local_dir_absolute_path, config.clone(), ignore, sync::PullMode::Parallel(Duration::from_millis(500)), remote_command_finished_rx.clone());
 
     let remote_command_result = remote_command_finished_rx.recv();
-    let remote_command_duration = remote_command_start_time.elapsed();
+    let remote_command_duration = remote_command_start_time.elapsed(); // TODO: move duration to Result.
 
     match remote_command_result {
         Err(_) => eprintln!("\nExecution failed: took {}.\n", format_duration(remote_command_duration)),
         Ok(_) => println!("\nExecution done: took {}.\n", format_duration(remote_command_duration))
     }
 
+    let remote_to_local_sync_result = remote_to_local_sync_finished_rx.recv();
     let total_duration = total_start.elapsed();
-
-    let remote_to_local_sync_result = remote_command_finished_rx.recv().unwrap();
 
     if remote_command_result.is_ok() && remote_to_local_sync_result.is_ok() {
         println!("\nSuccess: took {}.", format_duration(total_duration));
@@ -94,6 +94,7 @@ fn exit_with_error(message: &str, code: i32) -> ! {
 fn merge_configs(project_config_file: &Path) -> Result<Config, String> {
     let default_push_compression = 3;
     let default_pull_compression = 1;
+    let default_pull_mode = PullMode::Serial; // TODO: consider making Parallel the default mode.
 
     Ok(match IntermediateConfig::from_file(project_config_file) {
         Err(message) => return Err(message),
@@ -114,26 +115,18 @@ fn merge_configs(project_config_file: &Path) -> Result<Config, String> {
                     None => Push {
                         compression: default_push_compression,
                     },
-                    Some(push) => match push.compression {
-                        None => Push {
-                            compression: default_push_compression
-                        },
-                        Some(compression) => Push {
-                            compression,
-                        }
+                    Some(push) => Push {
+                        compression: push.compression.unwrap_or(default_push_compression),
                     }
                 },
                 pull: match intermediate_config.pull {
                     None => Pull {
-                        compression: default_pull_compression
+                        compression: default_pull_compression,
+                        mode: default_pull_mode,
                     },
-                    Some(pull) => match pull.compression {
-                        None => Pull {
-                            compression: default_pull_compression,
-                        },
-                        Some(compression) => Pull {
-                            compression,
-                        }
+                    Some(pull) => Pull {
+                        compression: pull.compression.unwrap_or(default_pull_compression),
+                        mode: pull.mode.unwrap_or(default_pull_mode)
                     }
                 },
             }
