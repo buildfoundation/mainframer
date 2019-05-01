@@ -58,7 +58,10 @@ fn main() {
         PushResult::Ok(push_duration) => println!("Push done: took {}.\n", format_duration(push_duration)),
     }
 
-    println!("Executing command on remote machine...\n");
+    match config.pull.mode {
+        PullMode::Serial => println!("Executing command on remote machine...\n"),
+        PullMode::Parallel(_) => println!("Executing command on remote machine (pulling in parallel)...\n")
+    }
 
     let mut remote_command_readers = remote_command::execute_remote_command(
         args.command.clone(),
@@ -76,30 +79,30 @@ fn main() {
         .unwrap();
 
     match remote_command_result {
-        RemoteCommandResult::Err(remote_command_duration) => eprintln!("\nExecution failed: took {}.\n", format_duration(remote_command_duration)),
-        RemoteCommandResult::Ok(remote_command_duration) => println!("\nExecution done: took {}.\n", format_duration(remote_command_duration))
+        RemoteCommandResult::Err(remote_command_duration) => eprintln!("\nExecution failed: took {}.\nPulling...", format_duration(remote_command_duration)),
+        RemoteCommandResult::Ok(remote_command_duration) => println!("\nExecution done: took {}.\nPulling...", format_duration(remote_command_duration))
     }
 
-    let pull_result = pull_finished_rx
+    let remote_to_local_sync_result = pull_finished_rx
         .recv()
-        .expect("Could not receive pull_result");
+        .expect("Could not receive remote_to_local_sync_result");
 
     let total_duration = total_start.elapsed();
 
-    match pull_result {
-        PullResult::Err(pull_duration, ref reason) => eprintln!("\nPull failed: {}, took {}.", reason, format_duration(pull_duration)),
-        PullResult::Ok(pull_duration) => println!("\nPull done: took {}", format_duration(pull_duration)),
+    match remote_to_local_sync_result {
+        PullResult::Err(pull_duration, ref reason) => eprintln!("Pull failed: {}, took {}.", reason, format_duration(pull_duration)),
+        PullResult::Ok(pull_duration) => println!("Pull done: took {}", format_duration(pull_duration)),
     }
 
     match remote_command_result {
         RemoteCommandResult::Err(_) => {
-            match pull_result {
+            match remote_to_local_sync_result {
                 PullResult::Err(_, _) => exit_with_error(&format!("\nFailure: took {}.", format_duration(total_duration)), 1),
                 PullResult::Ok(_) => exit_with_error(&format!("\nFailure: took {}.", format_duration(total_duration)), 1),
             }
         },
         RemoteCommandResult::Ok(_) => {
-            match pull_result {
+            match remote_to_local_sync_result {
                 PullResult::Err(_, _) => exit_with_error(&format!("\nFailure: took {}.", format_duration(total_duration)), 1),
                 PullResult::Ok(_) => println!("\nSuccess: took {}.", format_duration(total_duration)),
             }

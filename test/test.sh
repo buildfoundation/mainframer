@@ -33,6 +33,9 @@ popd > /dev/null
 
 echo "Running integration tests…"
 
+# Print stacktrace for debug build in case it panics at runtime.
+export RUST_BACKTRACE=1
+
 # Run all tests.
 for test_ in "$DIR"/test_*; do
 	TEST_COUNTER=$((TEST_COUNTER+1))
