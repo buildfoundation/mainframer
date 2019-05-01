@@ -1,3 +1,4 @@
+extern crate bus;
 extern crate crossbeam_channel;
 
 use std::env;
@@ -10,7 +11,8 @@ use args::Args;
 use config::*;
 use ignore::*;
 use intermediate_config::IntermediateConfig;
-use sync::PullMode;
+use remote_command::RemoteCommandResult;
+use sync::{PullMode, PullResult};
 use time::*;
 
 mod args;
@@ -55,38 +57,50 @@ fn main() {
 
     println!("Executing command on remote machine...\n");
 
-    let remote_command_start_time = Instant::now();
-
-    let remote_command_finished_rx = remote_command::execute_remote_command(
+    let mut remote_command_readers = remote_command::execute_remote_command(
         args.command.clone(),
         config.clone(),
         sync::project_dir_on_remote_machine(&local_dir_absolute_path.clone()),
+        2
     );
 
-    let remote_to_local_sync_finished_rx = sync::sync_remote_to_local(&local_dir_absolute_path, config.clone(), ignore, &config.pull.mode, remote_command_finished_rx);
+    let remote_to_local_sync_finished_rx = sync::sync_remote_to_local(&local_dir_absolute_path, config.clone(), ignore, &config.pull.mode, remote_command_readers.pop().unwrap());
+
+    let remote_command_result = remote_command_readers
+        .pop()
+        .unwrap()
+        .recv()
+        .unwrap();
+
+    match remote_command_result {
+        RemoteCommandResult::Err(remote_command_duration) => eprintln!("\nExecution failed: took {}.\n", format_duration(remote_command_duration)),
+        RemoteCommandResult::Ok(remote_command_duration) => println!("\nExecution done: took {}.\n", format_duration(remote_command_duration))
+    }
 
     let remote_to_local_sync_result = remote_to_local_sync_finished_rx
         .recv()
         .expect("Could not receive remote_to_local_sync_result");
 
-    let remote_command_result = remote_to_local_sync_result
-
-    match remote_command_result {
-        Err(_) => {
-            eprintln!("\nExecution failed: took {}.\n", format_duration(remote_command_duration))
-            exit_with_error(&format!("\nFailure: took {}.", format_duration(total_duration)), 1)
-        },
-        Ok(_) => println!("\nExecution done: took {}.\n", format_duration(remote_command_duration))
-    }
-
     let total_duration = total_start.elapsed();
 
-    if remote_command_result.is_err() {
-        exit_with_error(&format!("\nFailure: took {}.", format_duration(total_duration)), 1)
-    } else if remote_to_local_sync_result.is_err() {
-        exit_with_error(&format!("\nSync remote → local machine failed: {}.", remote_to_local_sync_result.err().unwrap()), 1)
-    } else {
-        println!("\nSuccess: took {}.", format_duration(total_duration));
+    match remote_to_local_sync_result {
+        PullResult::Err(pull_duration, ref reason) => eprintln!("\nPull failed: {}, took {}.", reason, format_duration(pull_duration)),
+        PullResult::Ok(pull_duration) => println!("\nPull done: took {}", format_duration(pull_duration)),
+    }
+
+    match remote_command_result {
+        RemoteCommandResult::Err(_) => {
+            match remote_to_local_sync_result {
+                PullResult::Err(_, _) => exit_with_error(&format!("\nFailure: took {}.", format_duration(total_duration)), 1),
+                PullResult::Ok(_) => exit_with_error(&format!("\nFailure: took {}.", format_duration(total_duration)), 1),
+            }
+        },
+        RemoteCommandResult::Ok(_) => {
+            match remote_to_local_sync_result {
+                PullResult::Err(_, _) => exit_with_error(&format!("\nFailure: took {}.", format_duration(total_duration)), 1),
+                PullResult::Ok(_) => println!("\nSuccess: took {}.", format_duration(total_duration)),
+            }
+        },
     }
 }
 
@@ -132,7 +146,7 @@ fn merge_configs(project_config_file: &Path) -> Result<Config, String> {
                     },
                     Some(pull) => Pull {
                         compression: pull.compression.unwrap_or(default_pull_compression),
-                        mode: pull.mode.unwrap_or(default_pull_mode)
+                        mode: pull.mode.unwrap_or(default_pull_mode),
                     }
                 },
             }
