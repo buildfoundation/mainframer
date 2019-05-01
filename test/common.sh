@@ -52,13 +52,13 @@ function buildMainframer {
 function printTestStarted {
 	echo ""
 	test_name=$(basename "$0")
-	echo "-------- TEST STARTED $test_name -------- "
+	echo "-------- TEST STARTED (pull mode = '$TEST_PULL_MODE') $test_name -------- "
 }
 
 function printTestEnded {
 	echo ""
 	test_name=$(basename "$0")
-	echo "-------- TEST ENDED $test_name -------- "	
+	echo "-------- TEST ENDED (pull mode = '$TEST_PULL_MODE') $test_name -------- "
 }
 
 function cleanBuildDirOnLocalMachine {
@@ -105,10 +105,12 @@ function fileMustNotExistOnRemoteMachine {
     fi
 }
 
-function setTestRemoteMachineInConfig {
+function createConfig {
     {
         echo -e "remote:\\n"
         echo -e "  host: \"$TEST_REMOTE_MACHINE\""
+        echo -e "pull:\\n"
+        echo -e "  mode: \"$TEST_PULL_MODE\""
     } > "$CONFIG_FILE"
 }
 
@@ -127,7 +129,7 @@ cleanMainfamerDirOnRemoteMachine
 mkdir -p "$BUILD_DIR/.mainframer"
 
 # Create config that sets remote build machine for the test.
-setTestRemoteMachineInConfig
+createConfig
 
 # Set build directory as "working dir".
 pushd "$BUILD_DIR"

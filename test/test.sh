@@ -36,7 +36,10 @@ echo "Running integration tests…"
 # Run all tests.
 for test_ in "$DIR"/test_*; do
 	TEST_COUNTER=$((TEST_COUNTER+1))
-	"$test_"
+	TEST_PULL_MODE="serial" "$test_"
+
+	TEST_COUNTER=$((TEST_COUNTER+1))
+	TEST_PULL_MODE="parallel" "$test_"
 done
 
 TEST_RUN_SUCCESS="true"
