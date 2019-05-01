@@ -58,7 +58,7 @@ $ brew install mainframer
 * Is the Mainframer already used in the project? You’ll need to create the config file.
 * Is the Mainframer not used in the project? You’ll need to create the config file and ignore rules.
 
-Please refer to [the documentation](../configuration.md).
+Please refer to [the documentation](../configuration/description.md).
 
 ## Running
 
