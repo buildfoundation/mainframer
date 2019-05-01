@@ -15,12 +15,18 @@ use ignore::Ignore;
 use remote_command::RemoteCommandResult;
 
 #[derive(Debug, PartialEq, Clone)]
+pub enum PushResult {
+    Ok(Duration),
+    Err(Duration, String),
+}
+
+#[derive(Debug, PartialEq, Clone)]
 pub enum PullMode {
     /// Serial, after remote command execution.
     Serial,
 
     /// Parallel to remote command execution.
-    /// First parameter is pause between sync actions.
+    /// First parameter is pause between pulls.
     Parallel(Duration),
 }
 
@@ -30,8 +36,9 @@ pub enum PullResult {
     Err(Duration, String),
 }
 
-// TODO add internal version of sync functions with closures as parameters to unit test properly.
-pub fn sync_local_to_remote(local_dir_absolute_path: &Path, config: &Config, ignore: &Ignore) -> Result<(), String> {
+pub fn push(local_dir_absolute_path: &Path, config: &Config, ignore: &Ignore) -> PushResult {
+    let start_time = Instant::now();
+
     let mut command = Command::new("rsync");
 
     command
@@ -54,77 +61,80 @@ pub fn sync_local_to_remote(local_dir_absolute_path: &Path, config: &Config, ign
         project_dir_on_remote_machine = project_dir_on_remote_machine(local_dir_absolute_path))
     );
 
-    execute_rsync(&mut command)
-}
-
-pub fn sync_remote_to_local(local_dir_absolute_path: &Path, config: Config, ignore: Ignore, sync_mode: &PullMode, remote_command_finished_signal: BusReader<RemoteCommandResult>) -> Receiver<PullResult> {
-    match sync_mode {
-        PullMode::Serial => sync_remote_to_local_serial(local_dir_absolute_path.to_path_buf(), config, ignore, remote_command_finished_signal),
-        PullMode::Parallel(pause_between_sync) => sync_remote_to_local_parallel(local_dir_absolute_path.to_path_buf(), config, ignore, *pause_between_sync, remote_command_finished_signal)
+    match execute_rsync(&mut command) {
+        Err(reason) => PushResult::Err(start_time.elapsed(), reason),
+        Ok(_) => PushResult::Ok(start_time.elapsed()),
     }
 }
 
-fn sync_remote_to_local_serial(local_dir_absolute_path: PathBuf, config: Config, ignore: Ignore, mut remote_command_finished_signal: BusReader<RemoteCommandResult>) -> Receiver<PullResult> {
-    let (sync_finished_tx, sync_finished_rx): (Sender<PullResult>, Receiver<PullResult>) = unbounded();
+pub fn pull(local_dir_absolute_path: &Path, config: Config, ignore: Ignore, pull_mode: &PullMode, remote_command_finished_signal: BusReader<RemoteCommandResult>) -> Receiver<PullResult> {
+    match pull_mode {
+        PullMode::Serial => pull_serial(local_dir_absolute_path.to_path_buf(), config, ignore, remote_command_finished_signal),
+        PullMode::Parallel(pause_between_pulls) => pull_parallel(local_dir_absolute_path.to_path_buf(), config, ignore, *pause_between_pulls, remote_command_finished_signal)
+    }
+}
+
+fn pull_serial(local_dir_absolute_path: PathBuf, config: Config, ignore: Ignore, mut remote_command_finished_signal: BusReader<RemoteCommandResult>) -> Receiver<PullResult> {
+    let (pull_finished_tx, pull_finished_rx): (Sender<PullResult>, Receiver<PullResult>) = unbounded();
 
     thread::spawn(move || {
         remote_command_finished_signal
             .recv()
             .expect("Could not receive remote_command_finished_signal");
 
-        sync_finished_tx
-            .send(_sync_remote_to_local(local_dir_absolute_path.as_path(), &config, &ignore))
-            .expect("Could not send sync_finished signal");
+        pull_finished_tx
+            .send(_pull(local_dir_absolute_path.as_path(), &config, &ignore))
+            .expect("Could not send pull_finished signal");
     });
 
-    sync_finished_rx
+    pull_finished_rx
 }
 
-fn sync_remote_to_local_parallel(local_dir_absolute_path: PathBuf, config: Config, ignore: Ignore, pause_between_sync: Duration, mut remote_command_finished_signal: BusReader<RemoteCommandResult>) -> Receiver<PullResult> {
+fn pull_parallel(local_dir_absolute_path: PathBuf, config: Config, ignore: Ignore, pause_between_pulls: Duration, mut remote_command_finished_signal: BusReader<RemoteCommandResult>) -> Receiver<PullResult> {
     let start_time = Instant::now();
 
-    let (sync_finished_tx, sync_finished_rx): (Sender<PullResult>, Receiver<PullResult>) = unbounded();
+    let (pull_finished_tx, pull_finished_rx): (Sender<PullResult>, Receiver<PullResult>) = unbounded();
 
     thread::spawn(move || {
         let mut should_run = true;
 
         while should_run {
-            match _sync_remote_to_local(local_dir_absolute_path.as_path(), &config, &ignore) {
+            match _pull(local_dir_absolute_path.as_path(), &config, &ignore) {
                 PullResult::Err(_, reason) => {
                     should_run = false;
-                    sync_finished_tx
+                    pull_finished_tx
                         .send(PullResult::Err(start_time.elapsed(), reason)) // TODO handle code 24.
-                        .expect("Could not send sync_finished signal");
+                        .expect("Could not send pull_finished signal");
                 },
-                PullResult::Ok(_) => thread::sleep(pause_between_sync),
+                PullResult::Ok(_) => thread::sleep(pause_between_pulls),
             }
 
             match remote_command_finished_signal.try_recv() {
                 Err(reason) => match reason {
                     Disconnected => should_run = false,
-                    Empty => thread::sleep(pause_between_sync)
+                    Empty => thread::sleep(pause_between_pulls)
                 },
                 Ok(_) => {
                     should_run = false;
 
-                    // Final sync after remote command to ensure consistency of the files.
-                    match _sync_remote_to_local(local_dir_absolute_path.as_path(), &config, &ignore) {
-                        PullResult::Err(_, reason) => sync_finished_tx
+                    // Final pull after remote command to ensure consistency of the files.
+                    match _pull(local_dir_absolute_path.as_path(), &config, &ignore) {
+                        PullResult::Err(_, reason) => pull_finished_tx
                             .send(PullResult::Err(start_time.elapsed(), reason))
-                            .expect("Could not send sync finished signal (last iteration)"),
-                        PullResult::Ok(_) => sync_finished_tx
+                            .expect("Could not send pull finished signal (last iteration)"),
+                        PullResult::Ok(_) => pull_finished_tx
                             .send(PullResult::Ok(start_time.elapsed()))
-                            .expect("Could not send sync finished signal (last iteration)"),
+                            .expect("Could not send pull finished signal (last iteration)"),
                     }
                 }
             }
         }
     });
 
-    sync_finished_rx
+    pull_finished_rx
 }
 
-fn _sync_remote_to_local(local_dir_absolute_path: &Path, config: &Config, ignore: &Ignore) -> PullResult {
+fn _pull(local_dir_absolute_path: &Path, config: &Config, ignore: &Ignore) -> PullResult {
     let start_time = Instant::now();
 
     let mut command = Command::new("rsync");
@@ -169,9 +179,9 @@ fn execute_rsync(rsync: &mut Command) -> Result<(), String> {
     let result = rsync.output();
 
     match result {
-        Err(_) => Err(String::from("Generic sync error.")), // Rust doc doesn't really say when can an error occur.
+        Err(_) => Err(String::from("Generic rsync error.")), // Rust doc doesn't really say when can an error occur.
         Ok(output) => match output.status.code() {
-            None => Err(String::from("Sync was terminated.")),
+            None => Err(String::from("rsync was terminated.")),
             Some(status_code) => match status_code {
                 0 => Ok(()),
                 _ => Err(

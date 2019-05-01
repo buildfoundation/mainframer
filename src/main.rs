@@ -12,7 +12,7 @@ use config::*;
 use ignore::*;
 use intermediate_config::IntermediateConfig;
 use remote_command::RemoteCommandResult;
-use sync::{PullMode, PullResult};
+use sync::{PullMode, PullResult, PushResult};
 use time::*;
 
 mod args;
@@ -51,8 +51,11 @@ fn main() {
 
     let ignore = Ignore::from_working_dir(&local_dir_absolute_path.clone());
 
-    if let Err(error) = sync_before_remote_command(&local_dir_absolute_path, &config, &ignore) {
-        exit_with_error(&format!("Sync local → remote machine failed: {}.", error), 1)
+    println!("Pushing...");
+
+    match sync::push(&local_dir_absolute_path, &config, &ignore) {
+        PushResult::Err(push_duration, reason) => exit_with_error(&format!("Push failed: {}, took {}", reason, format_duration(push_duration)), 1),
+        PushResult::Ok(push_duration) => println!("Push done: took {}.\n", format_duration(push_duration)),
     }
 
     println!("Executing command on remote machine...\n");
@@ -64,7 +67,7 @@ fn main() {
         2
     );
 
-    let remote_to_local_sync_finished_rx = sync::sync_remote_to_local(&local_dir_absolute_path, config.clone(), ignore, &config.pull.mode, remote_command_readers.pop().unwrap());
+    let pull_finished_rx = sync::pull(&local_dir_absolute_path, config.clone(), ignore, &config.pull.mode, remote_command_readers.pop().unwrap());
 
     let remote_command_result = remote_command_readers
         .pop()
@@ -77,26 +80,26 @@ fn main() {
         RemoteCommandResult::Ok(remote_command_duration) => println!("\nExecution done: took {}.\n", format_duration(remote_command_duration))
     }
 
-    let remote_to_local_sync_result = remote_to_local_sync_finished_rx
+    let pull_result = pull_finished_rx
         .recv()
-        .expect("Could not receive remote_to_local_sync_result");
+        .expect("Could not receive pull_result");
 
     let total_duration = total_start.elapsed();
 
-    match remote_to_local_sync_result {
+    match pull_result {
         PullResult::Err(pull_duration, ref reason) => eprintln!("\nPull failed: {}, took {}.", reason, format_duration(pull_duration)),
         PullResult::Ok(pull_duration) => println!("\nPull done: took {}", format_duration(pull_duration)),
     }
 
     match remote_command_result {
         RemoteCommandResult::Err(_) => {
-            match remote_to_local_sync_result {
+            match pull_result {
                 PullResult::Err(_, _) => exit_with_error(&format!("\nFailure: took {}.", format_duration(total_duration)), 1),
                 PullResult::Ok(_) => exit_with_error(&format!("\nFailure: took {}.", format_duration(total_duration)), 1),
             }
         },
         RemoteCommandResult::Ok(_) => {
-            match remote_to_local_sync_result {
+            match pull_result {
                 PullResult::Err(_, _) => exit_with_error(&format!("\nFailure: took {}.", format_duration(total_duration)), 1),
                 PullResult::Ok(_) => println!("\nSuccess: took {}.", format_duration(total_duration)),
             }
@@ -154,24 +157,3 @@ fn merge_configs(project_config_file: &Path) -> Result<Config, String> {
     })
 }
 
-fn sync_before_remote_command(local_dir_absolute_path: &Path, config: &Config, ignore: &Ignore) -> Result<(), String> {
-    println!("Sync local → remote machine...");
-
-    let start = Instant::now();
-
-    let result = sync::sync_local_to_remote(
-        &local_dir_absolute_path,
-        config,
-        ignore,
-    );
-
-    let duration = start.elapsed();
-
-    match result {
-        Err(error) => Err(error),
-        Ok(_) => {
-            println!("Sync done: took {}.\n", format_duration(duration));
-            Ok(())
-        }
-    }
-}
