@@ -63,23 +63,30 @@ fn main() {
         sync::project_dir_on_remote_machine(&local_dir_absolute_path.clone()),
     );
 
-    let remote_to_local_sync_finished_rx = sync::sync_remote_to_local(&local_dir_absolute_path, config.clone(), ignore, &config.pull.mode, remote_command_finished_rx.clone());
+    let remote_to_local_sync_finished_rx = sync::sync_remote_to_local(&local_dir_absolute_path, config.clone(), ignore, &config.pull.mode, remote_command_finished_rx);
 
-    let remote_command_result = remote_command_finished_rx.recv();
-    let remote_command_duration = remote_command_start_time.elapsed(); // TODO: move duration to Result.
+    let remote_to_local_sync_result = remote_to_local_sync_finished_rx
+        .recv()
+        .expect("Could not receive remote_to_local_sync_result");
+
+    let remote_command_result = remote_to_local_sync_result
 
     match remote_command_result {
-        Err(_) => eprintln!("\nExecution failed: took {}.\n", format_duration(remote_command_duration)),
+        Err(_) => {
+            eprintln!("\nExecution failed: took {}.\n", format_duration(remote_command_duration))
+            exit_with_error(&format!("\nFailure: took {}.", format_duration(total_duration)), 1)
+        },
         Ok(_) => println!("\nExecution done: took {}.\n", format_duration(remote_command_duration))
     }
 
-    let remote_to_local_sync_result = remote_to_local_sync_finished_rx.recv();
     let total_duration = total_start.elapsed();
 
-    if remote_command_result.is_ok() && remote_to_local_sync_result.is_ok() {
-        println!("\nSuccess: took {}.", format_duration(total_duration));
+    if remote_command_result.is_err() {
+        exit_with_error(&format!("\nFailure: took {}.", format_duration(total_duration)), 1)
+    } else if remote_to_local_sync_result.is_err() {
+        exit_with_error(&format!("\nSync remote → local machine failed: {}.", remote_to_local_sync_result.err().unwrap()), 1)
     } else {
-        exit_with_error(&format!("\nFailure: took {}.", format_duration(total_duration)), 1);
+        println!("\nSuccess: took {}.", format_duration(total_duration));
     }
 }
 

@@ -5,9 +5,16 @@ use crossbeam_channel::unbounded;
 use std::process::Command;
 use std::process::Stdio;
 use std::thread;
+use std::time::{Duration, Instant};
 
-pub fn execute_remote_command(remote_command: String, config: Config, project_dir_on_remote_machine: String) -> Receiver<Result<(), ()>> {
-    let (remote_command_finished_tx, remote_command_finished_rx): (Sender<Result<(), ()>>, Receiver<Result<(), ()>>) = unbounded();
+#[derive(Debug, PartialEq, Clone)]
+pub enum RemoteCommandResult {
+    Ok(Duration),
+    Err(Duration),
+}
+
+pub fn execute_remote_command(remote_command: String, config: Config, project_dir_on_remote_machine: String) -> Receiver<RemoteCommandResult> {
+    let (remote_command_finished_tx, remote_command_finished_rx): (Sender<RemoteCommandResult>, Receiver<RemoteCommandResult>) = unbounded();
 
     thread::spawn(move || {
         remote_command_finished_tx
@@ -18,7 +25,9 @@ pub fn execute_remote_command(remote_command: String, config: Config, project_di
     remote_command_finished_rx
 }
 
-fn _execute_remote_command(remote_command: &str, config: &Config, project_dir_on_remote_machine: &str) -> Result<(), ()> {
+fn _execute_remote_command(remote_command: &str, config: &Config, project_dir_on_remote_machine: &str) -> RemoteCommandResult {
+    let start_time = Instant::now();
+
     let mut command = Command::new("ssh");
 
     command
@@ -37,11 +46,11 @@ fn _execute_remote_command(remote_command: &str, config: &Config, project_dir_on
         .unwrap();
 
     match process.wait() {
-        Err(_) => Err(()), // No need to get error description as we've already piped command output to Mainframer output.
+        Err(_) => RemoteCommandResult::Err(start_time.elapsed()), // No need to get error description as we've already piped command output to Mainframer output.
         Ok(exit_status) => if exit_status.success() {
-            Ok(())
+            Ok(start_time.elapsed())
         } else {
-            Err(())
+            Err(start_time.elapsed())
         }
     }
 }
