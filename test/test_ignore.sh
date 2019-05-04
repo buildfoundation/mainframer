@@ -12,16 +12,16 @@ printTestStarted
 
 # Create several files that should be synced to remote machine.
 mkdir "$BUILD_DIR/src"
-touch "$BUILD_DIR/src/file1.txt"
-touch "$BUILD_DIR/src/file2.txt"
-touch "$BUILD_DIR/src/file3.txt"
+echo srcContent1 > "$BUILD_DIR/src/file1.txt"
+echo srcContent2 > "$BUILD_DIR/src/file2.txt"
+echo srcContent3 > "$BUILD_DIR/src/file3.txt"
 
 # Add a rule to ignore one local file and one remote file.
 echo "src/file2.txt" > "$COMMON_IGNORE_FILE"
 echo "build/buildfile2.txt" >> "$COMMON_IGNORE_FILE"
 
 # Run mainframer that creates 3 build files.
-"$MAINFRAMER_EXECUTABLE" 'mkdir build && touch build/buildfile1.txt && touch build/buildfile2.txt && touch build/buildfile3.txt'
+"$MAINFRAMER_EXECUTABLE" 'mkdir build && echo content1 > build/buildfile1.txt && echo content2 > build/buildfile2.txt && echo content3 > build/buildfile3.txt'
 
 # Make sure all src files except ignored exist on remote machine.
 fileMustExistOnRemoteMachine "src/file1.txt" "(sync problem)"
@@ -31,8 +31,8 @@ fileMustExistOnRemoteMachine "src/file3.txt" "(sync problem)"
 fileMustNotExistOnRemoteMachine "src/file2.txt" "(common ignore problem)"
 
 # Make sure all build files except ignored exist on local machine.
-fileMustExistOnLocalMachine "build/buildfile1.txt" "(sync problem)"
-fileMustExistOnLocalMachine "build/buildfile3.txt" "(sync problem)"
+localFileMustMatchRemote "build/buildfile1.txt" "(sync problem)"
+localFileMustMatchRemote "build/buildfile3.txt" "(sync problem)"
 
 # Make sure ignored build file does not exist on local machine.
 fileMustNotExistOnLocalMachine "build/buildfile2.txt" "(common ignore problem)"

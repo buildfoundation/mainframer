@@ -12,16 +12,16 @@ printTestStarted
 
 # Create several files that should be synced to remote machine AND KEEPT after execution.
 mkdir "$BUILD_DIR/src"
-touch "$BUILD_DIR/src/file1.txt"
-touch "$BUILD_DIR/src/file2.txt"
-touch "$BUILD_DIR/src/file3.txt"
+echo srcContent1 > "$BUILD_DIR/src/file1.txt"
+echo srcContent2 > "$BUILD_DIR/src/file2.txt"
+echo srcContent3 > "$BUILD_DIR/src/file3.txt"
 
 # Run mainframer that noops.
 "$MAINFRAMER_EXECUTABLE" 'echo noop'
 
 # Make sure files STILL exist on local machine after execution.
-fileMustExistOnLocalMachine "src/file1.txt" "(sync problem)"
-fileMustExistOnLocalMachine "src/file2.txt" "(sync problem)"
-fileMustExistOnLocalMachine "src/file3.txt" "(sync problem)"
+localFileMustMatchRemote "src/file1.txt" "(sync problem)"
+localFileMustMatchRemote "src/file2.txt" "(sync problem)"
+localFileMustMatchRemote "src/file3.txt" "(sync problem)"
 
 printTestEnded
