@@ -75,20 +75,20 @@ function localFileMustMatchRemote {
     local -r file_name="$1"
     local -r error_message="$2"
 
-	local -r local_file="$BUILD_DIR/$file_name"
-	# shellcheck disable=SC2088
-	local -r remote_file="~/mainframer/$BUILD_DIR/$file_name"
+    local -r local_file="$BUILD_DIR/$file_name"
+    # shellcheck disable=SC2088
+    local -r remote_file="~/mainframer/$BUILD_DIR/$file_name"
 
-	if [[ ! -f "$local_file" ]]; then
-	    echo "$local_file does not exist on local machine $error_message" >&2
-	    exit 1
-	else
-	    local -r tmp_file="$(mktemp)"
-	    scp "$TEST_REMOTE_MACHINE:$remote_file" "$tmp_file"
+    if [[ ! -f "$local_file" ]]; then
+        echo "$local_file does not exist on local machine $error_message" >&2
+        exit 1
+    else
+        local -r tmp_file="$(mktemp)"
+        scp "$TEST_REMOTE_MACHINE:$remote_file" "$tmp_file"
         local -r actual_shasum=$("$DIR/calculate_shasum" "$tmp_file")
         rm -f "$tmp_file"
         "$DIR/verify_shasum" "$actual_shasum" "$local_file"
-	fi
+    fi
 }
 
 function fileMustNotExistOnLocalMachine {
@@ -108,15 +108,15 @@ function remoteFileMustMatchLocal {
     local -r remote_file="~/mainframer/$BUILD_DIR/$file_name"
 
     if [[ ! -f "$local_file" ]]; then
-	    echo "$local_file does not exist on local machine $error_message" >&2
-	    exit 1
-	else
-	    local -r tmp_file="$(mktemp)"
-	    scp "$TEST_REMOTE_MACHINE:$remote_file" "$tmp_file"
+        echo "$local_file does not exist on local machine $error_message" >&2
+        exit 1
+    else
+        local -r tmp_file="$(mktemp)"
+        scp "$TEST_REMOTE_MACHINE:$remote_file" "$tmp_file"
         local -r actual_shasum=$("$DIR/calculate_shasum" "$local_file")
         "$DIR/verify_shasum" "$actual_shasum" "$tmp_file"
         rm -f "$tmp_file"
-	fi
+    fi
 }
 
 function fileMustNotExistOnRemoteMachine {
