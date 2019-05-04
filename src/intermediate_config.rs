@@ -4,11 +4,13 @@ extern crate yaml_rust;
 use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
+use std::time::Duration;
+
+use sync::PullMode;
+
 use self::linked_hash_map::LinkedHashMap;
 use self::yaml_rust::Yaml;
 use self::yaml_rust::YamlLoader;
-use sync::PullMode;
-use std::time::Duration;
 
 #[derive(Debug, PartialEq)]
 pub struct IntermediateConfig {
@@ -24,13 +26,13 @@ pub struct IntermediateRemote {
 
 #[derive(Debug, PartialEq)]
 pub struct IntermediatePush {
-    pub compression: Option<u8>
+    pub compression: Option<u8>,
 }
 
 #[derive(Debug, PartialEq)]
 pub struct IntermediatePull {
     pub compression: Option<u8>,
-    pub mode: Option<PullMode>
+    pub mode: Option<PullMode>,
 }
 
 impl IntermediateConfig {
@@ -97,16 +99,10 @@ fn parse_config_from_str(config_content: &str) -> Result<IntermediateConfig, Str
             let compression = parse_compression(pull, "compression", "pull");
             let mode = parse_pull_mode(pull);
 
-            if compression.is_err() {
-                return Err(compression.unwrap_err())
-            } else if mode.is_err() {
-                return Err(mode.unwrap_err())
-            } else {
-               Some(IntermediatePull {
-                   compression: compression.ok().unwrap(),
-                   mode: mode.ok().unwrap(),
-               })
-            }
+            Some(IntermediatePull {
+                compression: compression?,
+                mode: mode?,
+            })
         }
         Yaml::Null | Yaml::BadValue => None,
         _ => return Err(String::from("'pull' must be an object"))
@@ -200,7 +196,7 @@ pull:
             }),
             pull: Some(IntermediatePull {
                 compression: Some(2),
-                mode: Some(PullMode::Serial)
+                mode: Some(PullMode::Serial),
             }),
         }));
     }
@@ -370,7 +366,7 @@ pull:
             push: None,
             pull: Some(IntermediatePull {
                 compression: None,
-                mode: Some(PullMode::Serial)
+                mode: Some(PullMode::Serial),
             }),
         }));
     }
@@ -386,7 +382,7 @@ pull:
             push: None,
             pull: Some(IntermediatePull {
                 compression: None,
-                mode: Some(PullMode::Parallel(Duration::from_millis(500)))
+                mode: Some(PullMode::Parallel(Duration::from_millis(500))),
             }),
         }));
     }
