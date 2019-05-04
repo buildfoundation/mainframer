@@ -21,8 +21,8 @@ echo srcContent2 > "$BUILD_DIR/src/file2.txt"
 "$MAINFRAMER_EXECUTABLE" 'mkdir build && echo buildContent1 > build/buildfile1.txt && echo buildContent2 > build/buildfile2.txt'
 
 # Make sure all src files exist on remote machine.
-fileMustExistOnRemoteMachine "src/file1.txt" "(sync problem)"
-fileMustExistOnRemoteMachine "src/file2.txt" "(sync problem)"
+remoteFileMustMatchLocal "src/file1.txt" "(sync problem)"
+remoteFileMustMatchLocal "src/file2.txt" "(sync problem)"
 
 # Make sure all build files except ignored exist on local machine.
 localFileMustMatchRemote "build/buildfile1.txt" "(sync problem)"

@@ -24,8 +24,8 @@ echo "build/buildfile2.txt" >> "$COMMON_IGNORE_FILE"
 "$MAINFRAMER_EXECUTABLE" 'mkdir build && echo content1 > build/buildfile1.txt && echo content2 > build/buildfile2.txt && echo content3 > build/buildfile3.txt'
 
 # Make sure all src files except ignored exist on remote machine.
-fileMustExistOnRemoteMachine "src/file1.txt" "(sync problem)"
-fileMustExistOnRemoteMachine "src/file3.txt" "(sync problem)"
+remoteFileMustMatchLocal "src/file1.txt" "(sync problem)"
+remoteFileMustMatchLocal "src/file3.txt" "(sync problem)"
 
 # Make sure ignored src file does not exist on remote machine.
 fileMustNotExistOnRemoteMachine "src/file2.txt" "(common ignore problem)"

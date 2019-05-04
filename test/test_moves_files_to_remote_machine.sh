@@ -20,8 +20,8 @@ echo srcContent3 > "$BUILD_DIR/src/file3.txt"
 "$MAINFRAMER_EXECUTABLE" 'echo noop'
 
 # Make sure files exist on remote machine after sync.
-fileMustExistOnRemoteMachine "src/file1.txt" "(sync problem)"
-fileMustExistOnRemoteMachine "src/file2.txt" "(sync problem)"
-fileMustExistOnRemoteMachine "src/file3.txt" "(sync problem)"
+remoteFileMustMatchLocal "src/file1.txt" "(sync problem)"
+remoteFileMustMatchLocal "src/file2.txt" "(sync problem)"
+remoteFileMustMatchLocal "src/file3.txt" "(sync problem)"
 
 printTestEnded
