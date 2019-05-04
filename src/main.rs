@@ -11,7 +11,6 @@ use args::Args;
 use config::*;
 use ignore::*;
 use intermediate_config::IntermediateConfig;
-use remote_command::RemoteCommandResult;
 use sync::{PullMode};
 use time::*;
 
@@ -79,8 +78,8 @@ fn main() {
         .unwrap();
 
     match remote_command_result {
-        RemoteCommandResult::Err(remote_command_duration) => eprintln!("\nExecution failed: took {}.\nPulling...", format_duration(remote_command_duration)),
-        RemoteCommandResult::Ok(remote_command_duration) => println!("\nExecution done: took {}.\nPulling...", format_duration(remote_command_duration))
+        Err(ref err) => eprintln!("\nExecution failed: took {}.\nPulling...", format_duration(err.duration)),
+        Ok(ref ok) => println!("\nExecution done: took {}.\nPulling...", format_duration(ok.duration))
     }
 
     let pull_result = pull_finished_rx
@@ -95,13 +94,13 @@ fn main() {
     }
 
     match remote_command_result {
-        RemoteCommandResult::Err(_) => {
+        Err(_) => {
             match pull_result {
                 Err(_)=> exit_with_error(&format!("\nFailure: took {}.", format_duration(total_duration)), 1),
                 Ok(_) => exit_with_error(&format!("\nFailure: took {}.", format_duration(total_duration)), 1),
             }
         },
-        RemoteCommandResult::Ok(_) => {
+        Ok(_) => {
             match pull_result {
                 Err(_) => exit_with_error(&format!("\nFailure: took {}.", format_duration(total_duration)), 1),
                 Ok(_) => println!("\nSuccess: took {}.", format_duration(total_duration)),

@@ -12,7 +12,7 @@ use crossbeam_channel::unbounded;
 
 use config::Config;
 use ignore::Ignore;
-use remote_command::RemoteCommandResult;
+use remote_command::{RemoteCommandOk, RemoteCommandErr};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct PushOk {
@@ -82,20 +82,21 @@ pub fn push(local_dir_absolute_path: &Path, config: &Config, ignore: &Ignore) ->
     }
 }
 
-pub fn pull(local_dir_absolute_path: &Path, config: Config, ignore: Ignore, pull_mode: &PullMode, remote_command_finished_signal: BusReader<RemoteCommandResult>) -> Receiver<Result<PullOk, PullErr>> {
+pub fn pull(local_dir_absolute_path: &Path, config: Config, ignore: Ignore, pull_mode: &PullMode, remote_command_finished_signal: BusReader<Result<RemoteCommandOk, RemoteCommandErr>>) -> Receiver<Result<PullOk, PullErr>> {
     match pull_mode {
         PullMode::Serial => pull_serial(local_dir_absolute_path.to_path_buf(), config, ignore, remote_command_finished_signal),
         PullMode::Parallel(pause_between_pulls) => pull_parallel(local_dir_absolute_path.to_path_buf(), config, ignore, *pause_between_pulls, remote_command_finished_signal)
     }
 }
 
-fn pull_serial(local_dir_absolute_path: PathBuf, config: Config, ignore: Ignore, mut remote_command_finished_signal: BusReader<RemoteCommandResult>) -> Receiver<Result<PullOk, PullErr>> {
+fn pull_serial(local_dir_absolute_path: PathBuf, config: Config, ignore: Ignore, mut remote_command_finished_rx: BusReader<Result<RemoteCommandOk, RemoteCommandErr>>) -> Receiver<Result<PullOk, PullErr>> {
     let (pull_finished_tx, pull_finished_rx): (Sender<Result<PullOk, PullErr>>, Receiver<Result<PullOk, PullErr>>) = unbounded();
 
+    #[allow(unused_must_use)] // We don't handle remote_command_result, in any case we need to pull after it.
     thread::spawn(move || {
-        remote_command_finished_signal
+        remote_command_finished_rx
             .recv()
-            .expect("Could not receive remote_command_finished_signal");
+            .expect("Could not receive remote_command_finished_rx");
 
         pull_finished_tx
             .send(_pull(local_dir_absolute_path.as_path(), &config, &ignore))
@@ -105,7 +106,7 @@ fn pull_serial(local_dir_absolute_path: PathBuf, config: Config, ignore: Ignore,
     pull_finished_rx
 }
 
-fn pull_parallel(local_dir_absolute_path: PathBuf, config: Config, ignore: Ignore, pause_between_pulls: Duration, mut remote_command_finished_signal: BusReader<RemoteCommandResult>) -> Receiver<Result<PullOk, PullErr>> {
+fn pull_parallel(local_dir_absolute_path: PathBuf, config: Config, ignore: Ignore, pause_between_pulls: Duration, mut remote_command_finished_signal: BusReader<Result<RemoteCommandOk, RemoteCommandErr>>) -> Receiver<Result<PullOk, PullErr>> {
     let (pull_finished_tx, pull_finished_rx): (Sender<Result<PullOk, PullErr>>, Receiver<Result<PullOk, PullErr>>) = unbounded();
     let start_time = Instant::now();
 
@@ -132,8 +133,8 @@ fn pull_parallel(local_dir_absolute_path: PathBuf, config: Config, ignore: Ignor
                     should_run = false;
 
                     let remote_command_duration = match remote_command_result {
-                        RemoteCommandResult::Err(duration) => duration,
-                        RemoteCommandResult::Ok(duration) => duration
+                        Err(err) => err.duration,
+                        Ok(ok) => ok.duration
                     };
 
                     // Final pull after remote command to ensure consistency of the files.
