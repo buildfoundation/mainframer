@@ -111,24 +111,20 @@ fn pull_parallel(local_dir_absolute_path: PathBuf, config: Config, ignore: Ignor
     let start_time = Instant::now();
 
     thread::spawn(move || {
-        let mut should_run = true;
-
-        while should_run {
+        loop {
             if let Err(pull_err) = _pull(local_dir_absolute_path.as_path(), &config, &ignore) {
-                should_run = false;
                 pull_finished_tx
                     .send(Err(pull_err)) // TODO handle code 24.
                     .expect("Could not send pull_finished signal");
+                break;
             }
 
             match remote_command_finished_signal.try_recv() {
                 Err(reason) => match reason {
-                    Disconnected => should_run = false,
+                    Disconnected => break,
                     Empty => thread::sleep(pause_between_pulls)
                 },
                 Ok(remote_command_result) => {
-                    should_run = false;
-
                     let remote_command_duration = match remote_command_result {
                         Err(err) => err.duration,
                         Ok(ok) => ok.duration
@@ -144,11 +140,13 @@ fn pull_parallel(local_dir_absolute_path: PathBuf, config: Config, ignore: Ignor
                             .expect("Could not send pull finished signal (last iteration)"),
 
                         Ok(_) => pull_finished_tx
-                            .send(Ok(PullOk{
+                            .send(Ok(PullOk {
                                 duration: calculate_perceived_pull_duration(start_time.elapsed(), remote_command_duration)
                             }))
                             .expect("Could not send pull finished signal (last iteration)"),
                     }
+
+                    break;
                 }
             }
         }
