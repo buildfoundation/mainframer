@@ -18,7 +18,7 @@ touch "$BUILD_DIR/src/file3.txt"
 
 # Run mainframer that creates "build" result file that should be synced back to local machine.
 # shellcheck disable=SC2016
-"$MAINFRAMER_EXECUTABLE" 'mkdir build && for ((i=0;i<30;i++)); do dd if=/dev/urandom of=build/buildresult-$i.txt bs=16M count=4 iflag=fullblock; sleep 1; done;'
+"$MAINFRAMER_EXECUTABLE" 'mkdir build && for ((i=0;i<30;i++)); do dd if=/dev/urandom of=build/buildresult-$i.txt bs=16M count=4 iflag=fullblock; sleep 1; done; ls -la build'
 
 for ((i=0;i<30;i++)); do
     # Make sure files exist on local machine after sync.
