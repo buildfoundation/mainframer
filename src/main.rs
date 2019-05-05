@@ -93,19 +93,10 @@ fn main() {
         Ok(ref ok) => println!("Pull done: took {}", format_duration(ok.duration)),
     }
 
-    match remote_command_result {
-        Err(_) => {
-            match pull_result {
-                Err(_)=> exit_with_error(&format!("\nFailure: took {}.", format_duration(total_duration)), 1),
-                Ok(_) => exit_with_error(&format!("\nFailure: took {}.", format_duration(total_duration)), 1),
-            }
-        },
-        Ok(_) => {
-            match pull_result {
-                Err(_) => exit_with_error(&format!("\nFailure: took {}.", format_duration(total_duration)), 1),
-                Ok(_) => println!("\nSuccess: took {}.", format_duration(total_duration)),
-            }
-        },
+    if remote_command_result.is_err() || pull_result.is_err() {
+        exit_with_error(&format!("\nFailure: took {}.", format_duration(total_duration)), 1);
+    } else {
+        println!("\nSuccess: took {}.", format_duration(total_duration));
     }
 }
 
