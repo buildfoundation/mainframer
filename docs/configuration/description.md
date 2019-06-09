@@ -23,7 +23,7 @@ Name         | Required | Keep in VCS | Description
 
 ```yaml
 remote:
-  name: "{SSH machine name}"
+  host: "{SSH machine host}"
 push:
   compression: {level}
 pull:
@@ -32,7 +32,7 @@ pull:
 
 Name               | Required | Value   | Default | Description
 -------------------|----------|---------|---------|------------------
-`remote.name`      | Yes      | `string`| —       | Remote machine name from SSH config or hostname / IP address.
+`remote.host`      | Yes      | `string`| —       | Remote machine name from SSH config or hostname / IP address.
 `push.compression` | No       | `0..9`  | `0`     | Compression level used to copy files from local machine to remote one.
 `pull.compression` | No       | `0..9`  | `0`     | Compression level used to copy files from remote machine to local one.
 
