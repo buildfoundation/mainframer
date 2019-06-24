@@ -71,12 +71,24 @@ function cleanMainfamerDirOnRemoteMachine {
     ssh "$TEST_REMOTE_MACHINE" "rm -rf $PRIVATE_REMOTE_BUILD_ROOT_DIR"
 }
 
-function fileMustExistOnLocalMachine {
-	local_file="$BUILD_DIR/$1"
-	if [ ! -f "$local_file" ]; then
-		echo "$local_file does not exist on local machine $2"
-		exit 1
-	fi
+function localFileMustMatchRemote {
+    local -r file_name="$1"
+    local -r error_message="$2"
+
+    local -r local_file="$BUILD_DIR/$file_name"
+    # shellcheck disable=SC2088
+    local -r remote_file="~/mainframer/$BUILD_DIR/$file_name"
+
+    if [[ ! -f "$local_file" ]]; then
+        echo "$local_file does not exist on local machine $error_message" >&2
+        exit 1
+    else
+        local -r tmp_file="$(mktemp)"
+        scp "$TEST_REMOTE_MACHINE:$remote_file" "$tmp_file"
+        local -r actual_shasum=$("$DIR/calculate_shasum" "$tmp_file")
+        rm -f "$tmp_file"
+        "$DIR/verify_shasum" "$actual_shasum" "$local_file"
+    fi
 }
 
 function fileMustNotExistOnLocalMachine {
@@ -87,12 +99,23 @@ function fileMustNotExistOnLocalMachine {
 	fi
 }
 
-function fileMustExistOnRemoteMachine {
-    # $PRIVATE_REMOTE_BUILD_ROOT_DIR should expand locally.
-    # shellcheck disable=SC2029
-    if ! ssh "$TEST_REMOTE_MACHINE" "test -f $PRIVATE_REMOTE_BUILD_DIR/$1"; then
-        echo "$PRIVATE_REMOTE_BUILD_DIR/$1 does not exist on remote machine $2"
+function remoteFileMustMatchLocal {
+    local -r file_name="$1"
+    local -r error_message="$2"
+
+    local -r local_file="$BUILD_DIR/$file_name"
+    # shellcheck disable=SC2088
+    local -r remote_file="~/mainframer/$BUILD_DIR/$file_name"
+
+    if [[ ! -f "$local_file" ]]; then
+        echo "$local_file does not exist on local machine $error_message" >&2
         exit 1
+    else
+        local -r tmp_file="$(mktemp)"
+        scp "$TEST_REMOTE_MACHINE:$remote_file" "$tmp_file"
+        local -r actual_shasum=$("$DIR/calculate_shasum" "$local_file")
+        "$DIR/verify_shasum" "$actual_shasum" "$tmp_file"
+        rm -f "$tmp_file"
     fi
 }
 
