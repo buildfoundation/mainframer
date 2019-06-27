@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# $1 expected sha256 checksum.
+# $2 file to check.
+readonly expected_sha256="${1:-}"
+readonly file="${2:-}"
+readonly script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+if [[ "${#@}" != "2" ]]; then
+    echo "Expected list of arguments: 'expected sha256' and 'file to check'" >&2
+    exit 1
+fi
+
+if [[ -z "$expected_sha256" ]]; then
+    echo "Expected sha256 must be specified" >&2
+    exit 1
+fi
+
+if [[ -z "$file" ]]; then
+    echo "File to check must be specified" >&2
+    exit 1
+fi
+
+readonly actual_sha256=$("$script_dir/calculate_shasum" "$file")
+
+if [[ -z "${ALLOW_NULL_CONTENT:-}" ]]; then
+    if [[ "$actual_sha256" =~ "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" ]]; then
+        echo "FAILSAFE: actual sha256 of file '$file' is sha of null content, are you sure you want to verify against that? Set ALLOW_NULL_CONTENT environment variable to remove this check." >&2
+        exit 1
+    fi
+fi
+
+if [[ "$expected_sha256" == "$actual_sha256" ]]; then
+    exit 0
+else
+    echo "sha256 verification has failed, expected '$expected_sha256' but was '$actual_sha256', file: '$file'" >&2
+    exit 1
+fi

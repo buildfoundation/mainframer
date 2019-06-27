@@ -12,14 +12,14 @@ printTestStarted
 
 # Create several files that should be synced to remote machine.
 mkdir "$BUILD_DIR/src"
-touch "$BUILD_DIR/src/file1.txt"
-touch "$BUILD_DIR/src/file2.txt"
-touch "$BUILD_DIR/src/file3.txt"
+echo srcContent1 >"$BUILD_DIR/src/file1.txt"
+echo srcContent2 >"$BUILD_DIR/src/file2.txt"
+echo srcContent3 >"$BUILD_DIR/src/file3.txt"
 
 # Run mainframer that creates "build" result file that should be synced back to local machine.
-"$MAINFRAMER_EXECUTABLE" 'mkdir build && touch build/buildresult.txt'
+"$MAINFRAMER_EXECUTABLE" 'mkdir build && echo buildContent1 > build/buildresult.txt'
 
 # Make sure files exist on local machine after sync.
-fileMustExistOnLocalMachine "build/buildresult.txt" "(sync problem)"
+localFileMustMatchRemote "build/buildresult.txt" "(sync problem)"
 
 printTestEnded

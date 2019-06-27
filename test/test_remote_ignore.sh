@@ -15,11 +15,11 @@ echo "build/file2.txt" > "$REMOTE_IGNORE_FILE"
 echo "build/file3.txt" >> "$REMOTE_IGNORE_FILE"
 
 # Run mainframer that creates 4 files on remote machine.
-"$MAINFRAMER_EXECUTABLE" 'mkdir build && touch build/file1.txt && touch build/file2.txt && touch build/file3.txt && touch build/file4.txt'
+"$MAINFRAMER_EXECUTABLE" 'mkdir build && echo buildContent1 > build/file1.txt && echo buildContent2 > build/file2.txt && echo buildContent3 > build/file3.txt && echo buildContent4 > build/file4.txt'
 
 # Make sure all files except ignored exist on local machine.
-fileMustExistOnLocalMachine "build/file1.txt" "(sync problem)"
-fileMustExistOnLocalMachine "build/file4.txt" "(sync problem)"
+localFileMustMatchRemote "build/file1.txt" "(sync problem)"
+localFileMustMatchRemote "build/file4.txt" "(sync problem)"
 
 # Make sure ignored files do not exist on local machine.
 fileMustNotExistOnLocalMachine "build/file2.txt" "(remote ignore problem)"

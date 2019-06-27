@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+# Returns sha256 of a given file.
+
+readonly file="${1:-}"
+
+if [[ -z "$file" ]]; then
+    echo "File must be specified" >&2
+    exit 1
+fi
+
+shasum=$(shasum --algorithm 256 "$file" | awk '{ print $1 }')
+shasum="${shasum#"\\"}"
+
+if [[ -z "$shasum" ]]; then
+    echo "Validation has failed, resulting shasum is empty string" >&2
+    exit 1
+else
+    echo "$shasum"
+fi
