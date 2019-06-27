@@ -1,6 +1,7 @@
 use std::path::Path;
 use std::path::PathBuf;
 
+#[derive(Clone)]
 pub struct Ignore {
     pub common_ignore_file: Option<PathBuf>,
     pub local_ignore_file: Option<PathBuf>,

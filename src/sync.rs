@@ -1,11 +1,54 @@
-use config::Config;
-use ignore::Ignore;
 use std::path::Path;
 use std::path::PathBuf;
 use std::process::Command;
+use std::sync::mpsc::TryRecvError::*;
+use std::thread;
+use std::time::{Duration, Instant};
 
-// TODO add internal version of sync functions with closures as parameters to unit test properly.
-pub fn sync_local_to_remote(local_dir_absolute_path: &Path, config: &Config, ignore: &Ignore) -> Result<(), String> {
+use bus::BusReader;
+use crossbeam_channel::Receiver;
+use crossbeam_channel::Sender;
+use crossbeam_channel::unbounded;
+
+use config::Config;
+use ignore::Ignore;
+use remote_command::{RemoteCommandOk, RemoteCommandErr};
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct PushOk {
+    pub duration: Duration,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct PushErr {
+    pub duration: Duration,
+    pub message: String,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub enum PullMode {
+    /// Serial, after remote command execution.
+    Serial,
+
+    /// Parallel to remote command execution.
+    /// First parameter is pause between pulls.
+    Parallel(Duration),
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct PullOk {
+    pub duration: Duration,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct PullErr {
+    pub duration: Duration,
+    pub message: String,
+}
+
+pub fn push(local_dir_absolute_path: &Path, config: &Config, ignore: &Ignore) -> Result<PushOk, PushErr> {
+    let start_time = Instant::now();
+
     let mut command = Command::new("rsync");
 
     command
@@ -28,10 +71,93 @@ pub fn sync_local_to_remote(local_dir_absolute_path: &Path, config: &Config, ign
         project_dir_on_remote_machine = project_dir_on_remote_machine(local_dir_absolute_path))
     );
 
-    execute_rsync(&mut command)
+    match execute_rsync(&mut command) {
+        Err(reason) => Err(PushErr {
+            duration: start_time.elapsed(),
+            message: reason,
+        }),
+        Ok(_) => Ok(PushOk {
+            duration: start_time.elapsed()
+        }),
+    }
 }
 
-pub fn sync_remote_to_local(local_dir_absolute_path: &Path, config: &Config, ignore: &Ignore) -> Result<(), String> {
+pub fn pull(local_dir_absolute_path: &Path, config: Config, ignore: Ignore, pull_mode: &PullMode, remote_command_finished_signal: BusReader<Result<RemoteCommandOk, RemoteCommandErr>>) -> Receiver<Result<PullOk, PullErr>> {
+    match pull_mode {
+        PullMode::Serial => pull_serial(local_dir_absolute_path.to_path_buf(), config, ignore, remote_command_finished_signal),
+        PullMode::Parallel(pause_between_pulls) => pull_parallel(local_dir_absolute_path.to_path_buf(), config, ignore, *pause_between_pulls, remote_command_finished_signal)
+    }
+}
+
+fn pull_serial(local_dir_absolute_path: PathBuf, config: Config, ignore: Ignore, mut remote_command_finished_rx: BusReader<Result<RemoteCommandOk, RemoteCommandErr>>) -> Receiver<Result<PullOk, PullErr>> {
+    let (pull_finished_tx, pull_finished_rx): (Sender<Result<PullOk, PullErr>>, Receiver<Result<PullOk, PullErr>>) = unbounded();
+
+    #[allow(unused_must_use)] // We don't handle remote_command_result, in any case we need to pull after it.
+    thread::spawn(move || {
+        remote_command_finished_rx
+            .recv()
+            .expect("Could not receive remote_command_finished_rx");
+
+        pull_finished_tx
+            .send(_pull(local_dir_absolute_path.as_path(), &config, &ignore))
+            .expect("Could not send pull_finished signal");
+    });
+
+    pull_finished_rx
+}
+
+fn pull_parallel(local_dir_absolute_path: PathBuf, config: Config, ignore: Ignore, pause_between_pulls: Duration, mut remote_command_finished_signal: BusReader<Result<RemoteCommandOk, RemoteCommandErr>>) -> Receiver<Result<PullOk, PullErr>> {
+    let (pull_finished_tx, pull_finished_rx): (Sender<Result<PullOk, PullErr>>, Receiver<Result<PullOk, PullErr>>) = unbounded();
+    let start_time = Instant::now();
+
+    thread::spawn(move || {
+        loop {
+            if let Err(pull_err) = _pull(local_dir_absolute_path.as_path(), &config, &ignore) {
+                pull_finished_tx
+                    .send(Err(pull_err)) // TODO handle code 24.
+                    .expect("Could not send pull_finished signal");
+                break;
+            }
+
+            match remote_command_finished_signal.try_recv() {
+                Err(reason) => match reason {
+                    Disconnected => break,
+                    Empty => thread::sleep(pause_between_pulls)
+                },
+                Ok(remote_command_result) => {
+                    let remote_command_duration = match remote_command_result {
+                        Err(err) => err.duration,
+                        Ok(ok) => ok.duration
+                    };
+
+                    // Final pull after remote command to ensure consistency of the files.
+                    match _pull(local_dir_absolute_path.as_path(), &config, &ignore) {
+                        Err(err) => pull_finished_tx
+                            .send(Err(PullErr {
+                                duration: calculate_perceived_pull_duration(start_time.elapsed(), remote_command_duration),
+                                message: err.message
+                            }))
+                            .expect("Could not send pull finished signal (last iteration)"),
+
+                        Ok(_) => pull_finished_tx
+                            .send(Ok(PullOk {
+                                duration: calculate_perceived_pull_duration(start_time.elapsed(), remote_command_duration)
+                            }))
+                            .expect("Could not send pull finished signal (last iteration)"),
+                    }
+
+                    break;
+                }
+            }
+        }
+    });
+
+    pull_finished_rx
+}
+
+fn _pull(local_dir_absolute_path: &Path, config: &Config, ignore: &Ignore) -> Result<PullOk, PullErr> {
+    let start_time = Instant::now();
+
     let mut command = Command::new("rsync");
 
     command
@@ -51,7 +177,15 @@ pub fn sync_remote_to_local(local_dir_absolute_path: &Path, config: &Config, ign
         )
         .arg("./");
 
-    execute_rsync(&mut command)
+    match execute_rsync(&mut command) {
+        Err(reason) => Err(PullErr {
+            duration: start_time.elapsed(),
+            message: reason
+        }),
+        Ok(_) => Ok(PullOk {
+            duration: start_time.elapsed(),
+        })
+    }
 }
 
 pub fn project_dir_on_remote_machine(local_dir_absolute_path: &Path) -> String {
@@ -71,9 +205,9 @@ fn execute_rsync(rsync: &mut Command) -> Result<(), String> {
     let result = rsync.output();
 
     match result {
-        Err(_) => Err(String::from("Generic sync error.")), // Rust doc doesn't really say when can an error occur.
+        Err(_) => Err(String::from("Generic rsync error.")), // Rust doc doesn't really say when can an error occur.
         Ok(output) => match output.status.code() {
-            None => Err(String::from("Sync was terminated.")),
+            None => Err(String::from("rsync was terminated.")),
             Some(status_code) => match status_code {
                 0 => Ok(()),
                 _ => Err(
@@ -86,5 +220,41 @@ fn execute_rsync(rsync: &mut Command) -> Result<(), String> {
                 )
             }
         }
+    }
+}
+
+fn calculate_perceived_pull_duration(total_pull_duration: Duration, remote_command_duration: Duration) -> Duration {
+    match total_pull_duration.checked_sub(remote_command_duration) {
+        None => Duration::from_millis(0),
+        Some(duration) => duration,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn calculate_perceived_pull_duration_equals() {
+        assert_eq!(
+            calculate_perceived_pull_duration(Duration::from_millis(10), Duration::from_millis(10)),
+            Duration::from_millis(0)
+        );
+    }
+
+    #[test]
+    fn calculate_perceived_pull_duration_pull_longer_than_execution() {
+        assert_eq!(
+            calculate_perceived_pull_duration(Duration::from_secs(10), Duration::from_secs(8)),
+            Duration::from_secs(2)
+        );
+    }
+
+    #[test]
+    fn calculate_perceived_pull_duration_pull_less_than_execution() {
+        assert_eq!(
+            calculate_perceived_pull_duration(Duration::from_secs(7), Duration::from_secs(9)),
+            Duration::from_secs(0)
+        );
     }
 }

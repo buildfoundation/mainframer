@@ -30,11 +30,12 @@ pull:
   compression: {level}
 ```
 
-Name               | Required | Value   | Default | Description
--------------------|----------|---------|---------|------------------
-`remote.host`      | Yes      | `string`| —       | Remote machine name from SSH config or hostname / IP address.
-`push.compression` | No       | `0..9`  | `0`     | Compression level used to copy files from local machine to remote one.
-`pull.compression` | No       | `0..9`  | `0`     | Compression level used to copy files from remote machine to local one.
+Name               | Required | Value                  | Default | Description
+-------------------|----------|------------------------|---------|------------------
+`remote.host`      | Yes      | `string`               | —       | Remote machine name from SSH config or hostname / IP address.
+`push.compression` | No       | `0..9`                 | `0`     | Compression level used to copy files from local machine to remote one.
+`pull.compression` | No       | `0..9`                 | `0`     | Compression level used to copy files from remote machine to local one.
+`pull.mode`        | No       | `serial` \| `parallel` | `serial`| Pull mode. `serial` pulls once remote command has finished, `parallel` pulls in parallel to remote command execution.
 
 Compression level is inherited from underlying `rsync`
 which uses [`zlib` values](https://www.zlib.net/manual.html):
