@@ -22,7 +22,7 @@ touch "$BUILD_DIR/src/file3.txt"
 
 for ((i=0;i<30;i++)); do
     # Make sure files exist on local machine after sync.
-    fileMustExistOnLocalMachine "build/buildresult-$i.txt" "(sync problem)"
+    localFileMustMatchRemote "build/buildresult-$i.txt" "(sync problem)"
 done
 
 printTestEnded
