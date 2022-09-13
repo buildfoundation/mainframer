@@ -343,7 +343,7 @@ pull:
 push:
   compression: yooo
 ";
-        assert_eq!(parse_config_from_str(content), Err(String::from("'push.compression\' must be a positive integer from 1 to 9, but was String(\n    \"yooo\"\n)")));
+        assert_eq!(parse_config_from_str(content), Err(String::from("'push.compression\' must be a positive integer from 1 to 9, but was String(\n    \"yooo\",\n)")));
     }
 
     #[test]
@@ -352,7 +352,7 @@ push:
 pull:
   compression: yooo
 ";
-        assert_eq!(parse_config_from_str(content), Err(String::from("'pull.compression\' must be a positive integer from 1 to 9, but was String(\n    \"yooo\"\n)")));
+        assert_eq!(parse_config_from_str(content), Err(String::from("'pull.compression\' must be a positive integer from 1 to 9, but was String(\n    \"yooo\",\n)")));
     }
 
     #[test]
