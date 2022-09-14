@@ -21,8 +21,10 @@ jobs:
 
       - name: build-linux
         if: ${{ matrix.os == 'ubuntu-latest' }}
+        timeout-minutes: 15
         run: ci/build.sh
 
       - name: build-macOS
         if: ${{ matrix.os == 'macos-latest' }}
+        timeout-minutes: 15
         run: ci/macOS.sh
