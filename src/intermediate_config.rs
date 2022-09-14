@@ -118,7 +118,7 @@ fn parse_config_from_str(config_content: &str) -> Result<IntermediateConfig, Str
 fn parse_compression(yaml: &LinkedHashMap<Yaml, Yaml>, field_name: &str, scope_name: &str) -> Result<Option<u8>, String> {
     match yaml.get(&Yaml::String(field_name.to_string())).cloned() {
         Some(compression) => match compression {
-            Yaml::Integer(compression) => if compression >= 1 && compression <= 9 {
+            Yaml::Integer(compression) => if (1..=9).contains(&compression) {
                 Ok(Some(compression as u8))
             } else {
                 Err(format!("'{}.{}' must be a positive integer from 1 to 9, but was {:#?}", scope_name, field_name, compression))
