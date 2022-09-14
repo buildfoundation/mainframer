@@ -7,7 +7,7 @@ on:
     branches: [ 3.x ]
 
 jobs:
-  build-linux:
+  build:
     strategy:
       matrix:
         os: [ ubuntu-latest, macos-latest ]
@@ -23,6 +23,6 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: ci/build.sh
 
-      - name: build-macos
+      - name: build-macOS
         if: ${{ matrix.os == 'macos-latest' }}
-        run: ci/build.sh
+        run: ci/macOS.sh
