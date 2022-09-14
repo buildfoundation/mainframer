@@ -12,24 +12,24 @@ use self::linked_hash_map::LinkedHashMap;
 use self::yaml_rust::Yaml;
 use self::yaml_rust::YamlLoader;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Eq, PartialEq)]
 pub struct IntermediateConfig {
     pub remote: Option<IntermediateRemote>,
     pub push: Option<IntermediatePush>,
     pub pull: Option<IntermediatePull>,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Eq, PartialEq)]
 pub struct IntermediateRemote {
     pub host: Option<String>,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Eq, PartialEq)]
 pub struct IntermediatePush {
     pub compression: Option<u8>,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Eq, PartialEq)]
 pub struct IntermediatePull {
     pub compression: Option<u8>,
     pub mode: Option<PullMode>,

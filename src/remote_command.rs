@@ -7,12 +7,12 @@ use bus::{Bus, BusReader};
 
 use config::Config;
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct RemoteCommandOk {
     pub duration: Duration,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct RemoteCommandErr {
     pub duration: Duration,
 }
