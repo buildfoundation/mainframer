@@ -17,7 +17,6 @@ echo "Running shellcheck against all .sh files in the project..."
 
 # shellcheck disable=SC2016
 docker run \
---interactive \
 --tty \
 --rm \
 --volume "$(pwd)":/project:ro \
@@ -68,8 +67,6 @@ BUILD_COMMAND+="/opt/project/test/test.sh &&"
 BUILD_COMMAND+="cd /opt/project && cargo build --release && mkdir -p artifacts && mv target/release/mainframer artifacts/mainframer-$TRAVIS_TAG-$(uname -s)"
 
 docker run \
---interactive \
---tty \
 --rm \
 --volume "$(pwd)":/opt/project \
 --env LOCAL_USER_ID="$USER_ID" \
