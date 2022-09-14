@@ -27,6 +27,6 @@ pushd "$BUILD_DIR" > /dev/null
 "$DIR/../test/build_and_unit_tests.sh"
 
 mkdir -p artifacts
-mv target/release/mainframer "artifacts/mainframer-$TRAVIS_TAG-$(uname -s)"
+mv target/release/mainframer "artifacts/mainframer-$GITHUB_REF-$(uname -s)"
 
 popd > /dev/null

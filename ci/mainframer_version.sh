@@ -3,18 +3,19 @@ set -e
 # Runs against Cargo.toml in working directory.
 
 # Script detects if build is triggered by git tag and sets it as Mainframer version, otherwise no-op.
+# See https://docs.github.com/en/actions/learn-github-actions/environment-variables
 
-if [ -z "$TRAVIS_TAG" ]; then
+if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
     echo "Non-tag build, using version from Cargo.toml."
 else
     echo "Tag detected, overriding version in Cargo.toml."
 
-    if ! [[ "$TRAVIS_TAG" == v* ]]; then
+    if ! [[ "$GITHUB_REF" == v* ]]; then
         echo "Git tag should start with 'v', ie 'v3.1.4'."
         exit 1
     fi
 
-    NEW_VERSION=${TRAVIS_TAG#"v"}
+    NEW_VERSION=${GITHUB_REF#"v"}
     OLD_VERSION="3.0.0-dev"
 
     if [[ "$OSTYPE" == "linux-gnu" ]]; then

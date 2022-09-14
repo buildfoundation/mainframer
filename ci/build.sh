@@ -64,7 +64,7 @@ BUILD_COMMAND+="source ~/.bashrc && "
 BUILD_COMMAND+="/opt/project/test/test.sh &&"
 
 # Build release version and move binary to build/artifacts.
-BUILD_COMMAND+="cd /opt/project && cargo build --release && mkdir -p artifacts && mv target/release/mainframer artifacts/mainframer-$TRAVIS_TAG-$(uname -s)"
+BUILD_COMMAND+="cd /opt/project && cargo build --release && mkdir -p artifacts && mv target/release/mainframer artifacts/mainframer-$GITHUB_REF-$(uname -s)"
 
 docker run \
 --rm \
