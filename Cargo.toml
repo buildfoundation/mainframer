@@ -9,8 +9,6 @@ version = "3.0.0-dev"
 authors = ["Artem Zinnatullin <artem.zinnatullin@gmail.com>", "Artur Dryomov <artur.dryomov@gmail.com>", "Mainframer Developers and Contributors"]
 
 [dependencies]
-yaml-rust = "0.4.5"
-linked-hash-map = "0.5.1"
 crossbeam-channel = "0.3"
 bus = "2.2.1"
 serde = { version = "1", features = ["derive"] }
