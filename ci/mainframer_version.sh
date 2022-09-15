@@ -6,8 +6,6 @@ set -e
 # See https://docs.github.com/en/actions/learn-github-actions/environment-variables
 
 if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
-    echo "Non-tag build, using version from Cargo.toml."
-else
     echo "Tag detected, overriding version in Cargo.toml."
 
     if ! [[ "$GITHUB_REF" == v* ]]; then
@@ -31,5 +29,7 @@ else
     fi
 
     echo "Mainframer version was overridden to '$NEW_VERSION'."
+elif
+    echo "Non-tag build, using version from Cargo.toml."
 fi
 
