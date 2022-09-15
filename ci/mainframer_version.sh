@@ -5,7 +5,7 @@ set -e
 # Script detects if build is triggered by git tag and sets it as Mainframer version, otherwise no-op.
 # See https://docs.github.com/en/actions/learn-github-actions/environment-variables
 
-if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
+if [[ "${GITHUB_REF_TYPE:-}" == "tag" ]]; then
     echo "Tag detected, overriding version in Cargo.toml."
 
     if ! [[ "$GITHUB_REF" == v* ]]; then
@@ -29,7 +29,6 @@ if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
     fi
 
     echo "Mainframer version was overridden to '$NEW_VERSION'."
-elif
+else
     echo "Non-tag build, using version from Cargo.toml."
 fi
-
