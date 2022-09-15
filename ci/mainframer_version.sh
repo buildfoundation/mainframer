@@ -8,12 +8,12 @@ set -e
 if [[ "${GITHUB_REF_TYPE:-}" == "tag" ]]; then
     echo "Tag detected, overriding version in Cargo.toml."
 
-    if ! [[ "$GITHUB_REF" == v* ]]; then
+    if ! [[ "$GITHUB_REF_NAME" == v* ]]; then
         echo "Git tag should start with 'v', ie 'v3.1.4'."
         exit 1
     fi
 
-    NEW_VERSION=${GITHUB_REF#"v"}
+    NEW_VERSION=${GITHUB_REF_NAME#"v"}
     OLD_VERSION="3.0.0-dev"
 
     if [[ "$OSTYPE" == "linux-gnu" ]]; then
