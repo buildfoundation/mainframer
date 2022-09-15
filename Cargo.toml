@@ -1,6 +1,6 @@
 [package]
 name = "mainframer"
-
+edition = "2021"
 # We override this version with one from Git tag on CI.
 # Version in this file only used to track major updates like 3.x.
 # Don't forget to update ci/mainframer_version.sh if version here gets changed.
@@ -13,3 +13,5 @@ yaml-rust = "0.4.5"
 linked-hash-map = "0.5.1"
 crossbeam-channel = "0.3"
 bus = "2.2.1"
+serde = { version = "1", features = ["derive"] }
+serde_yaml = "0.9.13"
