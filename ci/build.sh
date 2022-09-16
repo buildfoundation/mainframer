@@ -64,6 +64,7 @@ BUILD_COMMAND+="source ~/.bashrc && "
 BUILD_COMMAND+="/opt/project/test/test.sh &&"
 
 # Build release version and move binary to build/artifacts.
+# shellcheck disable=SC2016
 BUILD_COMMAND+='ARTIFACT_VERSION="$GITHUB_SHA" && if [[ "${GITHUB_REF_TYPE:-}" == "tag" ]]; then ARTIFACT_VERSION="$GITHUB_REF_NAME"; fi &&'
 BUILD_COMMAND+="cd /opt/project && cargo build --release && mkdir -p artifacts && mv target/release/mainframer artifacts/mainframer-$ARTIFACT_VERSION-$(uname -s)"
 
