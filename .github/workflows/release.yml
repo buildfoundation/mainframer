@@ -1,0 +1,33 @@
+name: Release
+
+on:
+  push:
+    branches: [ "3.x" ]
+  pull_request:
+    branches: [ "3.x" ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build
+      continue-on-error: false
+      run: |
+        cargo build --verbose
+        cargo build --release --verbose
+        echo "TEMP_DIR=$(mktemp -d)" >> $GITHUB_ENV
+        cp ./target/release/mainframer $TEMP_DIR/mainframer
+    - name: Test
+      continue-on-error: false
+      run: |
+        cargo test --verbose
+        cargo test --release --verbose
+    - name: Update release
+      run: |
+        git checkout release
+        mv ${{ env.TEMP_DIR}}/mainframer ./mainframer
+        git add .
+        git commit -m "$GITHUB_SHA"
+        git push
