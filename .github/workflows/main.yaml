@@ -32,6 +32,6 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: artifacts
-          path: artifacts/*
+          path: ${{github.workspace}}/artifacts/*
           retention-days: 21
+          if-no-files-found: error
