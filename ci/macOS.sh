@@ -27,10 +27,4 @@ pushd "$BUILD_DIR" > /dev/null
 "$DIR/../test/build_and_unit_tests.sh"
 
 mkdir -p artifacts
-ARTIFACT_VERSION="$GITHUB_SHA"
-if [[ "${GITHUB_REF_TYPE:-}" == "tag" ]]; then
-  ARTIFACT_VERSION="$GITHUB_REF_NAME"
-fi
-cp target/release/mainframer "artifacts/mainframer-$ARTIFACT_VERSION-$(uname -s)"
-
-popd > /dev/null
+cp target/release/mainframer "artifacts/mainframer"
