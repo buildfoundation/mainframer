@@ -33,4 +33,7 @@ if [[ "${GITHUB_REF_TYPE:-}" == "tag" ]]; then
 fi
 cp target/release/mainframer "artifacts/mainframer-$ARTIFACT_VERSION-$(uname -s)"
 
+echo "working dir $PWD"
+ls -la artifacts
+
 popd > /dev/null
