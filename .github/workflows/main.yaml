@@ -28,3 +28,10 @@ jobs:
         if: ${{ matrix.os == 'macos-latest' }}
         timeout-minutes: 15
         run: ci/macOS.sh
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifacts
+          path: artifacts/
+          retention-days: 21
