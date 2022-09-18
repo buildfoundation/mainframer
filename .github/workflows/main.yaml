@@ -33,6 +33,6 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.os }}
-          path: ${{github.workspace}}/artifacts/*
+          path: build/artifacts/*
           retention-days: 21
           if-no-files-found: error
