@@ -33,5 +33,5 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: artifacts
-          path: artifacts/
+          path: artifacts/*
           retention-days: 21

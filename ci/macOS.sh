@@ -33,6 +33,4 @@ if [[ "${GITHUB_REF_TYPE:-}" == "tag" ]]; then
 fi
 mv target/release/mainframer "artifacts/mainframer-$ARTIFACT_VERSION-$(uname -s)"
 
-ls -la artifacts
-
 popd > /dev/null
