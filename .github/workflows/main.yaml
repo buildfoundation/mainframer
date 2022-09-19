@@ -40,7 +40,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.os }}
-          path: build/artifacts/*
+          path: artifacts/*
           retention-days: 21
           if-no-files-found: error
 
@@ -48,7 +48,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
         with:
-          files: build/artifacts/*
+          files: artifacts/*
 
   e2e-integration-tests:
     runs-on: ubuntu-latest
