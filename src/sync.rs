@@ -14,18 +14,18 @@ use config::Config;
 use ignore::Ignore;
 use remote_command::{RemoteCommandOk, RemoteCommandErr};
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct PushOk {
     pub duration: Duration,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct PushErr {
     pub duration: Duration,
     pub message: String,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub enum PullMode {
     /// Serial, after remote command execution.
     Serial,
@@ -35,12 +35,12 @@ pub enum PullMode {
     Parallel(Duration),
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct PullOk {
     pub duration: Duration,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct PullErr {
     pub duration: Duration,
     pub message: String,
