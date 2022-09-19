@@ -2,13 +2,15 @@ FROM ubuntu:focal
 
 MAINTAINER Mainframer Team
 
+ENV DEBIAN_FRONTEND=noninteractive
+
 COPY ci/rust.version /var/rust.version
 
 # "sudo": switch user in entrypoint.
 # "curl", "build-essential": build Mainframer.
 # "openssh-server", "rsync": testing.
 RUN apt-get update --quiet > /dev/null && \
-    apt-get --assume-yes --quiet install \
+    apt-get --assume-yes --no-install-recommends --quiet install \
     sudo \
     curl \
     build-essential \
