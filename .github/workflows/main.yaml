@@ -16,18 +16,25 @@ jobs:
       - name: Git checkout
         uses: actions/checkout@v3
 
+      - name: Setup Rust Build Env
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: "1.63.0"
+          override: true
+          components: clippy
+
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
 
       - name: build-linux
         if: ${{ matrix.os == 'ubuntu-latest' }}
-        timeout-minutes: 15
-        run: ci/build.sh
+        timeout-minutes: 5
+        run: ci/build-linux.sh
 
       - name: build-macOS
         if: ${{ matrix.os == 'macos-latest' }}
-        timeout-minutes: 15
-        run: ci/macOS.sh
+        timeout-minutes: 5
+        run: ci/build-macOS.sh
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
@@ -42,3 +49,13 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: build/artifacts/*
+
+  e2e-integration-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+
+      - name: E2E Integration Tests
+        timeout-minutes: 15
+        run: ci/e2e-integration-tests.sh
