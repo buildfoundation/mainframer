@@ -36,3 +36,9 @@ jobs:
           path: build/artifacts/*
           retention-days: 21
           if-no-files-found: error
+
+      - name: Upload release binaries
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: build/artifacts/*
