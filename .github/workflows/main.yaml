@@ -20,6 +20,7 @@ jobs:
       - name: Setup Rust Build Env
         uses: actions-rs/toolchain@v1
         with:
+          # Keep in sync with ci/rust.version
           toolchain: "1.63.0"
           override: true
           components: clippy
@@ -56,6 +57,10 @@ jobs:
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
+
+      - name: Docker Layer Cache
+        uses: satackey/action-docker-layer-caching@v0.0.11
+        continue-on-error: true
 
       - name: E2E Integration Tests
         timeout-minutes: 15
