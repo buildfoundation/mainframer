@@ -1,6 +1,8 @@
-FROM ubuntu:16.04
+FROM ubuntu:focal
 
 MAINTAINER Mainframer Team
+
+ENV DEBIAN_FRONTEND=noninteractive
 
 COPY ci/rust.version /var/rust.version
 
@@ -8,9 +10,10 @@ COPY ci/rust.version /var/rust.version
 # "curl", "build-essential": build Mainframer.
 # "openssh-server", "rsync": testing.
 RUN apt-get update --quiet > /dev/null && \
-    apt-get --assume-yes --quiet install \
+    apt-get --assume-yes --no-install-recommends --quiet install \
     sudo \
     curl \
+    ca-certificates \
     build-essential \
     openssh-server \
     rsync && \
@@ -20,7 +23,7 @@ RUN groupadd build_user && \
     useradd --shell /bin/bash --comment "User for container" --create-home -g build_user build_user && \
     usermod -a -G sudo build_user
 
-RUN su build_user -c 'curl --silent --fail --location curl https://sh.rustup.rs | sh -s -- -y --default-toolchain="$(cat /var/rust.version)" && \
+RUN su build_user -c 'curl --proto '=https' --tlsv1.2 -Sf https://sh.rustup.rs | sh -s -- -y --default-toolchain="$(cat /var/rust.version)" && \
     source "$HOME/.cargo/env" && \
     echo "$PATH" && \
     rustc --version && cargo --version && \

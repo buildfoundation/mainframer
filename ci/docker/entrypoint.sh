@@ -1,5 +1,5 @@
 #!/bin/bash
-set -xe
+set -xeuo pipefail
 
 # Start ssh server for tests.
 service ssh start
