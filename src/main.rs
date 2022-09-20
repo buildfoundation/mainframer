@@ -11,13 +11,13 @@ use args::Args;
 use config::*;
 use ignore::*;
 use intermediate_config::IntermediateConfig;
-use sync::{PullMode};
+use sync::PullMode;
 use time::*;
 
 mod args;
 mod config;
-mod intermediate_config;
 mod ignore;
+mod intermediate_config;
 mod remote_command;
 mod sync;
 mod time;
@@ -45,7 +45,7 @@ fn main() {
 
     let config = match merge_configs(&config_file) {
         Err(error) => exit_with_error(&error, 1),
-        Ok(value) => value
+        Ok(value) => value,
     };
 
     let ignore = Ignore::from_working_dir(&local_dir_absolute_path);
@@ -53,33 +53,50 @@ fn main() {
     println!("Pushing...");
 
     match sync::push(&local_dir_absolute_path, &config, &ignore) {
-        Err(err) => exit_with_error(&format!("Push failed: {}, took {}", err.message, format_duration(err.duration)), 1),
+        Err(err) => exit_with_error(
+            &format!(
+                "Push failed: {}, took {}",
+                err.message,
+                format_duration(err.duration)
+            ),
+            1,
+        ),
         Ok(ok) => println!("Push done: took {}.\n", format_duration(ok.duration)),
     }
 
     match config.pull.mode {
         PullMode::Serial => println!("Executing command on remote machine...\n"),
-        PullMode::Parallel(_) => println!("Executing command on remote machine (pulling in parallel)...\n")
+        PullMode::Parallel(_) => {
+            println!("Executing command on remote machine (pulling in parallel)...\n")
+        }
     }
 
     let mut remote_command_readers = remote_command::execute_remote_command(
         args.command,
         config.clone(),
         sync::project_dir_on_remote_machine(&local_dir_absolute_path),
-        2
+        2,
     );
 
-    let pull_finished_rx = sync::pull(&local_dir_absolute_path, config.clone(), ignore, &config.pull.mode, remote_command_readers.pop().unwrap());
+    let pull_finished_rx = sync::pull(
+        &local_dir_absolute_path,
+        config.clone(),
+        ignore,
+        &config.pull.mode,
+        remote_command_readers.pop().unwrap(),
+    );
 
-    let remote_command_result = remote_command_readers
-        .pop()
-        .unwrap()
-        .recv()
-        .unwrap();
+    let remote_command_result = remote_command_readers.pop().unwrap().recv().unwrap();
 
     match remote_command_result {
-        Err(ref err) => eprintln!("\nExecution failed: took {}.\nPulling...", format_duration(err.duration)),
-        Ok(ref ok) => println!("\nExecution done: took {}.\nPulling...", format_duration(ok.duration))
+        Err(ref err) => eprintln!(
+            "\nExecution failed: took {}.\nPulling...",
+            format_duration(err.duration)
+        ),
+        Ok(ref ok) => println!(
+            "\nExecution done: took {}.\nPulling...",
+            format_duration(ok.duration)
+        ),
     }
 
     let pull_result = pull_finished_rx
@@ -89,12 +106,19 @@ fn main() {
     let total_duration = total_start.elapsed();
 
     match pull_result {
-        Err(ref err) => eprintln!("Pull failed: {}, took {}.", err.message, format_duration(err.duration)),
+        Err(ref err) => eprintln!(
+            "Pull failed: {}, took {}.",
+            err.message,
+            format_duration(err.duration)
+        ),
         Ok(ref ok) => println!("Pull done: took {}", format_duration(ok.duration)),
     }
 
     if remote_command_result.is_err() || pull_result.is_err() {
-        exit_with_error(&format!("\nFailure: took {}.", format_duration(total_duration)), 1);
+        exit_with_error(
+            &format!("\nFailure: took {}.", format_duration(total_duration)),
+            1,
+        );
     } else {
         println!("\nSuccess: took {}.", format_duration(total_duration));
     }
@@ -117,14 +141,16 @@ fn merge_configs(project_config_file: &Path) -> Result<Config, String> {
         Ok(intermediate_config) => {
             let remote = match intermediate_config.remote {
                 None => return Err(String::from("Configuration must specify 'remote'")),
-                Some(value) => value
+                Some(value) => value,
             };
 
             Config {
                 remote: Remote {
                     host: match remote.host {
-                        None => return Err(String::from("Configuration must specify 'remote.host'")),
-                        Some(value) => value
+                        None => {
+                            return Err(String::from("Configuration must specify 'remote.host'"))
+                        }
+                        Some(value) => value,
                     },
                 },
                 push: match intermediate_config.push {
@@ -133,7 +159,7 @@ fn merge_configs(project_config_file: &Path) -> Result<Config, String> {
                     },
                     Some(push) => Push {
                         compression: push.compression.unwrap_or(default_push_compression),
-                    }
+                    },
                 },
                 pull: match intermediate_config.pull {
                     None => Pull {
@@ -143,10 +169,9 @@ fn merge_configs(project_config_file: &Path) -> Result<Config, String> {
                     Some(pull) => Pull {
                         compression: pull.compression.unwrap_or(default_pull_compression),
                         mode: pull.mode.unwrap_or(default_pull_mode),
-                    }
+                    },
                 },
             }
         }
     })
 }
-
