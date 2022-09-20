@@ -23,7 +23,7 @@ jobs:
           # Keep in sync with ci/rust.version
           toolchain: "1.63.0"
           override: true
-          components: clippy
+          components: rustfmt, clippy
 
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
