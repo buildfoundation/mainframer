@@ -13,6 +13,7 @@ RUN apt-get update --quiet > /dev/null && \
     apt-get --assume-yes --no-install-recommends --quiet install \
     sudo \
     curl \
+    ca-certificates \
     build-essential \
     openssh-server \
     rsync && \
