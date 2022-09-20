@@ -38,6 +38,10 @@ jobs:
         timeout-minutes: 5
         run: ci/build-macOS.sh
 
+      - name: Check Code Formatting
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: cargo fmt --check || ( echo "run 'cargo fmt' to fix code formatting" && exit 1 )
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
