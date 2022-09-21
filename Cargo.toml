@@ -13,3 +13,6 @@ yaml-rust = "0.4.5"
 linked-hash-map = "0.5.6"
 crossbeam-channel = "0.5.6"
 bus = "2.3.0"
+
+[profile.release]
+strip = "symbols"
