@@ -1,7 +1,7 @@
-use std::{path::Path, fs};
+use std::{fs, path::Path};
 
-use serde::{Deserialize};
 use crate::sync::PullMode;
+use serde::Deserialize;
 
 #[derive(Debug, PartialEq, Clone, Deserialize)]
 pub struct Config {
@@ -26,10 +26,19 @@ impl Config {
         serde_yaml::from_str::<Config>(contents)
             .map_err(|err| err.to_string())
             .and_then(|config| {
-                match (config.valid_pull_compression_range(), config.valid_push_compression_range()) {
+                match (
+                    config.valid_pull_compression_range(),
+                    config.valid_push_compression_range(),
+                ) {
                     (true, true) => Ok(config),
-                    (false, _) => Err(format!("'pull.compression' must be a positive integer from 1 to 9, but was {}",  config.pull.compression)),
-                    (_, false) => Err(format!("'push.compression' must be a positive integer from 1 to 9, but was {}", config.push.compression)),
+                    (false, _) => Err(format!(
+                        "'pull.compression' must be a positive integer from 1 to 9, but was {}",
+                        config.pull.compression
+                    )),
+                    (_, false) => Err(format!(
+                        "'push.compression' must be a positive integer from 1 to 9, but was {}",
+                        config.push.compression
+                    )),
                 }
             })
     }
@@ -82,13 +91,12 @@ impl Pull {
 
 impl Default for Pull {
     fn default() -> Self {
-        Self { 
-            compression: 1, 
+        Self {
+            compression: 1,
             mode: PullMode::default(),
         }
     }
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -106,18 +114,19 @@ pull:
   mode: serial
 ";
 
-        assert_eq!(Config::from_file_contents(content), Ok(Config {
-            remote: Remote {
-                host: String::from("computer1"),
-            },
-            push: Push {
-                compression: 5
-            },
-            pull: Pull {
-                compression: 2,
-                mode: PullMode::Serial,
-            },
-        }));
+        assert_eq!(
+            Config::from_file_contents(content),
+            Ok(Config {
+                remote: Remote {
+                    host: String::from("computer1"),
+                },
+                push: Push { compression: 5 },
+                pull: Pull {
+                    compression: 2,
+                    mode: PullMode::Serial,
+                },
+            })
+        );
     }
 
     #[test]
@@ -132,18 +141,19 @@ pull:
   mode: \"serial\"
 ";
 
-        assert_eq!(Config::from_file_contents(content), Ok(Config {
-            remote: Remote {
-                host: String::from("computer1"),
-            },
-            push: Push {
-                compression: 5
-            },
-            pull: Pull {
-                compression: 2,
-                mode: PullMode::Serial,
-            },
-        }));
+        assert_eq!(
+            Config::from_file_contents(content),
+            Ok(Config {
+                remote: Remote {
+                    host: String::from("computer1"),
+                },
+                push: Push { compression: 5 },
+                pull: Pull {
+                    compression: 2,
+                    mode: PullMode::Serial,
+                },
+            })
+        );
     }
 
     #[test]
@@ -158,18 +168,19 @@ pull:
     mode: serial
 ";
 
-        assert_eq!(Config::from_file_contents(content), Ok(Config {
-            remote: Remote {
-                host: String::from("computer1"),
-            },
-            push: Push {
-                compression: 5
-            },
-            pull: Pull {
-                compression: 2,
-                mode: PullMode::Serial,
-            },
-        }));
+        assert_eq!(
+            Config::from_file_contents(content),
+            Ok(Config {
+                remote: Remote {
+                    host: String::from("computer1"),
+                },
+                push: Push { compression: 5 },
+                pull: Pull {
+                    compression: 2,
+                    mode: PullMode::Serial,
+                },
+            })
+        );
     }
 
     #[test]
@@ -178,13 +189,16 @@ pull:
 remote:
   host: computer1
 ";
-        assert_eq!(Config::from_file_contents(content), Ok(Config {
-            remote: Remote {
-                host: String::from("computer1"),
-            },
-            push: Push::default(),
-            pull: Pull::default(),
-        }));
+        assert_eq!(
+            Config::from_file_contents(content),
+            Ok(Config {
+                remote: Remote {
+                    host: String::from("computer1"),
+                },
+                push: Push::default(),
+                pull: Pull::default(),
+            })
+        );
     }
 
     #[test]
@@ -196,31 +210,39 @@ remote:
 
         for destination in destinations {
             for compression_level in 1..9 {
-                let content = format!("
+                let content = format!(
+                    "
 remote:
   host: computer1
 {:#?}:
   compression: {:#?}
-", destination, compression_level);
+",
+                    destination, compression_level
+                );
 
-                assert_eq!(Config::from_file_contents(&content), Ok(Config {
-                    remote: Remote { host: "computer1".to_string() },
-                    push: if destination == "push" {
-                        Push {
-                            compression: compression_level,
-                        }
-                    } else {
-                        Push::default()
-                    },
-                    pull: if destination == "pull" {
-                        Pull {
-                            compression: compression_level,
-                            ..Default::default()
-                        }
-                    } else {
-                        Pull::default()
-                    },
-                }));
+                assert_eq!(
+                    Config::from_file_contents(&content),
+                    Ok(Config {
+                        remote: Remote {
+                            host: "computer1".to_string()
+                        },
+                        push: if destination == "push" {
+                            Push {
+                                compression: compression_level,
+                            }
+                        } else {
+                            Push::default()
+                        },
+                        pull: if destination == "pull" {
+                            Pull {
+                                compression: compression_level,
+                                ..Default::default()
+                            }
+                        } else {
+                            Pull::default()
+                        },
+                    })
+                );
             }
         }
     }
@@ -240,16 +262,22 @@ remote:
 
         for destination in destinations {
             for compression_level in &invalid_compression_levels {
-                let content = format!("
+                let content = format!(
+                    "
 remote:
     host: computer1
 {:#?}:
   compression: {:#?}
-", destination, compression_level);
+",
+                    destination, compression_level
+                );
 
                 assert_eq!(
                     Config::from_file_contents(&content),
-                    Err(format!("'{}.compression' must be a positive integer from 1 to 9, but was {}", destination, compression_level))
+                    Err(format!(
+                        "'{}.compression' must be a positive integer from 1 to 9, but was {}",
+                        destination, compression_level
+                    ))
                 );
             }
         }
@@ -274,14 +302,19 @@ remote:
 pull:
   mode: parallel
 ";
-        assert_eq!(Config::from_file_contents(content), Ok(Config {
-            remote: Remote { host: "computer1".to_string() },
-            push: Push::default(),
-            pull: Pull {
-                mode:  PullMode::Parallel,
-                ..Default::default()
-            },
-        }));
+        assert_eq!(
+            Config::from_file_contents(content),
+            Ok(Config {
+                remote: Remote {
+                    host: "computer1".to_string()
+                },
+                push: Push::default(),
+                pull: Pull {
+                    mode: PullMode::Parallel,
+                    ..Default::default()
+                },
+            })
+        );
     }
 
     #[test]

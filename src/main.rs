@@ -9,7 +9,7 @@ use std::time::Instant;
 use args::Args;
 use config::*;
 use ignore::*;
-use sync::{PullMode};
+use sync::PullMode;
 use time::*;
 
 mod args;
@@ -42,7 +42,7 @@ fn main() {
 
     let config = match Config::from_path(&config_file) {
         Err(error) => exit_with_error(&error, 1),
-        Ok(value) => value
+        Ok(value) => value,
     };
 
     let ignore = Ignore::from_working_dir(&local_dir_absolute_path.clone());
@@ -50,33 +50,50 @@ fn main() {
     println!("Pushing...");
 
     match sync::push(&local_dir_absolute_path, &config, &ignore) {
-        Err(err) => exit_with_error(&format!("Push failed: {}, took {}", err.message, format_duration(err.duration)), 1),
+        Err(err) => exit_with_error(
+            &format!(
+                "Push failed: {}, took {}",
+                err.message,
+                format_duration(err.duration)
+            ),
+            1,
+        ),
         Ok(ok) => println!("Push done: took {}.\n", format_duration(ok.duration)),
     }
 
     match config.pull.mode {
         PullMode::Serial => println!("Executing command on remote machine...\n"),
-        PullMode::Parallel => println!("Executing command on remote machine (pulling in parallel)...\n")
+        PullMode::Parallel => {
+            println!("Executing command on remote machine (pulling in parallel)...\n")
+        }
     }
 
     let mut remote_command_readers = remote_command::execute_remote_command(
         args.command.clone(),
         config.clone(),
         sync::project_dir_on_remote_machine(&local_dir_absolute_path.clone()),
-        2
+        2,
     );
 
-    let pull_finished_rx = sync::pull(&local_dir_absolute_path, config.clone(), ignore, &config.pull.mode, remote_command_readers.pop().unwrap());
+    let pull_finished_rx = sync::pull(
+        &local_dir_absolute_path,
+        config.clone(),
+        ignore,
+        &config.pull.mode,
+        remote_command_readers.pop().unwrap(),
+    );
 
-    let remote_command_result = remote_command_readers
-        .pop()
-        .unwrap()
-        .recv()
-        .unwrap();
+    let remote_command_result = remote_command_readers.pop().unwrap().recv().unwrap();
 
     match remote_command_result {
-        Err(ref err) => eprintln!("\nExecution failed: took {}.\nPulling...", format_duration(err.duration)),
-        Ok(ref ok) => println!("\nExecution done: took {}.\nPulling...", format_duration(ok.duration))
+        Err(ref err) => eprintln!(
+            "\nExecution failed: took {}.\nPulling...",
+            format_duration(err.duration)
+        ),
+        Ok(ref ok) => println!(
+            "\nExecution done: took {}.\nPulling...",
+            format_duration(ok.duration)
+        ),
     }
 
     let pull_result = pull_finished_rx
@@ -86,12 +103,19 @@ fn main() {
     let total_duration = total_start.elapsed();
 
     match pull_result {
-        Err(ref err) => eprintln!("Pull failed: {}, took {}.", err.message, format_duration(err.duration)),
+        Err(ref err) => eprintln!(
+            "Pull failed: {}, took {}.",
+            err.message,
+            format_duration(err.duration)
+        ),
         Ok(ref ok) => println!("Pull done: took {}", format_duration(ok.duration)),
     }
 
     if remote_command_result.is_err() || pull_result.is_err() {
-        exit_with_error(&format!("\nFailure: took {}.", format_duration(total_duration)), 1);
+        exit_with_error(
+            &format!("\nFailure: took {}.", format_duration(total_duration)),
+            1,
+        );
     } else {
         println!("\nSuccess: took {}.", format_duration(total_duration));
     }

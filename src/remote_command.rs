@@ -17,22 +17,36 @@ pub struct RemoteCommandErr {
     pub duration: Duration,
 }
 
-pub fn execute_remote_command(remote_command: String, config: Config, project_dir_on_remote_machine: String, number_of_readers: usize) -> Vec<BusReader<Result<RemoteCommandOk, RemoteCommandErr>>> {
+pub fn execute_remote_command(
+    remote_command: String,
+    config: Config,
+    project_dir_on_remote_machine: String,
+    number_of_readers: usize,
+) -> Vec<BusReader<Result<RemoteCommandOk, RemoteCommandErr>>> {
     let mut bus: Bus<Result<RemoteCommandOk, RemoteCommandErr>> = Bus::new(1);
-    let mut readers: Vec<BusReader<Result<RemoteCommandOk, RemoteCommandErr>>> = Vec::with_capacity(number_of_readers);
+    let mut readers: Vec<BusReader<Result<RemoteCommandOk, RemoteCommandErr>>> =
+        Vec::with_capacity(number_of_readers);
 
     for _ in 0..number_of_readers {
         readers.push(bus.add_rx())
     }
 
     thread::spawn(move || {
-        bus.broadcast(_execute_remote_command(&remote_command, &config, &project_dir_on_remote_machine));
+        bus.broadcast(_execute_remote_command(
+            &remote_command,
+            &config,
+            &project_dir_on_remote_machine,
+        ));
     });
 
     readers
 }
 
-fn _execute_remote_command(remote_command: &str, config: &Config, project_dir_on_remote_machine: &str) -> Result<RemoteCommandOk, RemoteCommandErr> {
+fn _execute_remote_command(
+    remote_command: &str,
+    config: &Config,
+    project_dir_on_remote_machine: &str,
+) -> Result<RemoteCommandOk, RemoteCommandErr> {
     let start_time = Instant::now();
 
     let mut command = Command::new("ssh");
@@ -54,12 +68,18 @@ fn _execute_remote_command(remote_command: &str, config: &Config, project_dir_on
 
     match process.wait() {
         Err(_) => Err(RemoteCommandErr {
-            duration: start_time.elapsed()
+            duration: start_time.elapsed(),
         }), // No need to get error description as we've already piped command output to Mainframer output.
-        Ok(exit_status) => if exit_status.success() {
-            Ok(RemoteCommandOk { duration: start_time.elapsed() })
-        } else {
-            Err(RemoteCommandErr { duration: start_time.elapsed() })
+        Ok(exit_status) => {
+            if exit_status.success() {
+                Ok(RemoteCommandOk {
+                    duration: start_time.elapsed(),
+                })
+            } else {
+                Err(RemoteCommandErr {
+                    duration: start_time.elapsed(),
+                })
+            }
         }
     }
 }
