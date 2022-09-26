@@ -9,7 +9,11 @@ version = "3.0.0-dev"
 authors = ["Artem Zinnatullin <artem.zinnatullin@gmail.com>", "Artur Dryomov <artur.dryomov@gmail.com>", "Mainframer Developers and Contributors"]
 
 [dependencies]
-crossbeam-channel = "0.3"
-bus = "2.2.1"
+crossbeam-channel = "0.5.6"
+bus = "2.3.0"
 serde = { version = "1", features = ["derive"] }
 serde_yaml = "0.9.13"
+linked-hash-map = "0.5.6"
+
+[profile.release]
+strip = "symbols"

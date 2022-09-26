@@ -15,18 +15,18 @@ use crate::config::Config;
 use crate::ignore::Ignore;
 use crate::remote_command::{RemoteCommandErr, RemoteCommandOk};
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct PushOk {
     pub duration: Duration,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct PushErr {
     pub duration: Duration,
     pub message: String,
 }
 
-#[derive(Debug, PartialEq, Clone, Deserialize)]
+#[derive(Debug, Eq, PartialEq, Clone, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum PullMode {
     /// Serial, after remote command execution.
@@ -47,12 +47,12 @@ impl Default for PullMode {
     }
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct PullOk {
     pub duration: Duration,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct PullErr {
     pub duration: Duration,
     pub message: String,
