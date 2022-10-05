@@ -21,26 +21,29 @@ impl Config {
         }
     }
 
+    fn is_valid(&self) -> Result<(), String> {
+        if !self.valid_pull_compression_range() {
+            return Err(format!(
+                "'pull.compression' must be a positive integer from 1 to 9, but was {}",
+                self.pull.compression
+            ));
+        }
+
+        if !self.valid_push_compression_range() {
+            return Err(format!(
+                "'push.compression' must be a positive integer from 1 to 9, but was {}",
+                self.push.compression
+            ));
+        }
+
+        Ok(())
+    }
+
     #[inline(always)]
     pub fn from_file_contents<'a>(contents: &'a str) -> Result<Self, String> {
         serde_yaml::from_str::<Config>(contents)
             .map_err(|err| err.to_string())
-            .and_then(|config| {
-                match (
-                    config.valid_pull_compression_range(),
-                    config.valid_push_compression_range(),
-                ) {
-                    (true, true) => Ok(config),
-                    (false, _) => Err(format!(
-                        "'pull.compression' must be a positive integer from 1 to 9, but was {}",
-                        config.pull.compression
-                    )),
-                    (_, false) => Err(format!(
-                        "'push.compression' must be a positive integer from 1 to 9, but was {}",
-                        config.push.compression
-                    )),
-                }
-            })
+            .and_then(|config| config.is_valid().map(|_| config))
     }
 
     pub fn valid_pull_compression_range(&self) -> bool {
