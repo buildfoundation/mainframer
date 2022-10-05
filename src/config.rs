@@ -21,6 +21,21 @@ impl Config {
         }
     }
 
+    #[inline(always)]
+    pub fn from_file_contents<'a>(contents: &'a str) -> Result<Self, String> {
+        serde_yaml::from_str::<Config>(contents)
+            .map_err(|err| err.to_string())
+            .and_then(|config| config.is_valid().map(|_| config))
+    }
+
+    fn valid_pull_compression_range(&self) -> bool {
+        (1..=9).contains(&self.pull.compression)
+    }
+
+    fn valid_push_compression_range(&self) -> bool {
+        (1..=9).contains(&self.push.compression)
+    }
+
     fn is_valid(&self) -> Result<(), String> {
         if !self.valid_pull_compression_range() {
             return Err(format!(
@@ -37,21 +52,6 @@ impl Config {
         }
 
         Ok(())
-    }
-
-    #[inline(always)]
-    pub fn from_file_contents<'a>(contents: &'a str) -> Result<Self, String> {
-        serde_yaml::from_str::<Config>(contents)
-            .map_err(|err| err.to_string())
-            .and_then(|config| config.is_valid().map(|_| config))
-    }
-
-    pub fn valid_pull_compression_range(&self) -> bool {
-        (1..=9).contains(&self.pull.compression)
-    }
-
-    pub fn valid_push_compression_range(&self) -> bool {
-        (1..=9).contains(&self.push.compression)
     }
 }
 
