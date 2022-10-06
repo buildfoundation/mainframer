@@ -22,7 +22,7 @@ impl Config {
     }
 
     #[inline(always)]
-    pub fn from_file_contents<'a>(contents: &'a str) -> Result<Self, String> {
+    pub fn from_file_contents(contents: &str) -> Result<Self, String> {
         serde_yaml::from_str::<Config>(contents)
             .map_err(|err| err.to_string())
             .and_then(|config| config.is_valid().map(|_| config))
