@@ -9,10 +9,11 @@ use bus::BusReader;
 use crossbeam_channel::unbounded;
 use crossbeam_channel::Receiver;
 use crossbeam_channel::Sender;
+use serde::Deserialize;
 
-use config::Config;
-use ignore::Ignore;
-use remote_command::{RemoteCommandErr, RemoteCommandOk};
+use crate::config::Config;
+use crate::ignore::Ignore;
+use crate::remote_command::{RemoteCommandErr, RemoteCommandOk};
 
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub struct PushOk {
@@ -25,14 +26,25 @@ pub struct PushErr {
     pub message: String,
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, Eq, PartialEq, Clone, Deserialize)]
+#[serde(rename_all = "lowercase")]
 pub enum PullMode {
     /// Serial, after remote command execution.
     Serial,
 
     /// Parallel to remote command execution.
     /// First parameter is pause between pulls.
-    Parallel(Duration),
+    Parallel,
+}
+
+impl PullMode {
+    pub const PARALLEL_DURATION: Duration = Duration::from_millis(500);
+}
+
+impl Default for PullMode {
+    fn default() -> Self {
+        Self::Serial
+    }
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]
@@ -101,11 +113,11 @@ pub fn pull(
             ignore,
             remote_command_finished_signal,
         ),
-        PullMode::Parallel(pause_between_pulls) => pull_parallel(
+        PullMode::Parallel => pull_parallel(
             local_dir_absolute_path.to_path_buf(),
             config,
             ignore,
-            *pause_between_pulls,
+            PullMode::PARALLEL_DURATION,
             remote_command_finished_signal,
         ),
     }

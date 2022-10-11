@@ -3,21 +3,18 @@ extern crate crossbeam_channel;
 
 use std::env;
 use std::fs;
-use std::path::Path;
 use std::process;
 use std::time::Instant;
 
 use args::Args;
 use config::*;
 use ignore::*;
-use intermediate_config::IntermediateConfig;
 use sync::PullMode;
 use time::*;
 
 mod args;
 mod config;
 mod ignore;
-mod intermediate_config;
 mod remote_command;
 mod sync;
 mod time;
@@ -43,7 +40,7 @@ fn main() {
     let mut config_file = local_dir_absolute_path.clone();
     config_file.push(".mainframer/config.yml");
 
-    let config = match merge_configs(&config_file) {
+    let config = match Config::from_path(&config_file) {
         Err(error) => exit_with_error(&error, 1),
         Ok(value) => value,
     };
@@ -66,7 +63,7 @@ fn main() {
 
     match config.pull.mode {
         PullMode::Serial => println!("Executing command on remote machine...\n"),
-        PullMode::Parallel(_) => {
+        PullMode::Parallel => {
             println!("Executing command on remote machine (pulling in parallel)...\n")
         }
     }
@@ -129,49 +126,4 @@ fn exit_with_error(message: &str, code: i32) -> ! {
         eprintln!("{}", message);
     }
     process::exit(code);
-}
-
-fn merge_configs(project_config_file: &Path) -> Result<Config, String> {
-    let default_push_compression = 3;
-    let default_pull_compression = 1;
-    let default_pull_mode = PullMode::Serial; // TODO: consider making Parallel the default mode.
-
-    Ok(match IntermediateConfig::from_file(project_config_file) {
-        Err(message) => return Err(message),
-        Ok(intermediate_config) => {
-            let remote = match intermediate_config.remote {
-                None => return Err(String::from("Configuration must specify 'remote'")),
-                Some(value) => value,
-            };
-
-            Config {
-                remote: Remote {
-                    host: match remote.host {
-                        None => {
-                            return Err(String::from("Configuration must specify 'remote.host'"))
-                        }
-                        Some(value) => value,
-                    },
-                },
-                push: match intermediate_config.push {
-                    None => Push {
-                        compression: default_push_compression,
-                    },
-                    Some(push) => Push {
-                        compression: push.compression.unwrap_or(default_push_compression),
-                    },
-                },
-                pull: match intermediate_config.pull {
-                    None => Pull {
-                        compression: default_pull_compression,
-                        mode: default_pull_mode,
-                    },
-                    Some(pull) => Pull {
-                        compression: pull.compression.unwrap_or(default_pull_compression),
-                        mode: pull.mode.unwrap_or(default_pull_mode),
-                    },
-                },
-            }
-        }
-    })
 }

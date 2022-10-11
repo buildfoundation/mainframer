@@ -5,7 +5,7 @@ use std::time::{Duration, Instant};
 
 use bus::{Bus, BusReader};
 
-use config::Config;
+use crate::config::Config;
 
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub struct RemoteCommandOk {
