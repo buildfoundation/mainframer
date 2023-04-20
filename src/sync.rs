@@ -251,7 +251,17 @@ fn _pull(
 }
 
 pub fn project_dir_on_remote_machine(local_dir_absolute_path: &Path) -> String {
-    format!("~/mainframer{}", local_dir_absolute_path.to_string_lossy())
+    let mut path = local_dir_absolute_path.to_string_lossy().to_string();
+
+    if cfg!(windows) {
+        // Replace "\\?\\C:\" in a canonical Windows path with "/C".
+        if let [b'\\', b'\\', b'?', b'\\', drive, b':', b'\\', rest @ ..] = path.as_bytes() {
+            path = format!("/{}/{}", *drive as char, String::from_utf8_lossy(rest));
+        }
+        path = path.replace('\\', "/");
+    }
+
+    format!("~/mainframer{}", path)
 }
 
 fn apply_exclude_from(rsync_command: &mut Command, exclude_file: &Option<PathBuf>) {
@@ -298,6 +308,23 @@ fn calculate_perceived_pull_duration(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn remote_path_from_canonical_unix_path() {
+        assert_eq!(
+            project_dir_on_remote_machine(&PathBuf::from(r"/home/user/project")),
+            "~/mainframer/home/user/project"
+        );
+    }
+
+    #[cfg(windows)]
+    #[test]
+    fn remote_path_from_canonical_windows_path() {
+        assert_eq!(
+            project_dir_on_remote_machine(&PathBuf::from(r"\\?\C:\Users\user\project")),
+            "~/mainframer/C/Users/user/project"
+        );
+    }
 
     #[test]
     fn calculate_perceived_pull_duration_equals() {
